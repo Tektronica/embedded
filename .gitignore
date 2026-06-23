@@ -1,0 +1,47 @@
+# PlatformIO
+.pio/
+.pioenvs/
+.piolibdeps/
+.clang_complete
+.gcc-flags.json
+lib/readme.txt
+
+# VSCode
+.vscode/
+!.vscode/extensions.json
+
+# JetBrains (CLion/IntelliJ)
+.idea/
+*.iml
+
+# Secrets — never commit (mirrors the /commit secret guard)
+.env
+.env.*
+secrets.h
+*_secrets.h
+arduino_secrets.h
+credentials.h
+
+# macOS
+.DS_Store
+.AppleDouble
+.LSOverride
+._*
+.Spotlight-V100
+.Trashes
+
+# Windows
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+
+# Linux
+*~
+.directory
+
+# Build artifacts
+*.o
+*.elf
+*.hex
+*.bin
+*.map
