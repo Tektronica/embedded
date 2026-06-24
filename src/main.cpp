@@ -46,7 +46,8 @@ void loop()
   for (uint8_t hob = 0; hob < cooktop::HOB_COUNT; ++hob)
   {
     cooktop::Hsv c = cooktop::heatColor(model.level(hob));
-    CRGB color = (c.v == 0) ? CRGB(CRGB::Black) : CRGB(CHSV(c.h, c.s, c.v));
+    CRGB color = CRGB::Black;
+    if (c.v != 0) color = CHSV(c.h, c.s, c.v);
     uint16_t start = static_cast<uint16_t>(hob) * cooktop::LEDS_PER_RING;
     for (uint8_t i = 0; i < cooktop::LEDS_PER_RING; ++i)
       leds[start + i] = color;
