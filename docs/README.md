@@ -14,7 +14,7 @@ dimmer (potentiometer).
 - 4 × 35-LED WS2812 rings (140 LEDs total), data daisy-chained, power injected per ring.
 - 1 data signal from the Nano drives all four rings as one logical strip.
 - 4 dimmers wired to the Nano's analog inputs — one per hob — set each burner's "heat" level.
-- Heat level maps to color/brightness (off → deep red → orange → bright yellow-white).
+- Heat level maps to color/brightness (off → deep red → bright orange, like a glowing burner).
 
 ## Status
 

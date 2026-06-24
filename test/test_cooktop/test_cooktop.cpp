@@ -56,10 +56,14 @@ void test_brightness_increases_with_level() {
   TEST_ASSERT_TRUE(cooktop::heatColor(255).v > cooktop::heatColor(20).v);
 }
 
-void test_hue_stays_in_red_to_yellow_band() {
-  TEST_ASSERT_TRUE(cooktop::heatColor(1).h <= 64);
-  TEST_ASSERT_TRUE(cooktop::heatColor(128).h <= 64);
-  TEST_ASSERT_TRUE(cooktop::heatColor(255).h <= 64);
+void test_hue_stays_in_red_orange_band() {
+  TEST_ASSERT_EQUAL_UINT8(0, cooktop::heatColor(1).h);  // coolest = pure red (hue 0)
+  TEST_ASSERT_TRUE(cooktop::heatColor(255).h <= 32);    // hottest = orange at most, never yellow
+}
+
+void test_color_is_always_fully_saturated() {           // red/orange, never washes out to white
+  TEST_ASSERT_EQUAL_UINT8(255, cooktop::heatColor(40).s);
+  TEST_ASSERT_EQUAL_UINT8(255, cooktop::heatColor(255).s);
 }
 
 int main(int, char**) {
@@ -72,6 +76,7 @@ int main(int, char**) {
   RUN_TEST(test_ema_converges_toward_target);
   RUN_TEST(test_zero_level_is_off);
   RUN_TEST(test_brightness_increases_with_level);
-  RUN_TEST(test_hue_stays_in_red_to_yellow_band);
+  RUN_TEST(test_hue_stays_in_red_orange_band);
+  RUN_TEST(test_color_is_always_fully_saturated);
   return UNITY_END();
 }

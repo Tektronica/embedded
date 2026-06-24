@@ -28,7 +28,7 @@ dropped (preserved in git history, commit `feat(cooktop)`).
 - **`include/Cooktop.h`** — all hardware-free logic, so it unit-tests off-device:
   - `HobModel` — per-hob heat level (0..255)
   - `adcToLevel()` / `emaStep()` — dimmer scaling + smoothing
-  - `heatColor()` — level → HSV ramp (off → red → orange → yellow; white-hot at the top)
+  - `heatColor()` — level → HSV ramp (off → deep red → orange; full saturation, never yellow/white)
 - **`src/main.cpp`** — the Arduino glue and the loop: pins, FastLED setup, and the
   `read inputs → update model → render rings → show` flow. (MVC survives as that flow, not as
   separate classes.)

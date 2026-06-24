@@ -11,7 +11,7 @@ it shares this codebase — then it's colocated here as another PlatformIO envir
 
 - 4 hob burners — 35-LED WS2812 rings, data daisy-chained into one 140-LED strip.
 - One dimmer (potentiometer) per hob; position maps to a heat ramp
-  (off → deep red → orange → bright yellow-white).
+  (off → deep red → bright orange, like a glowing burner element).
 - Single data line drives all four rings; power injected per ring.
 - FastLED with built-in current limiting to stay inside the power budget.
 - MVC + a Strategy-style `IAppliance` plugin so new appliances drop in cleanly.

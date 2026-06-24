@@ -22,7 +22,7 @@ Per-LED full-white draw is ~60 mA @ 5 V (3 channels × ~20 mA) = 0.3 W.
 - The "≤9 W per ring" rating ≈ ~51 mA/LED — a typical/conservative figure, **not** worst case.
   Your math (4 × 9 W = 36 W → 7.2 A) is correct *for the rated number*; true full-white worst
   case is ~8.4 A / 42 W.
-- **Realistically** the hobs render reds/oranges/yellows (blue channel mostly off, rarely all-on
+- **Realistically** the hobs render reds and oranges (blue channel off, green low, rarely all-on
   full bright), so actual draw is ~1–3 A total.
 
 ### PSU — pick one

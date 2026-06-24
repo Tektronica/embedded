@@ -11,7 +11,7 @@ namespace
   constexpr uint8_t DIMMER_PINS[cooktop::HOB_COUNT] = {A0, A1, A2, A3};
   constexpr uint8_t PSU_VOLTS = 5;
   constexpr uint16_t PSU_MILLIAMPS = 5500;
-  constexpr uint8_t MAX_BRIGHTNESS = 200;
+  constexpr uint8_t MAX_BRIGHTNESS = 255; // full brightness; PSU_MILLIAMPS cap below still protects real hardware
   constexpr uint8_t FRAME_DELAY_MS = 16; // ~60 fps
   constexpr uint8_t EMA_SHIFT = 3;       // dimmer smoothing strength
 

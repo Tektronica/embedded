@@ -2,7 +2,7 @@
 
 Run the firmware in the [Wokwi](https://wokwi.com) simulator to verify the four-dimmer → four-hob
 behavior with **no physical hardware** — drag each potentiometer and watch its ring ramp
-off → red → orange → yellow.
+off → deep red → orange.
 
 The simulator runs the **exact binary** PlatformIO builds (`.pio/build/nano/firmware.elf`); no code
 changes are needed.

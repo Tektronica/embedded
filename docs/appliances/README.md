@@ -22,7 +22,7 @@ time per build, not at runtime.
 - **Hobs:** 4, each a 35-LED WS2812 ring; all four data-chained as one 140-LED strip.
 - **Input:** 1 dimmer (potentiometer) per hob → analog in (A0–A3).
 - **Mapping:** dimmer position → heat level → color/brightness ramp
-  (off → deep red → orange → bright yellow-white). HSV via FastLED.
+  (off → deep red → bright orange; never yellow/white). HSV via FastLED.
 - **Ring layout:** ring N owns LED indices `[N*35, N*35+34]`.
 
 ## Microwave (future)
