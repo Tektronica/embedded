@@ -1,0 +1,47 @@
+{
+  "version": 1,
+  "author": "Ryan Bryson",
+  "editor": "wokwi",
+  "parts": [
+    { "type": "wokwi-arduino-nano", "id": "nano", "top": 0, "left": 0, "attrs": {} },
+
+    { "type": "wokwi-potentiometer", "id": "pot1", "top": -180, "left": 180, "attrs": {} },
+    { "type": "wokwi-potentiometer", "id": "pot2", "top": -180, "left": 320, "attrs": {} },
+    { "type": "wokwi-potentiometer", "id": "pot3", "top": -180, "left": 460, "attrs": {} },
+    { "type": "wokwi-potentiometer", "id": "pot4", "top": -180, "left": 600, "attrs": {} },
+
+    { "type": "wokwi-led-strip", "id": "ring1", "top": 180, "left": 180, "attrs": { "pixels": "35", "pixelShape": "circle" } },
+    { "type": "wokwi-led-strip", "id": "ring2", "top": 240, "left": 180, "attrs": { "pixels": "35", "pixelShape": "circle" } },
+    { "type": "wokwi-led-strip", "id": "ring3", "top": 300, "left": 180, "attrs": { "pixels": "35", "pixelShape": "circle" } },
+    { "type": "wokwi-led-strip", "id": "ring4", "top": 360, "left": 180, "attrs": { "pixels": "35", "pixelShape": "circle" } }
+  ],
+  "connections": [
+    [ "pot1:SIG", "nano:A0", "green", [] ],
+    [ "pot2:SIG", "nano:A1", "green", [] ],
+    [ "pot3:SIG", "nano:A2", "green", [] ],
+    [ "pot4:SIG", "nano:A3", "green", [] ],
+
+    [ "pot1:VCC", "nano:5V", "red", [] ],
+    [ "pot2:VCC", "nano:5V", "red", [] ],
+    [ "pot3:VCC", "nano:5V", "red", [] ],
+    [ "pot4:VCC", "nano:5V", "red", [] ],
+    [ "pot1:GND", "nano:GND.1", "black", [] ],
+    [ "pot2:GND", "nano:GND.1", "black", [] ],
+    [ "pot3:GND", "nano:GND.1", "black", [] ],
+    [ "pot4:GND", "nano:GND.1", "black", [] ],
+
+    [ "nano:D6", "ring1:DIN", "green", [] ],
+    [ "ring1:DOUT", "ring2:DIN", "green", [] ],
+    [ "ring2:DOUT", "ring3:DIN", "green", [] ],
+    [ "ring3:DOUT", "ring4:DIN", "green", [] ],
+
+    [ "ring1:VDD", "nano:5V", "red", [] ],
+    [ "ring2:VDD", "nano:5V", "red", [] ],
+    [ "ring3:VDD", "nano:5V", "red", [] ],
+    [ "ring4:VDD", "nano:5V", "red", [] ],
+    [ "ring1:VSS", "nano:GND.2", "black", [] ],
+    [ "ring2:VSS", "nano:GND.2", "black", [] ],
+    [ "ring3:VSS", "nano:GND.2", "black", [] ],
+    [ "ring4:VSS", "nano:GND.2", "black", [] ]
+  ]
+}

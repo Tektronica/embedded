@@ -1,0 +1,5 @@
+[wokwi]
+version = 1
+# Simulate the firmware PlatformIO already builds for the nano env.
+firmware = ".pio/build/nano/firmware.hex"
+elf = ".pio/build/nano/firmware.elf"

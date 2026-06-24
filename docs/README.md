@@ -18,7 +18,8 @@ dimmer (potentiometer).
 
 ## Status
 
-Early scaffolding — design decided, no firmware written yet.
+Firmware implemented, built, unit-tested (9/9), and flashed to a Nano. Not yet verified on wired
+rings/dimmers — use the [Wokwi sim](simulation/) or a hardware bring-up.
 
 ## At a glance
 
@@ -28,15 +29,16 @@ Early scaffolding — design decided, no firmware written yet.
 | LEDs | 4 × WS2812 35-LED rings (140 total) |
 | LED library | FastLED (HSV + built-in power limiting) |
 | Toolchain | VSCode + PlatformIO (no Arduino IDE required) |
-| Architecture | MVC + Strategy (`IAppliance` plugin), central pin config |
+| Architecture | Two files — pure logic (`Cooktop.h`) + Arduino glue (`main.cpp`) |
 
 ## Docs (pillars)
 
 - **[setup/](setup/)** — toolchain, building, flashing the Nano
 - **[hardware/](hardware/)** — BOM, wiring, power budget & injection, pinout
-- **[architecture/](architecture/)** — software design: MVC, plugin model, layering, pin ownership
-- **[appliances/](appliances/)** — appliance specs + the plugin contract (cooktop now; microwave later)
+- **[architecture/](architecture/)** — software design: structure, pure-vs-hardware split, pin ownership
+- **[appliances/](appliances/)** — appliance specs + the (deferred) plugin contract
 - **[troubleshooting/](troubleshooting/)** — environment/setup gotchas and their fixes
+- **[simulation/](simulation/)** — run it in Wokwi (VS Code), no hardware
 
 ## Roadmap
 

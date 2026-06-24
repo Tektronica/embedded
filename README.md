@@ -63,8 +63,9 @@ fw-nano-playKitchen/
 | [docs/](docs/) | Project overview |
 | [docs/setup](docs/setup/) | Toolchain, building, flashing |
 | [docs/hardware](docs/hardware/) | BOM, power budget & injection, wiring, pinout |
-| [docs/architecture](docs/architecture/) | MVC, `IAppliance` plugin, layering, pin ownership |
-| [docs/appliances](docs/appliances/) | Appliance specs + the plugin contract |
+| [docs/architecture](docs/architecture/) | Structure, pure-vs-hardware split, pin ownership |
+| [docs/appliances](docs/appliances/) | Appliance specs + the (deferred) plugin contract |
+| [docs/simulation](docs/simulation/) | Run in Wokwi (VS Code), no hardware |
 | [docs/troubleshooting](docs/troubleshooting/) | Environment/setup gotchas + fixes |
 
 ## Status
