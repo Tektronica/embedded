@@ -38,14 +38,12 @@ void test_adc_clamps_above_max() {
   TEST_ASSERT_EQUAL_UINT8(255, controller::adcToLevel(5000));
 }
 
-void test_ema_converges_toward_target() {
-  uint16_t s = 0, prev = 0;
-  for (int i = 0; i < 60; ++i) {
-    s = controller::emaStep(s, 800, 3);
-    TEST_ASSERT_TRUE(s >= prev);  // monotonic toward the target
-    prev = s;
-  }
-  TEST_ASSERT_TRUE(s > 700);  // settles near 800
+void test_ema_reaches_target_exactly() {
+  uint16_t s = 0;
+  for (int i = 0; i < 200; ++i) s = controller::emaStep(s, 800, 3);
+  TEST_ASSERT_EQUAL_UINT16(800, s);   // converges exactly — no dead-band
+  for (int i = 0; i < 200; ++i) s = controller::emaStep(s, 1023, 3);
+  TEST_ASSERT_EQUAL_UINT16(1023, s);  // reaches the max rail -> dimmer max = full brightness
 }
 
 // --- Level → color curve ---
@@ -73,7 +71,7 @@ int main(int, char**) {
   RUN_TEST(test_out_of_range_channel_is_ignored);
   RUN_TEST(test_adc_endpoints);
   RUN_TEST(test_adc_clamps_above_max);
-  RUN_TEST(test_ema_converges_toward_target);
+  RUN_TEST(test_ema_reaches_target_exactly);
   RUN_TEST(test_zero_level_is_off);
   RUN_TEST(test_brightness_increases_with_level);
   RUN_TEST(test_hue_stays_in_red_orange_band);

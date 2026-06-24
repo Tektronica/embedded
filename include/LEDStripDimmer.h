@@ -32,10 +32,15 @@ inline uint8_t adcToLevel(uint16_t raw) {
   return static_cast<uint8_t>(static_cast<uint32_t>(raw) * 255u / ADC_MAX);
 }
 
-// One exponential-moving-average step toward `raw`; larger `shift` = smoother/slower.
+// One exponential-moving-average step toward `raw`; larger `shift` = smoother/slower. The final
+// `step != 0` guard removes the integer dead-band: without it, a small positive delta (< 2^shift)
+// shifts to 0 and the value stalls short of the target — so the dimmer at max would never reach
+// full brightness. With it, the value always converges exactly to `raw`.
 inline uint16_t emaStep(uint16_t smoothed, uint16_t raw, uint8_t shift) {
   int16_t delta = static_cast<int16_t>(raw - smoothed);
-  return static_cast<uint16_t>(smoothed + (delta >> shift));
+  int16_t step = static_cast<int16_t>(delta >> shift);
+  if (step == 0 && delta != 0) step = (delta > 0) ? 1 : -1;
+  return static_cast<uint16_t>(smoothed + step);
 }
 
 // --- Level → color curve ---
