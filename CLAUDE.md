@@ -14,13 +14,14 @@ as dimmable hob burners, one dimmer (potentiometer) per hob.
 
 - **No dynamic allocation** in the hot path — avoid `new`, `String`, `std::vector`,
   `std::function`, RTTI. Static allocation only.
-- **MVC + Strategy:** Model (pure state/logic, no hardware) · View (`LedRenderer`, owns the
-  FastLED framebuffer) · Controller (`InputController`, reads dimmers). Appliances implement the
-  `IAppliance` plugin interface, selected at **compile time** per environment.
-- **Central pin config** in `include/` — no module hardcodes a pin; pins are passed in at init
-  (dependency injection). No layer "owns" the pins.
+- **Two files.** `include/Cooktop.h` holds all hardware-free logic (hob state, ADC→level, the
+  heat-color ramp) so it unit-tests off-device; `src/main.cpp` is the Arduino glue (pins/power,
+  FastLED) and the `read → update → render` loop. **Keep the pure-vs-hardware split** — it's what
+  makes the tests possible. Pins/power live at the top of `main.cpp`.
+- **No premature abstraction.** A class-per-file MVC tree + `IAppliance` plugin layer was dropped
+  as over-built for one appliance (preserved in git history, `feat(cooktop)`). Reintroduce the
+  plugin seam only when a second appliance (e.g. microwave) is real.
 - Library: **FastLED** (HSV + `setMaxPowerInVoltsAndMilliamps` current limiting).
-- Keep patterns light — principles over the pattern zoo (see `docs/architecture/`).
 
 ## Naming
 

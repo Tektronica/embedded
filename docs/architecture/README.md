@@ -1,7 +1,7 @@
 # Architecture
 
-Software design: MVC, the plugin (Strategy) model, layering, and pin ownership — adapted for
-an 8-bit MCU.
+Software design for an 8-bit MCU: a deliberately small structure, the pure-vs-hardware split,
+and pin ownership.
 
 ## MCU constraints (the ground rules)
 
@@ -20,39 +20,36 @@ different chip (ESP32) is a *separate* repo that reuses these patterns, not this
 codebase → many deploys" still applies, but scoped to **multiple Nano units** (a cooktop Nano, a
 microwave Nano) via PlatformIO environments — not across chip families.
 
-## MVC split
+## Structure (deliberately small)
 
-- **Model** — pure state + logic, zero hardware (e.g. `hobLevel[4]`, heating state). Testable
-  off-device.
-- **View** — `LedRenderer`: maps level → ring colors, owns the FastLED framebuffer and the
-  index layout (which of the 140 LEDs belong to ring N).
-- **Controller** — `InputController`: reads/smooths the 4 dimmers, writes the Model.
-- **App loop** — orchestrates: `read inputs → update model → render`.
+~200 lines in **two source files**. A class-per-file MVC tree was over-built for that size and was
+dropped (preserved in git history, commit `feat(cooktop)`).
 
-## Plugin model (Strategy)
+- **`include/Cooktop.h`** — all hardware-free logic, so it unit-tests off-device:
+  - `HobModel` — per-hob heat level (0..255)
+  - `adcToLevel()` / `emaStep()` — dimmer scaling + smoothing
+  - `heatColor()` — level → HSV ramp (off → red → orange → yellow; white-hot at the top)
+- **`src/main.cpp`** — the Arduino glue and the loop: pins, FastLED setup, and the
+  `read inputs → update model → render rings → show` flow. (MVC survives as that flow, not as
+  separate classes.)
 
-Appliances implement a common interface so the app layer drives them uniformly:
-
-```cpp
-struct IAppliance {
-    virtual void update() = 0;   // read inputs, advance state
-    virtual void render() = 0;   // draw to outputs
-};
-```
-
-`CooktopAppliance` now; `MicrowaveAppliance` later. Selected at **compile time** per build
-(build flags / `src_filter`), not loaded at runtime. See [appliances](../appliances/).
+The one seam worth keeping is **pure logic vs hardware**: everything testable lives in `Cooktop.h`
+with no `Arduino.h`/FastLED, which is exactly why `pio test -e native` runs it on the host.
 
 ## Pin ownership
 
-- Pins live in **one** header (`include/Pins.h`); pure counts/limits in `include/Config.h`. No module hardcodes a pin.
-- Modules receive their pins via `init()`/constructor params (**dependency injection**). This
-  keeps Model/Controller testable off-hardware and means no layer "owns" the pins.
-- The authoritative pin table lives in [hardware](../hardware/).
+Pins and power sit at the top of `src/main.cpp` — the only hardware-specific spot — not scattered
+through the logic. The authoritative pin table is in [hardware](../hardware/).
+
+## Deferred: the plugin (Strategy) seam
+
+An `IAppliance` interface (so an app layer could drive cooktop/microwave/… uniformly) was built and
+then removed as premature — there is one appliance. Reintroduce it when a second is real (the
+original is in git history). Multiple **Nano units** would ship from this repo via PlatformIO
+environments; a different **chip** is a separate repo (see "Why repo-per-board").
 
 ## Patterns: use vs avoid
 
-- **Use (lightly):** Strategy (plugin), dependency injection, central config. State machine
-  per hob only if animations need it.
-- **Avoid on Nano:** heap-based Observer/factories, Singletons with lazy heap init, deep
-  inheritance, anything pulling in `String`/STL containers/RTTI.
+- **Use (lightly):** separation of pure logic from hardware, central constants, plain functions.
+- **Avoid on Nano:** dynamic allocation, deep inheritance, `String`/STL containers/RTTI, and any
+  abstraction without a second use case yet.

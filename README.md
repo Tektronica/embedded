@@ -46,14 +46,12 @@ Bootloader/CH340/port gotchas and the `platformio.ini` starting point: **[docs/s
 ```
 fw-nano-playKitchen/
 ├── platformio.ini      # env:nano (build/flash) + env:native (host unit tests)
-├── include/            # shared pure headers: Config.h, Pins.h, HeatRamp.h, InputMap.h
-├── lib/
-│   ├── model/          # HobModel — pure hob state (host-tested)
-│   ├── controller/     # InputController — reads/smooths dimmers (hardware)
-│   ├── view/           # LedRenderer — drives the rings via FastLED (hardware)
-│   └── appliance/      # IAppliance plugin contract + CooktopAppliance
-├── src/                # main.cpp — entry point + app loop
-├── test/               # native Unity tests: test_model/, test_logic/
+├── include/
+│   └── Cooktop.h       # hardware-free logic: hob state, ADC→level, heat-color ramp (unit-tested)
+├── src/
+│   └── main.cpp        # Arduino glue: pins, FastLED, loop = read → update → render
+├── test/
+│   └── test_cooktop/   # native Unity tests for Cooktop.h
 ├── docs/               # project documentation (see below)
 └── README.md
 ```
