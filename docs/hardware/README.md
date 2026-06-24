@@ -28,11 +28,18 @@ Per-LED full-white draw is ~60 mA @ 5 V (3 channels × ~20 mA) = 0.3 W.
 - Full-white is worst case. With the default `levelColor` curve (reds/oranges — blue off, green
   low, rarely full bright), actual draw is ~1–3 A total.
 
-### PSU — pick one
+### PSU — 5 V directly
 
-- **5 V / 10 A (50 W):** full headroom, never think about it again. _or_
-- **5 V / 6 A + firmware current cap:** FastLED `setMaxPowerInVoltsAndMilliamps(5, 5500)` auto-dims
-  to stay under budget.
+WS2812 are **5 V** parts, so the LEDs need a 5 V rail at the full LED current regardless of source —
+power them from a 5 V supply directly. Stepping down from 12 V/24 V buys nothing here: the buck would
+have to carry the entire LED current (an LM2596 can't) and only adds a lossy stage. Reserve a higher
+bus voltage for when you actually have 12 V/24 V loads.
+
+Pick a current rating:
+
+- **5 V / 6 A + firmware current cap (default):** FastLED `setMaxPowerInVoltsAndMilliamps(5, 5500)`
+  auto-dims to stay under budget; 6 A covers the 5.5 A cap with margin. _or_
+- **5 V / 10 A (50 W):** full-white headroom, never think about the cap again.
 
 ## Wiring rules
 
