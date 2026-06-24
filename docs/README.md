@@ -12,7 +12,7 @@ one dimmer (potentiometer) and drives one WS2812 LED strip through a level→col
 - Dimmer position → smoothed 0–255 **level** → **color** via `levelColor` (a swappable curve).
 - All LED strips are data-chained on one pin and addressed as one logical buffer
   (`LED_TOTAL` = `CHANNEL_COUNT` × `LED_STRIP_LENGTH` = 140).
-- The default curve ramps off → deep red → orange; it carries no application meaning.
+- The default curve ramps off → deep red → orange-red; it carries no application meaning.
 
 ## Status
 

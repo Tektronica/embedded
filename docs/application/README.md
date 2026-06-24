@@ -12,14 +12,14 @@ arranged as a play-kitchen **cooktop**, where the application vocabulary lives (
 | dimmer input | the burner's control knob |
 | WS2812 LED strip | the burner's ring of LEDs |
 | `level` (0–255) | how "hot" the burner is |
-| `levelColor` curve | the heat glow (off → deep red → orange) |
+| `levelColor` curve | the heat glow (off → deep red → orange-red) |
 
 ## The build
 
 - 4 channels → 4 hob burners (`CHANNEL_COUNT = 4`).
 - Each WS2812 LED strip is bent into a ring under a translucent burner (`LED_STRIP_LENGTH = 35`).
 - 4 knobs (dimmers) on the kitchen's front panel, one per burner.
-- Turning a knob ramps its burner off → deep red → orange, like a heating element.
+- Turning a knob ramps its burner off → deep red → orange-red, like a heating element.
 
 ## Notes
 

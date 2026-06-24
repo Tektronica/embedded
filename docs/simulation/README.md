@@ -2,7 +2,7 @@
 
 Run the firmware in the [Wokwi](https://wokwi.com) simulator to verify the four-dimmer →
 four-LED-strip behavior with **no physical hardware** — drag each potentiometer and watch its LED
-strip ramp off → deep red → orange.
+strip ramp off → deep red → orange-red.
 
 The simulator runs the **exact binary** PlatformIO builds (`.pio/build/nano/firmware.elf`); no code
 changes are needed.

@@ -18,7 +18,7 @@ preserved in git history.)
 - **`include/LEDStripDimmer.h`** — all hardware-free logic, so it unit-tests off-device:
   - `Levels` — per-channel level (0..255)
   - `adcToLevel()` / `emaStep()` — dimmer scaling + smoothing
-  - `levelColor()` — level → HSV curve (default: off → deep red → orange; swappable, no app meaning)
+  - `levelColor()` — level → HSV curve (default: off → deep red → orange-red; swappable, no app meaning)
 - **`src/main.cpp`** — Arduino glue + the loop: **read dimmer inputs → render LED strip outputs**.
 
 The one seam worth keeping is **pure logic vs hardware**: everything testable lives in

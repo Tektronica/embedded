@@ -58,7 +58,7 @@ void test_brightness_increases_with_level() {
 
 void test_hue_stays_in_red_orange_band() {
   TEST_ASSERT_EQUAL_UINT8(0, controller::levelColor(1).h);  // coolest = pure red (hue 0)
-  TEST_ASSERT_TRUE(controller::levelColor(255).h <= 32);    // hottest = orange at most, never yellow
+  TEST_ASSERT_TRUE(controller::levelColor(255).h <= 16);    // hottest = orange-red, never plain orange/yellow
 }
 
 void test_color_is_always_fully_saturated() {               // never washes out to white

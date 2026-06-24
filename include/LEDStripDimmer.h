@@ -45,15 +45,15 @@ struct Hsv {
   uint8_t v;
 };
 
-// Default curve: off -> dim deep red -> bright orange (full saturation, hue capped at orange).
-// Hue values are interpreted by FastLED's default *rainbow* map (hsv2rgb_rainbow): 0 = red,
-// 32 = orange, 64 = yellow. Capping at 32 means it never reaches yellow. (Literal numbers rather
-// than FastLED's HUE_* names keep this header hardware-free and unit-testable.) Swap this function
-// to change the rendering; it carries no application meaning.
+// Default curve: off -> dim deep red -> bright orange-red, like a glowing burner element.
+// Hue is interpreted by FastLED's default *rainbow* map (hsv2rgb_rainbow): 0 = red, 16 ≈ orange-red,
+// 32 = orange, 64 = yellow. We cap at 16, so it stays red-dominant — never plain orange or yellow.
+// Tuning knob: lower the cap toward 0 for a bloodier/pure red, raise toward 32 for more orange.
+// (Literal numbers rather than FastLED's HUE_* names keep this header hardware-free + unit-testable.)
 inline Hsv levelColor(uint8_t level) {
   if (level == 0) return Hsv{0, 0, 0};
   uint16_t t = static_cast<uint16_t>(level) - 1;                    // 0..254
-  uint8_t h = static_cast<uint8_t>(t * 32u / 254u);                 // rainbow hue 0=red -> 32=HUE_ORANGE
+  uint8_t h = static_cast<uint8_t>(t * 16u / 254u);                 // rainbow hue 0=red -> 16=orange-red
   uint8_t v = static_cast<uint8_t>(48u + t * (255u - 48u) / 254u);  // 48 -> 255 brightness
   return Hsv{h, 255, v};                                            // full saturation
 }

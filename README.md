@@ -14,7 +14,7 @@ it's another PlatformIO environment).
 - All LED strips are data-chained on one pin and addressed as one logical buffer.
 - FastLED drives the WS2812 LED strips, with a current cap to protect the supply.
 
-> The default `levelColor` curve ramps deep red → orange. The firmware carries **no application
+> The default `levelColor` curve ramps deep red → orange-red. The firmware carries **no application
 > meaning** — for an example use (a toy-kitchen cooktop), see **[docs/application](docs/application/)**.
 
 ## Hardware
