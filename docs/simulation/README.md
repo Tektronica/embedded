@@ -32,15 +32,18 @@ changes are needed.
 
 | Firmware | Wokwi wiring |
 |---|---|
-| `LED_DATA_PIN = 6` | Nano **D6** → ring1 `DIN`; each `DOUT`→next `DIN` (4 strips chained) |
+| `LED_DATA_PIN = 6` | Nano **`6`** (not `D6`!) → ring1 `DIN`; each `DOUT`→next `DIN` (4 strips chained) |
 | `DIMMER_PINS = {A0,A1,A2,A3}` | pot1–4 `SIG` → **A0–A3**; `VCC`→5V, `GND`→GND |
 | `LEDS_PER_RING = 35`, 4 hobs | 4 × `wokwi-led-strip` (`pixels: 35`) = 140 px; power `VDD`→5V, `VSS`→GND |
 
 ## Notes
 
-- **All strips black on start?** The potentiometer `value` attribute **defaults to `0`** → every
-  hob reads level 0 → `heatColor(0)` = off. `diagram.json` sets non-zero `value`s (1000/650/350/120)
-  so the four strips light in different heat colors immediately; dragging a pot changes its strip.
+- **All strips black? First suspect the data-pin label.** On `wokwi-arduino-nano` the digital pin
+  is **`nano:6`** (numeric) — **`nano:D6` silently does not connect**, so the strip gets no data and
+  stays dark. The firmware uses pin 6, so the wire must be `nano:6` → `ring1:DIN`.
+- **Also:** the potentiometer `value` defaults to `0` → level 0 → off. `diagram.json` seeds non-zero
+  values (1000/650/350/120) so the four strips light in different heat colors on load; drag a pot to
+  change its strip.
 - **Power comes from the Nano's `5V` pin** in the sim (strips' `VDD`→`5V`, `VSS`→`GND`). No separate
   supply is needed — the external-PSU / power-injection guidance in `docs/hardware` is a *real-board*
   concern, not a simulator one.
