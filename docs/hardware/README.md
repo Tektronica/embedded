@@ -9,6 +9,7 @@ form-factor — e.g. bending an LED strip into a ring — is application-specifi
 - 1 × Arduino Nano (ATmega328, 5 V)
 - 4 × WS2812 LED strips, 35 LEDs each (`CHANNEL_COUNT` × `LED_STRIP_LENGTH`)
 - 4 × potentiometers (dimmers), one per channel
+- 2 × momentary push switches (optional — cycle mode + color)
 - 1 × 5 V DC power supply (sizing below)
 - 1 × ~330–470 Ω resistor (data line), 1 × ~1000 µF capacitor (5 V rail)
 
@@ -51,5 +52,7 @@ Per-LED full-white draw is ~60 mA @ 5 V (3 channels × ~20 mA) = 0.3 W.
 | Channel 1 dimmer | A1 | analog in |
 | Channel 2 dimmer | A2 | analog in |
 | Channel 3 dimmer | A3 | analog in |
+| Mode switch (`PIN_SWITCH_MODE`, optional) | D2 | `INPUT_PULLUP` → GND; cycles Mode |
+| Color switch (`PIN_SWITCH_COLOR`, optional) | D3 | `INPUT_PULLUP` → GND; cycles Palette |
 
 Use A0–A5 for analog (avoid A6/A7 — analog-only, no internal pull-ups / digital use).

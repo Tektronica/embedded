@@ -18,8 +18,12 @@ preserved in git history.)
 - **`include/LEDStripDimmer.h`** — all hardware-free logic, so it unit-tests off-device:
   - `Levels` — per-channel level (0..255)
   - `adcToLevel()` / `emaStep()` — dimmer scaling + smoothing
-  - `levelColor()` — level → HSV curve (default: off → deep red → orange-red; swappable, no app meaning)
-- **`src/main.cpp`** — Arduino glue + the loop: **read dimmer inputs → render LED strip outputs**.
+  - `Palette` / `Mode` enums + `nextPalette()` / `nextMode()` — what the two optional switches cycle
+  - `pixelColor(palette, mode, level, pixel, stripLen, frame)` — the single render primitive
+    (palette → hue/sat, mode → temporal/spatial gate, level → brightness)
+  - `Button` — debounced rising-edge detect for the switches
+- **`src/main.cpp`** — Arduino glue + the loop: read dimmers + switches → `pixelColor` per pixel →
+  FastLED. A `frame` counter drives the animations; switch pins use `INPUT_PULLUP`.
 
 The one seam worth keeping is **pure logic vs hardware**: everything testable lives in
 `LEDStripDimmer.h` with no `Arduino.h`/FastLED, which is exactly why `pio test -e native` runs it on

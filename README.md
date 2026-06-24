@@ -9,13 +9,16 @@ it's another PlatformIO environment).
 
 ## What it does
 
-- **N channels** (default 4) — each channel is one **dimmer input** → one **WS2812 LED strip output**.
-- A dimmer's position → a smoothed 0–255 **level** → a **color**, via a swappable curve (`levelColor`).
-- All LED strips are data-chained on one pin and addressed as one logical buffer.
-- FastLED drives the WS2812 LED strips, with a current cap to protect the supply.
+- **N channels** (default 4) — each is one **dimmer input** → one **WS2812 LED strip output**; the
+  dimmer sets a smoothed 0–255 **level** (brightness).
+- **Color** — an optional switch cycles a palette: heat red→orange-red (default), green, blue, white,
+  or a rainbow spanning each LED strip.
+- **Mode** — an optional switch cycles an animation: solid (default), blink, strobe, chase.
+- Both switches are **optional**: unwired (via `INPUT_PULLUP`) they hold the defaults
+  (red-orange, solid). All LED strips chain on one data pin; FastLED drives them with a current cap.
 
-> The default `levelColor` curve ramps deep red → orange-red. The firmware carries **no application
-> meaning** — for an example use (a toy-kitchen cooktop), see **[docs/application](docs/application/)**.
+> The firmware carries **no application meaning** — for an example use (a toy-kitchen cooktop), see
+> **[docs/application](docs/application/)**.
 
 ## Hardware
 
@@ -46,7 +49,7 @@ pio device monitor      # serial monitor
 fw-nano-ledStripDimmer/
 ├── platformio.ini       # env:nano (build/flash) + env:native (host unit tests)
 ├── include/
-│   └── LEDStripDimmer.h  # hardware-free logic: Levels, ADC→level, levelColor curve (unit-tested)
+│   └── LEDStripDimmer.h  # hardware-free logic: Levels, dimmer math, Palette/Mode, pixelColor, Button (unit-tested)
 ├── src/
 │   └── main.cpp         # Arduino glue: pins, FastLED, loop = read dimmer inputs → render LED strip outputs
 ├── test/

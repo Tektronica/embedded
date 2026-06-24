@@ -26,6 +26,8 @@ changes are needed.
 1. Build first so the firmware exists: `pio run` (or VS Code **Build**).
 2. Open `diagram.json`, press **F1** → **"Wokwi: Start Simulator"** (or click the green ▶).
 3. **Drag a potentiometer** → its LED strip changes color/brightness, independently of the others.
+4. **Press MODE / COLOR** (the two buttons) to cycle the animation / palette. Unwired, they hold the
+   defaults (solid / red-orange).
 
 ## What the diagram models (must match `src/main.cpp`)
 
@@ -33,6 +35,7 @@ changes are needed.
 |---|---|
 | `PIN_DATA_LED = 6` | Nano **`6`** (not `D6`!) → `ledStrip1:DIN`; each `DOUT`→next `DIN` (4 LED strips chained) |
 | `PIN_DIMMER = {A0,A1,A2,A3}` | pot1–4 `SIG` → **A0–A3**; `VCC`→5V, `GND`→GND |
+| `PIN_SWITCH_MODE = 2`, `PIN_SWITCH_COLOR = 3` | `swMode`/`swColor` pushbuttons → **D2/D3** and GND (optional; `INPUT_PULLUP`) |
 | `LED_STRIP_LENGTH = 35`, `CHANNEL_COUNT = 4` | 4 × `wokwi-led-strip` (`pixels: 35`) = 140 px; power `VDD`→5V, `VSS`→GND |
 
 ## Notes

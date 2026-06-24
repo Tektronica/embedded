@@ -8,11 +8,13 @@ one dimmer (potentiometer) and drives one WS2812 LED strip through a level→col
 
 ## Concept
 
-- **N channels** (default `CHANNEL_COUNT` = 4): each is one dimmer input → one WS2812 LED strip output.
-- Dimmer position → smoothed 0–255 **level** → **color** via `levelColor` (a swappable curve).
-- All LED strips are data-chained on one pin and addressed as one logical buffer
+- **N channels** (default `CHANNEL_COUNT` = 4): each is one dimmer input → one WS2812 LED strip output;
+  the dimmer sets a smoothed 0–255 **level** (brightness).
+- **Optional color switch** cycles a `Palette` (heat red→orange-red [default], green, blue, white,
+  rainbow-per-strip); **optional mode switch** cycles a `Mode` (solid [default], blink, strobe, chase).
+- Both switches use `INPUT_PULLUP`, so unwired they hold the defaults.
+- All LED strips chain on one data pin as one logical buffer
   (`LED_TOTAL` = `CHANNEL_COUNT` × `LED_STRIP_LENGTH` = 140).
-- The default curve ramps off → deep red → orange-red; it carries no application meaning.
 
 ## Status
 
