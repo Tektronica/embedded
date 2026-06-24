@@ -17,7 +17,9 @@ arranged as a play-kitchen **cooktop**, where the application vocabulary lives (
 ## The build
 
 - 4 channels → 4 hob burners (`CHANNEL_COUNT = 4`).
-- Each WS2812 LED strip is bent into a ring under a translucent burner (`LED_STRIP_LENGTH = 35`).
+- Each burner is a pre-made **35-LED WS2812 ring** (5 V, 5050 RGB with integrated drivers;
+  `LED_STRIP_LENGTH = 35`). To the firmware a ring is just 35 sequential pixels; the round shape is
+  enclosure-only.
 - 4 knobs (dimmers) on the kitchen's front panel, one per burner.
 - Turning a knob ramps its burner off → deep red → orange-red, like a heating element.
 
