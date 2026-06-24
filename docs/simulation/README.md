@@ -38,6 +38,14 @@ changes are needed.
 
 ## Notes
 
+- **All strips black on start?** The potentiometer `value` attribute **defaults to `0`** → every
+  hob reads level 0 → `heatColor(0)` = off. `diagram.json` sets non-zero `value`s (1000/650/350/120)
+  so the four strips light in different heat colors immediately; dragging a pot changes its strip.
+- **Power comes from the Nano's `5V` pin** in the sim (strips' `VDD`→`5V`, `VSS`→`GND`). No separate
+  supply is needed — the external-PSU / power-injection guidance in `docs/hardware` is a *real-board*
+  concern, not a simulator one.
+- **`pixelSize: "2020"`** keeps each 35-LED strip compact (~9 px/LED); the default `"5050"` makes
+  them ~800 px wide and unwieldy.
 - **No floating pins in sim** — the pots give defined values, so rings respond cleanly (unlike a
   bare board, where unconnected analog inputs read random noise).
 - **140 LEDs** is heavy for the simulator; it runs but may render below 60 fps. Fine for verifying

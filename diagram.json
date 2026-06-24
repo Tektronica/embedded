@@ -5,21 +5,21 @@
   "parts": [
     { "type": "wokwi-arduino-nano", "id": "nano", "top": 0, "left": 0, "attrs": {} },
 
-    { "type": "wokwi-potentiometer", "id": "pot1", "top": -180, "left": 180, "attrs": {} },
-    { "type": "wokwi-potentiometer", "id": "pot2", "top": -180, "left": 320, "attrs": {} },
-    { "type": "wokwi-potentiometer", "id": "pot3", "top": -180, "left": 460, "attrs": {} },
-    { "type": "wokwi-potentiometer", "id": "pot4", "top": -180, "left": 600, "attrs": {} },
+    { "type": "wokwi-potentiometer", "id": "pot1", "top": -190, "left": 160, "attrs": { "value": "1000" } },
+    { "type": "wokwi-potentiometer", "id": "pot2", "top": -190, "left": 300, "attrs": { "value": "650" } },
+    { "type": "wokwi-potentiometer", "id": "pot3", "top": -190, "left": 440, "attrs": { "value": "350" } },
+    { "type": "wokwi-potentiometer", "id": "pot4", "top": -190, "left": 580, "attrs": { "value": "120" } },
 
-    { "type": "wokwi-led-strip", "id": "ring1", "top": 180, "left": 180, "attrs": { "pixels": "35", "pixelShape": "circle" } },
-    { "type": "wokwi-led-strip", "id": "ring2", "top": 240, "left": 180, "attrs": { "pixels": "35", "pixelShape": "circle" } },
-    { "type": "wokwi-led-strip", "id": "ring3", "top": 300, "left": 180, "attrs": { "pixels": "35", "pixelShape": "circle" } },
-    { "type": "wokwi-led-strip", "id": "ring4", "top": 360, "left": 180, "attrs": { "pixels": "35", "pixelShape": "circle" } }
+    { "type": "wokwi-led-strip", "id": "ring1", "top": 150, "left": 160, "attrs": { "pixels": "35", "pixelSize": "2020", "pixelShape": "circle" } },
+    { "type": "wokwi-led-strip", "id": "ring2", "top": 210, "left": 160, "attrs": { "pixels": "35", "pixelSize": "2020", "pixelShape": "circle" } },
+    { "type": "wokwi-led-strip", "id": "ring3", "top": 270, "left": 160, "attrs": { "pixels": "35", "pixelSize": "2020", "pixelShape": "circle" } },
+    { "type": "wokwi-led-strip", "id": "ring4", "top": 330, "left": 160, "attrs": { "pixels": "35", "pixelSize": "2020", "pixelShape": "circle" } }
   ],
   "connections": [
-    [ "pot1:SIG", "nano:A0", "green", [] ],
-    [ "pot2:SIG", "nano:A1", "green", [] ],
-    [ "pot3:SIG", "nano:A2", "green", [] ],
-    [ "pot4:SIG", "nano:A3", "green", [] ],
+    [ "pot1:SIG", "nano:A0", "green", [ "v-20", "h0" ] ],
+    [ "pot2:SIG", "nano:A1", "green", [ "v-20", "h0" ] ],
+    [ "pot3:SIG", "nano:A2", "green", [ "v-20", "h0" ] ],
+    [ "pot4:SIG", "nano:A3", "green", [ "v-20", "h0" ] ],
 
     [ "pot1:VCC", "nano:5V", "red", [] ],
     [ "pot2:VCC", "nano:5V", "red", [] ],
