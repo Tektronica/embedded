@@ -19,22 +19,23 @@ Plotter.
 ```ini
 [env:nano]
 platform = atmelavr
-board = nanoatmega328        ; use nanoatmega328old if uploads time out (old bootloader)
+board = nanoatmega328        ; old bootloader? add 'board_upload.speed = 57600' (there is no nanoatmega328old board id)
 framework = arduino
 monitor_speed = 115200
 lib_deps =
     fastled/FastLED
 ```
 
-If multiple Nano-based appliances ship from this repo, add one `[env:...]` per unit (e.g.
-`[env:cooktop]`, `[env:microwave]`) selecting the right feature module via build flags.
+If you ship multiple variants from this repo, add one `[env:...]` per variant, selecting the right
+config via build flags.
 
 ## Flashing the Nano — gotchas
 
-- **Bootloader:** older Nanos use the *old* bootloader. If uploads fail/time out, switch
-  `board` to `nanoatmega328old`.
+- **Bootloader:** older Nanos use the *old* bootloader. If uploads fail/time out, add
+  `board_upload.speed = 57600` (there is no `nanoatmega328old` board id in PlatformIO).
 - **USB-serial chip:** clone Nanos usually use the **CH340**. macOS often works out of the box;
-  some clones need the CH340 driver.
+  some need the CH340 driver. **Auto-reset is flaky on these clones — tap the RESET button as the
+  upload starts** if it won't sync.
 - **Port:** PlatformIO auto-detects; if needed, set `upload_port = /dev/cu.usbserial-XXXX`.
 - **Logic level:** Nano is 5 V and drives WS2812 data directly — **no level shifter needed**
   (unlike 3.3 V boards such as the ESP32/ESP8266).

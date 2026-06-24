@@ -1,29 +1,30 @@
-# fw-nano-playKitchen
+# fw-nano-ledStripDimmer
 
-> Arduino Nano firmware for a toy play kitchen. First appliance: a **cooktop** with four WS2812 RGB
-> LED rings as dimmable "hot" hob burners, each driven by its own physical dimmer.
+> Arduino Nano firmware: a generic **N-channel dimmer → WS2812 LED-strip controller**. Each channel
+> reads one dimmer (potentiometer) and drives one WS2812 LED strip through a level→color curve.
 
-Repo name follows `[codingType]-[targetPlatform]-[projectType]`: `fw` · `nano` · `playKitchen`.
-This is the Nano build. A different board is a *separate* repo (e.g. `fw-esp32-playKitchen`) unless
-it shares this codebase — then it's colocated here as another PlatformIO environment.
+Repo name follows `[codingType]-[targetPlatform]-[projectType]`: `fw` · `nano` · `ledStripDimmer`.
+This is the Nano build; a different board is a *separate* repo unless it shares this codebase (then
+it's another PlatformIO environment).
 
-## Features
+## What it does
 
-- 4 hob burners — 35-LED WS2812 rings, data daisy-chained into one 140-LED strip.
-- One dimmer (potentiometer) per hob; position maps to a heat ramp
-  (off → deep red → bright orange, like a glowing burner element).
-- Single data line drives all four rings; power injected per ring.
-- FastLED with built-in current limiting to stay inside the power budget.
-- MVC + a Strategy-style `IAppliance` plugin so new appliances drop in cleanly.
+- **N channels** (default 4) — each channel is one **dimmer input** → one **WS2812 LED strip output**.
+- A dimmer's position → a smoothed 0–255 **level** → a **color**, via a swappable curve (`levelColor`).
+- All LED strips are data-chained on one pin and addressed as one logical buffer.
+- FastLED drives the WS2812 LED strips, with a current cap to protect the supply.
+
+> The default `levelColor` curve ramps deep red → orange. The firmware carries **no application
+> meaning** — for an example use (a toy-kitchen cooktop), see **[docs/application](docs/application/)**.
 
 ## Hardware
 
 - Arduino Nano (ATmega328, 5 V)
-- 4 × WS2812 5050 RGB LED rings, 35 LEDs each
-- 4 × potentiometers (dimmers)
+- N × WS2812 LED strips (default 4 × 35 LEDs)
+- N × potentiometers (dimmers)
 - 5 V PSU (sized for the LED load), data-line resistor, bulk capacitor
 
-Full BOM, power budget, wiring rules, and pinout: **[docs/hardware](docs/hardware/)**.
+Full BOM, power budget, wiring, pinout: **[docs/hardware](docs/hardware/)**.
 
 ## Quick start
 
@@ -31,28 +32,27 @@ Requires [PlatformIO](https://platformio.org/) (VSCode extension or CLI) — no 
 
 ```bash
 git clone <repo-url>
-cd fw-nano-playKitchen
+cd fw-nano-ledStripDimmer
 pio run                 # build
 pio run -t upload       # build + flash the Nano
 pio device monitor      # serial monitor
 ```
 
-Bootloader/CH340/port gotchas and the `platformio.ini` starting point: **[docs/setup](docs/setup/)**.
-
-**Tests** — pure logic off-device: `pio test -e native`.
+**Tests** (pure logic, off-device): `pio test -e native`. Flash gotchas: **[docs/setup](docs/setup/)**.
 
 ## Repository structure
 
 ```
-fw-nano-playKitchen/
-├── platformio.ini      # env:nano (build/flash) + env:native (host unit tests)
+fw-nano-ledStripDimmer/
+├── platformio.ini       # env:nano (build/flash) + env:native (host unit tests)
 ├── include/
-│   └── Cooktop.h       # hardware-free logic: hob state, ADC→level, heat-color ramp (unit-tested)
+│   └── LEDStripDimmer.h  # hardware-free logic: Levels, ADC→level, levelColor curve (unit-tested)
 ├── src/
-│   └── main.cpp        # Arduino glue: pins, FastLED, loop = read → update → render
+│   └── main.cpp         # Arduino glue: pins, FastLED, loop = read dimmer inputs → render LED strip outputs
 ├── test/
-│   └── test_cooktop/   # native Unity tests for Cooktop.h
-├── docs/               # project documentation (see below)
+│   └── test_controller/ # native Unity tests
+├── docs/                # generic hardware/firmware docs (see below)
+│   └── application/     # example use (toy-kitchen cooktop)
 └── README.md
 ```
 
@@ -60,20 +60,15 @@ fw-nano-playKitchen/
 
 | Pillar | Contents |
 |---|---|
-| [docs/](docs/) | Project overview |
+| [docs/](docs/) | Overview |
 | [docs/setup](docs/setup/) | Toolchain, building, flashing |
 | [docs/hardware](docs/hardware/) | BOM, power budget & injection, wiring, pinout |
 | [docs/architecture](docs/architecture/) | Structure, pure-vs-hardware split, pin ownership |
-| [docs/appliances](docs/appliances/) | Appliance specs + the (deferred) plugin contract |
 | [docs/simulation](docs/simulation/) | Run in Wokwi (VS Code), no hardware |
 | [docs/troubleshooting](docs/troubleshooting/) | Environment/setup gotchas + fixes |
+| [docs/application](docs/application/) | Example use: a toy-kitchen cooktop |
 
 ## Status
 
-Early scaffolding — design decided, firmware not yet written.
-
-## Roadmap
-
-1. Cooktop appliance: 4 hobs, dimmer-driven, heat-color mapping.
-2. Extract the `IAppliance` plugin contract once a second appliance (e.g. microwave) is real.
-3. Per-unit PlatformIO environments if multiple Nano-based appliances ship from this repo.
+Firmware implemented, built, unit-tested (10/10), flashed to a Nano, and verified in the Wokwi
+simulator. Real-hardware bring-up pending wiring.

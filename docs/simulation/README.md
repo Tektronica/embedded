@@ -1,8 +1,8 @@
 # Simulation (Wokwi, VS Code)
 
-Run the firmware in the [Wokwi](https://wokwi.com) simulator to verify the four-dimmer → four-hob
-behavior with **no physical hardware** — drag each potentiometer and watch its ring ramp
-off → deep red → orange.
+Run the firmware in the [Wokwi](https://wokwi.com) simulator to verify the four-dimmer →
+four-LED-strip behavior with **no physical hardware** — drag each potentiometer and watch its LED
+strip ramp off → deep red → orange.
 
 The simulator runs the **exact binary** PlatformIO builds (`.pio/build/nano/firmware.elf`); no code
 changes are needed.
@@ -19,42 +19,39 @@ changes are needed.
 
 - **`wokwi.toml`** — points the simulator at the built firmware (`.hex` + `.elf`).
 - **`diagram.json`** — the circuit: Nano + 4 potentiometers (A0–A3) + 4 × 35-LED `wokwi-led-strip`
-  parts chained on D6.
+  parts (`ledStrip1`–`ledStrip4`) chained on pin 6.
 
 ## Run it
 
 1. Build first so the firmware exists: `pio run` (or VS Code **Build**).
-2. Open `diagram.json`, press **F1** → **"Wokwi: Start Simulator"** (or click the green ▶ on the
-   diagram).
-3. **Drag a potentiometer** → its hob's ring changes color/brightness, independently of the others.
+2. Open `diagram.json`, press **F1** → **"Wokwi: Start Simulator"** (or click the green ▶).
+3. **Drag a potentiometer** → its LED strip changes color/brightness, independently of the others.
 
 ## What the diagram models (must match `src/main.cpp`)
 
 | Firmware | Wokwi wiring |
 |---|---|
-| `LED_DATA_PIN = 6` | Nano **`6`** (not `D6`!) → ring1 `DIN`; each `DOUT`→next `DIN` (4 strips chained) |
-| `DIMMER_PINS = {A0,A1,A2,A3}` | pot1–4 `SIG` → **A0–A3**; `VCC`→5V, `GND`→GND |
-| `LEDS_PER_RING = 35`, 4 hobs | 4 × `wokwi-led-strip` (`pixels: 35`) = 140 px; power `VDD`→5V, `VSS`→GND |
+| `PIN_DATA_LED = 6` | Nano **`6`** (not `D6`!) → `ledStrip1:DIN`; each `DOUT`→next `DIN` (4 LED strips chained) |
+| `PIN_DIMMER = {A0,A1,A2,A3}` | pot1–4 `SIG` → **A0–A3**; `VCC`→5V, `GND`→GND |
+| `LED_STRIP_LENGTH = 35`, `CHANNEL_COUNT = 4` | 4 × `wokwi-led-strip` (`pixels: 35`) = 140 px; power `VDD`→5V, `VSS`→GND |
 
 ## Notes
 
-- **All strips black? First suspect the data-pin label.** On `wokwi-arduino-nano` the digital pin
-  is **`nano:6`** (numeric) — **`nano:D6` silently does not connect**, so the strip gets no data and
-  stays dark. The firmware uses pin 6, so the wire must be `nano:6` → `ring1:DIN`.
+- **All LED strips black? First suspect the data-pin label.** On `wokwi-arduino-nano` the digital
+  pin is **`nano:6`** (numeric) — **`nano:D6` silently does not connect**, so the LED strip gets no
+  data and stays dark. The firmware uses pin 6, so the wire must be `nano:6` → `ledStrip1:DIN`.
 - **Also:** the potentiometer `value` defaults to `0` → level 0 → off. `diagram.json` seeds non-zero
-  values (1000/650/350/120) so the four strips light in different heat colors on load; drag a pot to
-  change its strip.
-- **Power comes from the Nano's `5V` pin** in the sim (strips' `VDD`→`5V`, `VSS`→`GND`). No separate
-  supply is needed — the external-PSU / power-injection guidance in `docs/hardware` is a *real-board*
-  concern, not a simulator one.
-- **`pixelSize: "2020"`** keeps each 35-LED strip compact (~9 px/LED); the default `"5050"` makes
-  them ~800 px wide and unwieldy.
-- **No floating pins in sim** — the pots give defined values, so rings respond cleanly (unlike a
-  bare board, where unconnected analog inputs read random noise).
-- **140 LEDs** is heavy for the simulator; it runs but may render below 60 fps. Fine for verifying
-  behavior.
+  values (1000/650/350/120) so the four LED strips light in different colors on load; drag a pot to
+  change its LED strip.
+- **Power comes from the Nano's `5V` pin** in the sim (LED strips' `VDD`→`5V`, `VSS`→`GND`). No
+  separate supply is needed — the external-PSU / power-injection guidance in `docs/hardware` is a
+  *real-board* concern, not a simulator one.
+- **`pixelSize: "2020"`** keeps each LED strip (35 LEDs) compact (~9 px/LED); the default `"5050"`
+  makes them ~800 px wide and unwieldy.
+- **No floating pins in sim** — the pots give defined values, so the LED strips respond cleanly
+  (unlike a bare board, where unconnected analog inputs read random noise).
+- **140 LEDs** is heavy for the simulator; it runs but may render below 60 fps. Fine for verifying.
 - `setMaxPowerInVoltsAndMilliamps` still applies its brightness cap in sim — expected.
-- LEDs use **`wokwi-led-strip`** (`pixels: 35`, chained `DOUT`→`DIN`; power pins `VDD`/`VSS`). If you
-  prefer a ring look, `wokwi-led-ring` exists but comes in fixed sizes — the strip lets us match the
-  real 35-LED count. If anything fails to load, add the part from the diagram editor's **+** panel
-  and re-wire per the table; the editor writes correct `diagram.json` for you.
+- LEDs use **`wokwi-led-strip`** (`pixels: 35`, chained `DOUT`→`DIN`; power pins `VDD`/`VSS`). If a
+  part fails to load, add it from the diagram editor's **+** panel and re-wire per the table — the
+  editor writes correct `diagram.json` for you.

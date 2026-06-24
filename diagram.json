@@ -45,28 +45,28 @@
     },
     {
       "type": "wokwi-led-strip",
-      "id": "ring1",
+      "id": "ledStrip1",
       "top": 150,
       "left": 160,
       "attrs": { "pixels": "35", "pixelSize": "2020", "pixelShape": "circle" }
     },
     {
       "type": "wokwi-led-strip",
-      "id": "ring2",
+      "id": "ledStrip2",
       "top": 210,
       "left": 160,
       "attrs": { "pixels": "35", "pixelSize": "2020", "pixelShape": "circle" }
     },
     {
       "type": "wokwi-led-strip",
-      "id": "ring3",
+      "id": "ledStrip3",
       "top": 270,
       "left": 160,
       "attrs": { "pixels": "35", "pixelSize": "2020", "pixelShape": "circle" }
     },
     {
       "type": "wokwi-led-strip",
-      "id": "ring4",
+      "id": "ledStrip4",
       "top": 330,
       "left": 160,
       "attrs": { "pixels": "35", "pixelSize": "2020", "pixelShape": "circle" }
@@ -85,18 +85,18 @@
     ["pot2:GND", "nano:GND.1", "black", ["h144", "v117"]],
     ["pot3:GND", "nano:GND.1", "black", ["h144", "v30.6"]],
     ["pot4:GND", "nano:GND.1", "black", ["h144", "v-55.8"]],
-    ["ring1:DOUT", "ring2:DIN", "green", ["h8.2", "v31.5", "h-355.2", "v28.5"]],
-    ["ring2:DOUT", "ring3:DIN", "green", ["h8.2", "v29.1", "h-355.2", "v30.9"]],
-    ["ring3:DOUT", "ring4:DIN", "green", ["h8.2", "v26.7", "h-355.2", "v33.3"]],
-    ["ring1:VDD", "nano:5V", "red", ["h-208", "v-110.3"]],
-    ["ring2:VDD", "nano:5V", "red", ["h-208", "v-170.3"]],
-    ["ring3:VDD", "nano:5V", "red", ["h-208", "v-230.3"]],
-    ["ring4:VDD", "nano:5V", "red", ["h-208", "v-290.3"]],
-    ["nano:GND.1", "ring1:VSS", "black", ["h-26.8", "v111.1"]],
-    ["nano:GND.1", "ring2:VSS", "black", ["h-26.8", "v171.1"]],
-    ["nano:GND.1", "ring3:VSS", "black", ["h-26.8", "v231.1"]],
-    ["nano:GND.1", "ring4:VSS", "black", ["h-26.8", "v291.1"]],
-    ["nano:6", "ring1:DIN", "green", ["h88.4", "v168.3"]]
+    ["ledStrip1:DOUT", "ledStrip2:DIN", "green", ["h8.2", "v31.5", "h-355.2", "v28.5"]],
+    ["ledStrip2:DOUT", "ledStrip3:DIN", "green", ["h8.2", "v29.1", "h-355.2", "v30.9"]],
+    ["ledStrip3:DOUT", "ledStrip4:DIN", "green", ["h8.2", "v26.7", "h-355.2", "v33.3"]],
+    ["ledStrip1:VDD", "nano:5V", "red", ["h-208", "v-110.3"]],
+    ["ledStrip2:VDD", "nano:5V", "red", ["h-208", "v-170.3"]],
+    ["ledStrip3:VDD", "nano:5V", "red", ["h-208", "v-230.3"]],
+    ["ledStrip4:VDD", "nano:5V", "red", ["h-208", "v-290.3"]],
+    ["nano:GND.1", "ledStrip1:VSS", "black", ["h-26.8", "v111.1"]],
+    ["nano:GND.1", "ledStrip2:VSS", "black", ["h-26.8", "v171.1"]],
+    ["nano:GND.1", "ledStrip3:VSS", "black", ["h-26.8", "v231.1"]],
+    ["nano:GND.1", "ledStrip4:VSS", "black", ["h-26.8", "v291.1"]],
+    ["nano:6", "ledStrip1:DIN", "green", ["h88.4", "v168.3"]]
   ],
   "dependencies": {}
 }
