@@ -18,7 +18,7 @@ one dimmer (potentiometer) and drives one WS2812 LED strip through a level→col
 
 ## Status
 
-Firmware implemented, built, unit-tested (10/10), and running on a Nano (current build flashed).
+Firmware implemented, built, unit-tested (19/19), and running on a Nano (current build flashed).
 Behavior verified in the Wokwi simulator; physical LED strips and dimmers not yet wired.
 
 ## At a glance

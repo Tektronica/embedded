@@ -73,6 +73,6 @@ fw-nano-ledStripDimmer/
 
 ## Status
 
-Firmware implemented, built, unit-tested (10/10), and **running on a Nano** (current build flashed).
+Firmware implemented, built, unit-tested (19/19), and **running on a Nano** (current build flashed).
 The four-dimmer → four-LED-strip behavior is verified in the Wokwi simulator; physical LED strips and
 dimmers aren't wired up yet.
