@@ -61,24 +61,6 @@ Only continue if the user explicitly confirms. If they decline, remove those fil
 
 ---
 
-## Copyright Header Check
-
-Before staging any source file (`.c`, `.cpp`, `.cc`, `.h`, `.hpp`, `.ino`), verify it contains a
-Fluke copyright header within the first few lines. **Skip this check for test files** (files under
-`test/` or matching `test_*.cpp` / `*_test.cpp`).
-
-```
-Copyright (c) <year> Fluke Corporation. All rights reserved.
-```
-
-If any staged file is missing this header, **stop and ask the user** before proceeding:
-
-> "The following file(s) are missing the Fluke copyright header: `<file list>`. Add headers and continue, or commit without them?"
-
-Only continue once the user has confirmed their preference. Do not silently skip or auto-add the header.
-
----
-
 ## Pre-Commit Verification
 
 Before committing, both checks must pass for the affected environment(s):

@@ -46,7 +46,7 @@ Toolchain is VSCode + PlatformIO (no Arduino IDE). Details in `docs/setup/`.
 - Use the **`/commit`** command (`.claude/commands/commit.md`) — it encodes the format, batching,
   and pre-commit checks.
 - **Local commits only**, never push. **No `Co-Authored-By`** / AI attribution in messages.
-- Source files (`.c/.cpp/.h/.hpp/.ino`) carry the Fluke copyright header (skip for tests).
+- Personal repo — no Fluke (or any company) copyright headers on source.
 - Pre-commit gate: `pio run` (0 errors/warnings) + `pio check` (no high-severity defects).
 
 ## Docs
