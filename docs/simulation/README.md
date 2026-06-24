@@ -35,7 +35,7 @@ changes are needed.
 |---|---|
 | `PIN_DATA_LED = 6` | Nano **`6`** (not `D6`!) → `ledStrip1:DIN`; each `DOUT`→next `DIN` (4 LED strips chained) |
 | `PIN_DIMMER = {A0,A1,A2,A3}` | pot1–4 `SIG` → **A0–A3**; `VCC`→5V, `GND`→GND |
-| `PIN_SWITCH_MODE = 2`, `PIN_SWITCH_COLOR = 3` | `swMode`/`swColor` pushbuttons → **D2/D3** and GND (optional; `INPUT_PULLUP`) |
+| `PIN_SWITCH_MODE = 8`, `PIN_SWITCH_COLOR = 9` | `swMode`/`swColor` pushbuttons → **D8/D9** and GND (optional; `INPUT_PULLUP`) |
 | `LED_STRIP_LENGTH = 35`, `CHANNEL_COUNT = 4` | 4 × `wokwi-led-strip` (`pixels: 35`) = 140 px; power `VDD`→5V, `VSS`→GND |
 
 ## Notes

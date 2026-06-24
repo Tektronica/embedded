@@ -113,8 +113,8 @@
     [ "nano:6", "ledStrip1:DIN", "green", [ "h57.6", "v170.1" ] ],
     [ "swMode:2.l", "nano:GND.1", "black", [ "h-48", "v269" ] ],
     [ "swColor:2.l", "nano:GND.1", "black", [ "h-48", "v201.8" ] ],
-    [ "swColor:1.l", "nano:3", "green", [ "h-9.6", "v-19.2", "h105.6", "v201.6" ] ],
-    [ "swMode:1.l", "nano:2", "green", [ "h-9.6", "v-28.8", "h115.2", "v268.8" ] ]
+    [ "nano:9", "swColor:1.l", "green", [ "h48", "v-144", "h-115.2", "v19.2" ] ],
+    [ "nano:8", "swMode:1.l", "green", [ "h57.6", "v-220.8", "h-124.8", "v19.2" ] ]
   ],
   "dependencies": {}
 }

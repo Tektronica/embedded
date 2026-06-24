@@ -9,8 +9,8 @@ namespace {
 // unwired switch reads HIGH, never registers a press, and stays on the default mode/palette.
 constexpr uint8_t  PIN_DATA_LED     = 6;
 constexpr uint8_t  PIN_DIMMER[controller::CHANNEL_COUNT] = {A0, A1, A2, A3};
-constexpr uint8_t  PIN_SWITCH_MODE  = 2;  // optional — cycles Mode (default Solid)
-constexpr uint8_t  PIN_SWITCH_COLOR = 3;  // optional — cycles Palette (default HeatRedOrange)
+constexpr uint8_t  PIN_SWITCH_MODE  = 8;  // optional — cycles Mode (default Solid)
+constexpr uint8_t  PIN_SWITCH_COLOR = 9;  // optional — cycles Palette (default HeatRedOrange)
 
 // Power, brightness, and frame timing.
 constexpr uint8_t  PSU_VOLTS        = 5;
