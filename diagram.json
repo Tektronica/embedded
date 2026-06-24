@@ -84,6 +84,14 @@
       "top": -176.2,
       "left": 19.2,
       "attrs": { "color": "green", "label": "COLOR" }
+    },
+    {
+      "type": "wokwi-resistor",
+      "id": "r1",
+      "top": 43.2,
+      "left": 105.05,
+      "rotate": 90,
+      "attrs": { "value": "330" }
     }
   ],
   "connections": [
@@ -110,11 +118,12 @@
     [ "nano:GND.1", "ledStrip2:VSS", "black", [ "h-48", "v172.9" ] ],
     [ "nano:GND.1", "ledStrip3:VSS", "black", [ "h-48", "v232.9" ] ],
     [ "nano:GND.1", "ledStrip4:VSS", "black", [ "h-48", "v292.9" ] ],
-    [ "nano:6", "ledStrip1:DIN", "green", [ "h57.6", "v170.1" ] ],
     [ "swMode:2.l", "nano:GND.1", "black", [ "h-48", "v269" ] ],
     [ "swColor:2.l", "nano:GND.1", "black", [ "h-48", "v201.8" ] ],
     [ "nano:9", "swColor:1.l", "green", [ "h48", "v-144", "h-115.2", "v19.2" ] ],
-    [ "nano:8", "swMode:1.l", "green", [ "h57.6", "v-220.8", "h-124.8", "v19.2" ] ]
+    [ "nano:8", "swMode:1.l", "green", [ "h57.6", "v-220.8", "h-124.8", "v19.2" ] ],
+    [ "nano:6", "r1:1", "green", [ "h0" ] ],
+    [ "r1:2", "ledStrip1:DIN", "green", [ "v53.7" ] ]
   ],
   "dependencies": {}
 }
