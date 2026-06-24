@@ -10,6 +10,9 @@ lib/readme.txt
 .vscode/
 !.vscode/extensions.json
 
+# Claude Code personal/local settings
+.claude/settings.local.json
+
 # JetBrains (CLion/IntelliJ)
 .idea/
 *.iml
