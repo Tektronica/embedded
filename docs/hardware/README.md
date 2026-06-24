@@ -47,7 +47,7 @@ Per-LED full-white draw is ~60 mA @ 5 V (3 channels × ~20 mA) = 0.3 W.
 
 | Signal | Nano pin | Notes |
 |---|---|---|
-| LED data out | TBD (digital) | one line, drives all 140 LEDs |
+| LED data out | D6 | one line, drives all 140 LEDs (set in `include/Config.h`) |
 | Hob 1 dimmer | A0 | analog in |
 | Hob 2 dimmer | A1 | analog in |
 | Hob 3 dimmer | A2 | analog in |

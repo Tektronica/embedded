@@ -36,6 +36,7 @@ Early scaffolding — design decided, no firmware written yet.
 - **[hardware/](hardware/)** — BOM, wiring, power budget & injection, pinout
 - **[architecture/](architecture/)** — software design: MVC, plugin model, layering, pin ownership
 - **[appliances/](appliances/)** — appliance specs + the plugin contract (cooktop now; microwave later)
+- **[troubleshooting/](troubleshooting/)** — environment/setup gotchas and their fixes
 
 ## Roadmap
 

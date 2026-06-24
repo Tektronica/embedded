@@ -39,15 +39,21 @@ pio device monitor      # serial monitor
 
 Bootloader/CH340/port gotchas and the `platformio.ini` starting point: **[docs/setup](docs/setup/)**.
 
+**Tests** — pure logic off-device: `pio test -e native`.
+
 ## Repository structure
 
 ```
 fw-nano-playKitchen/
-├── platformio.ini      # build config + per-board/per-unit environments
-├── src/                # entry point + app loop (orchestration)
-├── include/            # shared headers — central pin/config lives here
-├── lib/                # project modules: model, view, controller, appliances
-├── test/               # off-device unit tests (model/controller logic)
+├── platformio.ini      # env:nano (build/flash) + env:native (host unit tests)
+├── include/            # shared pure headers: Config.h, Pins.h, HeatRamp.h, InputMap.h
+├── lib/
+│   ├── model/          # HobModel — pure hob state (host-tested)
+│   ├── controller/     # InputController — reads/smooths dimmers (hardware)
+│   ├── view/           # LedRenderer — drives the rings via FastLED (hardware)
+│   └── appliance/      # IAppliance plugin contract + CooktopAppliance
+├── src/                # main.cpp — entry point + app loop
+├── test/               # native Unity tests: test_model/, test_logic/
 ├── docs/               # project documentation (see below)
 └── README.md
 ```
@@ -61,6 +67,7 @@ fw-nano-playKitchen/
 | [docs/hardware](docs/hardware/) | BOM, power budget & injection, wiring, pinout |
 | [docs/architecture](docs/architecture/) | MVC, `IAppliance` plugin, layering, pin ownership |
 | [docs/appliances](docs/appliances/) | Appliance specs + the plugin contract |
+| [docs/troubleshooting](docs/troubleshooting/) | Environment/setup gotchas + fixes |
 
 ## Status
 

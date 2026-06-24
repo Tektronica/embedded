@@ -45,7 +45,7 @@ struct IAppliance {
 
 ## Pin ownership
 
-- Pins are assigned in **one** central config header — no module hardcodes a pin.
+- Pins live in **one** header (`include/Pins.h`); pure counts/limits in `include/Config.h`. No module hardcodes a pin.
 - Modules receive their pins via `init()`/constructor params (**dependency injection**). This
   keeps Model/Controller testable off-hardware and means no layer "owns" the pins.
 - The authoritative pin table lives in [hardware](../hardware/).
