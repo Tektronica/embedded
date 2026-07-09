@@ -7,8 +7,8 @@
 lib/readme.txt
 
 # VSCode
-.vscode/
-!.vscode/extensions.json
+**/.vscode/*
+!**/.vscode/extensions.json
 
 # Claude Code personal/local settings
 .claude/settings.local.json
