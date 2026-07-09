@@ -1,11 +1,11 @@
-# fw-nano-ledStripDimmer
+# nano/ledStripDimmer
 
 > Arduino Nano firmware: a generic **N-channel dimmer → WS2812 LED-strip controller**. Each channel
 > reads one dimmer (potentiometer) and drives one WS2812 LED strip through a level→color curve.
 
-Repo name follows `[codingType]-[targetPlatform]-[projectType]`: `fw` · `nano` · `ledStripDimmer`.
-This is the Nano build; a different board is a *separate* repo unless it shares this codebase (then
-it's another PlatformIO environment).
+This project lives at `nano/ledStripDimmer/` in the `fw-arduino` monorepo. This is the
+Nano build; a different board gets its own sibling folder (e.g. `esp32/ledStripDimmer`) rather than a
+separate repo — multiple Nano units could still ship from this folder via PlatformIO environments.
 
 ## What it does
 
@@ -35,7 +35,7 @@ Requires [PlatformIO](https://platformio.org/) (VSCode extension or CLI) — no 
 
 ```bash
 git clone <repo-url>
-cd fw-nano-ledStripDimmer
+cd fw-arduino/nano/ledStripDimmer
 pio run                 # build
 pio run -t upload       # build + flash the Nano
 pio device monitor      # serial monitor
@@ -46,7 +46,7 @@ pio device monitor      # serial monitor
 ## Repository structure
 
 ```
-fw-nano-ledStripDimmer/
+nano/ledStripDimmer/
 ├── platformio.ini       # env:nano (build/flash) + env:native (host unit tests)
 ├── include/
 │   └── LEDStripDimmer.h  # hardware-free logic: Levels, dimmer math, Palette/Mode, pixelColor, Button (unit-tested)

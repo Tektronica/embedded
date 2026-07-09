@@ -1,10 +1,10 @@
-# fw-nano-ledStripDimmer
+# nano/ledStripDimmer
 
 A generic **N-channel dimmer → WS2812 LED-strip controller** for the Arduino Nano. Each channel reads
 one dimmer (potentiometer) and drives one WS2812 LED strip through a level→color curve.
 
-> **Naming:** `[codingType]-[targetPlatform]-[projectType]` → `fw` · `nano` · `ledStripDimmer`. Nano
-> build; a different board is a *separate* repo. See [architecture](architecture/).
+> **Location:** `nano/ledStripDimmer/` in the `fw-arduino` monorepo. Nano build; a
+> different board gets its own sibling folder, not a separate repo. See [architecture](architecture/).
 
 ## Concept
 

@@ -37,11 +37,12 @@ the host.
 Pins and power sit at the top of `src/main.cpp` — the only hardware-specific spot — not scattered
 through the logic. The authoritative pin table is in [hardware](../hardware/).
 
-## Why repo-per-board
+## Why folder-per-board
 
-The board is the project boundary, so `nano` is in the repo name. A different chip (ESP32) is a
-*separate* repo that reuses these patterns, not this code — multiple Nano units could still ship from
-one repo via PlatformIO environments.
+The board is the project boundary, so this project lives at `nano/ledStripDimmer/` in the monorepo. A
+different chip (ESP32) gets its own top-level folder (e.g. `esp32/ledStripDimmer`) that reuses these
+patterns, not this code — multiple Nano units could still ship from this same folder via PlatformIO
+environments.
 
 ## Patterns: use vs avoid
 
