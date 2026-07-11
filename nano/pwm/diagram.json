@@ -1,0 +1,40 @@
+{
+  "version": 1,
+  "author": "Ryan Bryson",
+  "editor": "wokwi",
+  "parts": [
+    { "type": "wokwi-arduino-nano", "id": "nano", "top": -4.8, "left": -0.5, "attrs": {} },
+    {
+      "type": "wokwi-potentiometer",
+      "id": "pot1",
+      "top": 85.1,
+      "left": -57.8,
+      "rotate": 270,
+      "attrs": { "value": "512" }
+    },
+    {
+      "type": "wokwi-led",
+      "id": "led1",
+      "top": -138,
+      "left": 61.8,
+      "attrs": { "color": "green", "flip": "1" }
+    },
+    {
+      "type": "wokwi-resistor",
+      "id": "r1",
+      "top": -54.2,
+      "left": 18.35,
+      "rotate": 270,
+      "attrs": { "value": "330" }
+    }
+  ],
+  "connections": [
+    [ "pot1:SIG", "nano:A0", "green", [ "h37.3", "v2.7" ] ],
+    [ "pot1:VCC", "nano:5V", "red", [ "v0", "h0" ] ],
+    [ "pot1:GND", "nano:GND.1", "black", [ "v0", "h0" ] ],
+    [ "nano:9", "r1:1", "green", [ "v-19.2", "v-17.8" ] ],
+    [ "r1:2", "led1:A", "green", [ "v-46.8", "v36" ] ],
+    [ "led1:C", "nano:GND.2", "black", [ "v0", "h0" ] ]
+  ],
+  "dependencies": {}
+}

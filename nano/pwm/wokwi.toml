@@ -1,0 +1,8 @@
+[wokwi]
+version = 1
+# Simulate the firmware PlatformIO already builds for the nano env. Default PWM_MODE
+# (PwmMode::AnalogWrite, see src/main.cpp) simulates correctly. If you switch to
+# PwmMode::DirectTimer to test it, expect it NOT to work here — Wokwi's avr8js core doesn't
+# correctly emulate that Timer1 mode (see README's "PWM strategy" section).
+firmware = ".pio/build/nano/firmware.hex"
+elf = ".pio/build/nano/firmware.elf"
