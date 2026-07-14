@@ -17,6 +17,13 @@ lib/readme.txt
 .idea/
 *.iml
 
+# KiCad
+*.lck
+*-backups/
+_autosave-*
+fp-info-cache
+.history/
+
 # Secrets — never commit (mirrors the /commit secret guard)
 .env
 .env.*
