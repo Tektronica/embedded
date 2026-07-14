@@ -1,0 +1,7 @@
+[wokwi]
+version = 1
+# Simulate the firmware PlatformIO already builds for the nano env. This diagram substitutes a
+# plain LED + resistor per channel for the real PT4115 buck-driver hardware (not available as a
+# Wokwi part) — it verifies the 4-channel PWM/pot correspondence, not the real LED-driver behavior.
+firmware = ".pio/build/nano/firmware.hex"
+elf = ".pio/build/nano/firmware.elf"
