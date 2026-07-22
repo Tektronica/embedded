@@ -1,0 +1,108 @@
+{
+  "version": 1,
+  "author": "Ryan Bryson",
+  "editor": "wokwi",
+  "parts": [
+    {
+      "type": "wokwi-arduino-nano",
+      "id": "nano",
+      "top": 0,
+      "left": 100,
+      "attrs": {}
+    },
+    {
+      "type": "wokwi-membrane-keypad",
+      "id": "keypad",
+      "top": -40,
+      "left": -220,
+      "attrs": {}
+    },
+    {
+      "type": "wokwi-tm1637-7segment",
+      "id": "display1",
+      "top": -220,
+      "left": 100,
+      "attrs": {}
+    },
+    {
+      "type": "wokwi-buzzer",
+      "id": "buzzer1",
+      "top": 20,
+      "left": 420,
+      "attrs": { "volume": "0.1" }
+    },
+    {
+      "type": "wokwi-led",
+      "id": "ledMotor",
+      "top": 120,
+      "left": 460,
+      "attrs": { "color": "yellow", "label": "MOTOR" }
+    },
+    {
+      "type": "wokwi-resistor",
+      "id": "rMotor",
+      "top": 124,
+      "left": 400,
+      "attrs": { "value": "330" }
+    },
+    {
+      "type": "wokwi-led",
+      "id": "ledFan",
+      "top": 190,
+      "left": 460,
+      "attrs": { "color": "yellow", "label": "FAN" }
+    },
+    {
+      "type": "wokwi-resistor",
+      "id": "rFan",
+      "top": 194,
+      "left": 400,
+      "attrs": { "value": "330" }
+    },
+    {
+      "type": "wokwi-led",
+      "id": "ledLight",
+      "top": 260,
+      "left": 460,
+      "attrs": { "color": "white", "label": "LIGHT" }
+    },
+    {
+      "type": "wokwi-resistor",
+      "id": "rLight",
+      "top": 264,
+      "left": 400,
+      "attrs": { "value": "330" }
+    }
+  ],
+  "connections": [
+    [ "keypad:R1", "nano:2", "green", [ "v0", "h0" ] ],
+    [ "keypad:R2", "nano:3", "green", [ "v0", "h0" ] ],
+    [ "keypad:R3", "nano:4", "green", [ "v0", "h0" ] ],
+    [ "keypad:R4", "nano:5", "green", [ "v0", "h0" ] ],
+    [ "keypad:C1", "nano:6", "blue", [ "v0", "h0" ] ],
+    [ "keypad:C2", "nano:7", "blue", [ "v0", "h0" ] ],
+    [ "keypad:C3", "nano:8", "blue", [ "v0", "h0" ] ],
+    [ "keypad:C4", "nano:9", "blue", [ "v0", "h0" ] ],
+
+    [ "nano:A0", "display1:CLK", "green", [ "v0", "h0" ] ],
+    [ "nano:A1", "display1:DIO", "blue", [ "v0", "h0" ] ],
+    [ "display1:VCC", "nano:5V", "red", [ "v0", "h0" ] ],
+    [ "display1:GND", "nano:GND.1", "black", [ "v0", "h0" ] ],
+
+    [ "nano:10", "buzzer1:1", "green", [ "v0", "h0" ] ],
+    [ "buzzer1:2", "nano:GND.1", "black", [ "v0", "h0" ] ],
+
+    [ "nano:11", "rMotor:1", "green", [ "v0", "h0" ] ],
+    [ "rMotor:2", "ledMotor:A", "green", [ "v0", "h0" ] ],
+    [ "ledMotor:C", "nano:GND.1", "black", [ "v0", "h0" ] ],
+
+    [ "nano:12", "rFan:1", "green", [ "v0", "h0" ] ],
+    [ "rFan:2", "ledFan:A", "green", [ "v0", "h0" ] ],
+    [ "ledFan:C", "nano:GND.1", "black", [ "v0", "h0" ] ],
+
+    [ "nano:13", "rLight:1", "green", [ "v0", "h0" ] ],
+    [ "rLight:2", "ledLight:A", "green", [ "v0", "h0" ] ],
+    [ "ledLight:C", "nano:GND.1", "black", [ "v0", "h0" ] ]
+  ],
+  "dependencies": {}
+}

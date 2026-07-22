@@ -1,0 +1,6 @@
+[wokwi]
+version = 1
+# Simulate the firmware PlatformIO already builds for the nano env. The display isn't wired yet
+# (see main.cpp's TODO), so this diagram covers the keypad, buzzer, and motor/fan/light outputs.
+firmware = ".pio/build/nano/firmware.hex"
+elf = ".pio/build/nano/firmware.elf"
