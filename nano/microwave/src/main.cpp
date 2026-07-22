@@ -52,7 +52,7 @@ uint8_t scanRawKeyIndex() {
 }
 
 // Map a settled key character to a microwave::Event. Returns false for keys this project
-// doesn't use (A-D) — the keypad is a standard 16-key layout, but only 0-9/#/* map to anything.
+// doesn't use (B-D) — the keypad is a standard 16-key layout; see README for the full mapping.
 bool translateKey(char key, microwave::Event& event) {
   if (key >= '0' && key <= '9') {
     event = microwave::Event{microwave::EventType::Digit, static_cast<uint8_t>(key - '0')};
@@ -64,6 +64,10 @@ bool translateKey(char key, microwave::Event& event) {
   }
   if (key == '*') {
     event = microwave::Event{microwave::EventType::Cancel, 0};
+    return true;
+  }
+  if (key == 'A') {
+    event = microwave::Event{microwave::EventType::Clock, 0};
     return true;
   }
   return false;
@@ -102,16 +106,16 @@ void updateOutputs() {
   digitalWrite(PIN_LIGHT, running ? HIGH : LOW);
 }
 
-// Renders the countdown (MM:SS) to the TM1637, blinking the colon while Setting/Done so the
-// panel doesn't sit static in those states.
+// Renders the current value (MM:SS for the cook timer, HH:MM for the clock) to the TM1637.
+// The colon blinks in every state except Running, where it stays solid — Idle's blink doubles
+// as a live "the clock is still running" heartbeat, and Setting/ClockSet/Done reuse the same
+// blink to show they're not the live countdown/clock.
 void updateDisplay() {
-  sevenseg::Digits d = sevenseg::secondsToDigits(controller.displaySeconds());
+  sevenseg::Digits d = sevenseg::secondsToDigits(controller.displayValue());
 
-  bool colonOn = true;
-  if (controller.state() == microwave::State::Setting ||
-      controller.state() == microwave::State::Done) {
-    colonOn = sevenseg::blinkOn(static_cast<uint16_t>(millis() % 60000), BLINK_PERIOD_MS);
-  }
+  bool colonOn = controller.state() == microwave::State::Running
+                     ? true
+                     : sevenseg::blinkOn(static_cast<uint16_t>(millis() % 60000), BLINK_PERIOD_MS);
 
   uint8_t segments[4] = {
       display.encodeDigit(d.minutesTens),
