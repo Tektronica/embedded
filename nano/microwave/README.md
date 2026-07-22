@@ -2,7 +2,8 @@
 
 Arduino Nano firmware for a toy/prop microwave oven control panel: a countdown timer on a 4-digit
 display, a turntable motor, a done/alert buzzer, a cooling fan and buzzer-tone layer for the
-running "hum," an interior light, and a 4x4 matrix keypad for setting time and start/stop.
+running "hum," an interior light, and a 4x4 matrix keypad for setting time, start/stop, and the
+time-of-day clock shown while idle.
 
 ## BOM
 
@@ -19,12 +20,35 @@ running "hum," an interior light, and a 4x4 matrix keypad for setting time and s
 
 Self-contained PlatformIO project (`platformio.ini`, `include/`, `src/`, `test/`), fully wired up:
 
-- **`SevenSegment.h`** — countdown-time formatting (seconds → MM:SS digit values) and a blink-cycle helper, used for the colon while Setting/Done.
+- **`SevenSegment.h`** — display-value formatting (a total-seconds-style value → two digit-pair values) and a blink-cycle helper, used for the colon in every state but Running. Shared by both the cook-timer's MM:SS and the clock's HH:MM, since the digit-pair math is identical regardless of what the two halves mean.
 - **`Buzzer.h`** — tone/frequency selection and beep-pattern timing (key press, done — 4 beeps, error) plus the continuous Running hum, and `isFinished()` to know when a one-shot pattern's whole sequence (not just its current on/off phase) has completed.
 - **`KeyMatrix.h`** — debounced key detection across a 4x4 matrix, using the same debounce pattern as `nano/ledStripDimmer`'s `Button` class generalized to a 16-way key index. Named to avoid colliding with the well-known Arduino `Keypad` library.
-- **`Microwave.h`** — the Idle → Setting → Running → Done state machine, driven by abstract `Event`s (`Digit`/`Start`/`Cancel`/`Tick`) rather than any specific keypad wiring.
+- **`Clock.h`** (namespace `wallclock`, to avoid shadowing the C standard library's `clock()`) — a hardware-free time-of-day counter (seconds since midnight, advanced by `tick()`) plus its own digit-entry helpers for HH:MM. No RTC chip is in the BOM, so this is a plain software clock that resets to 0:00 on every power loss or reset — fine for a toy/prop build; a battery-backed RTC (e.g. DS3231) would be needed for it to survive a power cycle.
+- **`Microwave.h`** — the app-level orchestrator: the Idle → Setting → Running → Done cook-timer state machine (plus `ClockSet`, reachable from Idle), driven by abstract `Event`s (`Digit`/`Start`/`Cancel`/`Clock`/`Tick`) rather than any specific keypad wiring. Owns the cook-timer flow itself but delegates time-of-day keeping to `Clock.h`'s `wallclock::Clock` rather than absorbing that concern directly — `Microwave.h` is the main app, `Clock.h` is a service it composes.
 - **`main.cpp`** — matrix scan → debounced key → `Event` → state machine → buzzer pattern selection, motor/fan/light on/off, and TM1637 display rendering.
 - Motor, fan, and light have no dedicated header — all three are plain on/off hardware glue in `main.cpp`.
+
+### Behavior
+
+- **Idle** — displays the live time-of-day clock (HH:MM). A digit key starts entering a cook time; `A` starts entering a new clock time.
+- **Setting** — entering cook time digit-by-digit (MM:SS, calculator-style: each press appends to the low end and shifts existing digits left, e.g. `3` → `0:03`, `30` → `0:30`, `300` → `3:00`). `#` starts the countdown if a nonzero time is entered; `*` cancels back to Idle.
+- **Running** — counts down once per second; motor, fan, and light are on, plus the ambient hum. `*` cancels back to Idle at any point.
+- **Done** — countdown reached 0:00; buzzer plays a 4-beep done pattern. Any key returns to Idle.
+- **ClockSet** — entering a new time-of-day, HH:MM, same calculator-style digit entry as cook time (hours clamp to 23, minutes to 59). `#` confirms and returns to Idle with the clock updated; `*` cancels, discarding the entry and leaving the clock unchanged.
+- The clock keeps advancing in the background in every state except while it's actively being set (cooking doesn't stop the time of day).
+
+### 4x4 keypad mapping
+
+| Key(s) | Action |
+|---|---|
+| `0`-`9` | Enter a digit (cook time while Idle/Setting, clock time while ClockSet) |
+| `#` | Start / confirm (starts the cook timer from Setting; confirms the new clock time from ClockSet) |
+| `*` | Cancel (back to Idle, discarding whatever was being entered) |
+| `A` | Clock — from Idle, begin setting the time-of-day clock |
+| `B`, `C`, `D` | Reserved, unused for now |
+
+`B`/`C`/`D` are left open for future features (e.g. a kitchen-timer-only mode, a light toggle, or a
+child-lock) rather than assigned speculatively now.
 
 **Display library**: `avishorp/TM1637` pulled directly from GitHub (see `platformio.ini`'s
 `lib_deps` — the PlatformIO registry re-registration has an odd unversioned release, so this
@@ -43,5 +67,5 @@ drive the state machine and watch the countdown on the display.
 
 ## Status
 
-BOM set. No hardware design yet. Firmware logic is implemented and tested (26 unit tests across
-the four headers) and wired end-to-end, including the TM1637 display.
+BOM set. No hardware design yet. Firmware logic is implemented and tested (43 unit tests across
+the five headers) and wired end-to-end, including the TM1637 display.
