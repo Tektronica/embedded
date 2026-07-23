@@ -10,6 +10,19 @@ One **potentiometer** (A0) sets **duty cycle** 0–100% on the PWM output (D9).
 
 This folder is also a testbed comparing two PWM implementation approaches — see below.
 
+## PWM pins (ATmega328P)
+
+The Nano's 6 PWM-capable pins split across 3 timers, each with its own default `analogWrite()`
+frequency:
+
+| Timer | Pins | Frequency |
+|---|---|---|
+| Timer0 | D5, D6 | ~980 Hz (also drives `millis()`/`delay()`) |
+| Timer1 | D9, D10 | ~490 Hz |
+| Timer2 | D3, D11 | ~490 Hz |
+
+This project uses D9 (Timer1).
+
 ## PWM strategy
 
 `src/main.cpp` has two encapsulated PWM implementations, selected by one compile-time constant,
