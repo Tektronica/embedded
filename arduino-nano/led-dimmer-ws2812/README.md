@@ -32,10 +32,14 @@ Full BOM, power budget, wiring, pinout: **[docs/hardware](docs/hardware/)**.
 ## Quick start
 
 Requires [PlatformIO](https://platformio.org/) (VSCode extension or CLI) — no Arduino IDE needed.
+If `pio` isn't on your shell `PATH` (VSCode-extension-only installs), add it:
 
 ```bash
-git clone <repo-url>
-cd embedded/arduino-nano/led-dimmer-ws2812
+export PATH="$HOME/.platformio/penv/bin:$PATH"
+```
+
+```bash
+cd arduino-nano/led-dimmer-ws2812
 pio run                 # build
 pio run -t upload       # build + flash the Nano
 pio device monitor      # serial monitor
