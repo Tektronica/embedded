@@ -1,11 +1,11 @@
-# fw-arduino — Monorepo Context
+# embedded — Monorepo Context
 
 A personal monorepo of Arduino/embedded firmware projects, one PlatformIO project per board.
 
 ## Folder / naming scheme
 
-- `[board]/[camelCaseProject]/` — board = chip/platform (`nano`, `attiny`, `esp32`, ...), project in
-  camelCase (e.g. `nano/ledStripDimmer/`).
+- `[board]/[camelCaseProject]/` — board = chip/platform (`arduino-nano`, `attiny`, `esp32`, ...),
+  project in camelCase (e.g. `arduino-nano/ledStripDimmer/`).
 - Each project folder is fully self-contained: its own `platformio.ini`, `include/`/`src/`/`test/`,
   `docs/`, `README.md`, and `CLAUDE.md`.
 - A new board or a new project on an existing board is a new top-level folder here, not a new repo.

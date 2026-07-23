@@ -1,4 +1,4 @@
-# nano/led-dimmer-4ch
+# arduino-nano/led-dimmer-4ch
 
 A 4-channel potentiometer-controlled LED dimmer board: Arduino Nano + 4× PT4115 constant-current
 buck LED drivers, powered from 12V (Nano runs off 5V via an onboard LM2596 buck regulator). Each

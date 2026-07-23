@@ -49,7 +49,7 @@ bootloader can be burned once over that header, after which subsequent uploads c
 uses the same serial-bootloader protocol, with the USB-to-serial adapter built onto the board
 instead of wired in externally.
 
-This repository uses the ATmega328P in `nano/pwm` and `nano/led-dimmer-4ch`. Both require only a
+This repository uses the ATmega328P in `arduino-nano/pwm` and `arduino-nano/led-dimmer-4ch`. Both require only a
 small number of PWM channels and analog inputs; verified builds use under 5% of flash and under
 2% of RAM.
 
@@ -209,7 +209,7 @@ PlatformIO's normal project structure at all).
 
 | MCU / Family | PlatformIO support | Bare-chip hand assembly | In-circuit programming | Best for | Watch out for |
 |---|---|---|---|---|---|
-| ATmega328P / 328PB (Nano/Uno) | Official (`atmelavr`) | Yes: DIP-28 or TQFP-32 | 6-pin ISP, then a serial bootloader | Simple I/O, PWM, ADC | 2KB of RAM; shared-timer PWM frequency limits (see `nano/pwm`) |
+| ATmega328P / 328PB (Nano/Uno) | Official (`atmelavr`) | Yes: DIP-28 or TQFP-32 | 6-pin ISP, then a serial bootloader | Simple I/O, PWM, ADC | 2KB of RAM; shared-timer PWM frequency limits (see `arduino-nano/pwm`) |
 | ATtiny (412, 1614, etc.) | Official platform plus a third-party core, such as megaTinyCore | Yes: SOIC-8/SOIC-14 | Single-pin UPDI | Small, single-purpose jobs; no crystal needed | Fewer pins and peripherals; extra board-package setup |
 | ESP32 (including S3, C3) | Official (`espressif32`) | No: bare chip needs an RF matching network for its antenna; use a WROOM-style module | Built-in USB-to-serial ROM bootloader | Wi-Fi, BLE, dual-core headroom | 3.3V only; higher power draw than AVR |
 | RP2040 / RP2350 | Actively maintained, unofficial (arduino-pico) | Reflow/hot-air only: bare chip is QFN but has no radio, so a self-designed PCB is viable; iron-only builds should use a Pico board | SWD, or a built-in USB ROM bootloader (BOOTSEL) | Custom or precise timing through PIO | 3.3V; external flash needed unless using the flash-integrated RP2354; no FPU on the RP2040 |

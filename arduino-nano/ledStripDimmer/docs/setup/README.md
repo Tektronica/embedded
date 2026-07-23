@@ -17,7 +17,7 @@ Plotter.
 ## platformio.ini (starting point)
 
 ```ini
-[env:nano]
+[env:arduino-nano]
 platform = atmelavr
 board = nanoatmega328        ; old bootloader? add 'board_upload.speed = 57600' (there is no nanoatmega328old board id)
 framework = arduino
@@ -26,7 +26,7 @@ lib_deps =
     fastled/FastLED          ; NOTE: this repo pulls FastLED from GitHub instead — the registry CDN is blocked here (see docs/troubleshooting)
 ```
 
-This is a minimal starting point — the repo's actual `platformio.ini` also sets `default_envs = nano`,
+This is a minimal starting point — the repo's actual `platformio.ini` also sets `default_envs = arduino-nano`,
 `board_upload.speed = 115200` (this board's bootloader), and a `[env:native]` test env. If you ship
 multiple variants from this repo, add one `[env:...]` per variant, selecting the right config via build flags.
 

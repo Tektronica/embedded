@@ -1,4 +1,4 @@
-# nano/microwave
+# arduino-nano/microwave
 
 Arduino Nano firmware for a toy/prop microwave oven control panel: a countdown timer on a 4-digit
 display, a turntable motor, a done/alert buzzer, a cooling fan and buzzer-tone layer for the
@@ -22,7 +22,7 @@ Self-contained PlatformIO project (`platformio.ini`, `include/`, `src/`, `test/`
 
 - **`SevenSegment.h`** — display-value formatting (a total-seconds-style value → two digit-pair values) and a blink-cycle helper, used for the colon in every state but Running. Shared by both the cook-timer's MM:SS and the clock's HH:MM, since the digit-pair math is identical regardless of what the two halves mean.
 - **`Buzzer.h`** — tone/frequency selection and beep-pattern timing (key press, done — 4 beeps, error) plus the continuous Running hum, and `isFinished()` to know when a one-shot pattern's whole sequence (not just its current on/off phase) has completed.
-- **`KeyMatrix.h`** — debounced key detection across a 4x4 matrix, using the same debounce pattern as `nano/ledStripDimmer`'s `Button` class generalized to a 16-way key index. Named to avoid colliding with the well-known Arduino `Keypad` library.
+- **`KeyMatrix.h`** — debounced key detection across a 4x4 matrix, using the same debounce pattern as `arduino-nano/ledStripDimmer`'s `Button` class generalized to a 16-way key index. Named to avoid colliding with the well-known Arduino `Keypad` library.
 - **`Clock.h`** (namespace `wallclock`, to avoid shadowing the C standard library's `clock()`) — a hardware-free time-of-day counter (seconds since midnight, advanced by `tick()`) plus its own digit-entry helpers for HH:MM. No RTC chip is in the BOM, so this is a plain software clock that resets to 0:00 on every power loss or reset — fine for a toy/prop build; a battery-backed RTC (e.g. DS3231) would be needed for it to survive a power cycle.
 - **`Microwave.h`** — the app-level orchestrator: the Idle → Setting → Running → Done cook-timer state machine (plus `ClockSet`, reachable from Idle), driven by abstract `Event`s (`Digit`/`Start`/`Cancel`/`Clock`/`Tick`) rather than any specific keypad wiring. Owns the cook-timer flow itself but delegates time-of-day keeping to `Clock.h`'s `wallclock::Clock` rather than absorbing that concern directly — `Microwave.h` is the main app, `Clock.h` is a service it composes.
 - **`main.cpp`** — matrix scan → debounced key → `Event` → state machine → buzzer pattern selection, motor/fan/light on/off, and TM1637 display rendering.

@@ -22,7 +22,7 @@ constexpr char LAYOUT[ROWS][COLS] = {
 };
 
 // Debounced key-press detector across the whole matrix — the same debounce pattern as
-// nano/ledStripDimmer's Button class (N consistent samples before committing a state change),
+// arduino-nano/ledStripDimmer's Button class (N consistent samples before committing a state change),
 // generalized from a boolean to a 16-way raw key index. Feed it the raw key index found by
 // scanning all rows/columns once (or NO_KEY if none were active); returns the key character on a
 // fresh, debounced press, or '\0' if nothing new settled this scan.

@@ -39,7 +39,7 @@ through the logic. The authoritative pin table is in [hardware](../hardware/).
 
 ## Why folder-per-board
 
-The board is the project boundary, so this project lives at `nano/ledStripDimmer/` in the monorepo. A
+The board is the project boundary, so this project lives at `arduino-nano/ledStripDimmer/` in the monorepo. A
 different chip (ESP32) gets its own top-level folder (e.g. `esp32/ledStripDimmer`) that reuses these
 patterns, not this code — multiple Nano units could still ship from this same folder via PlatformIO
 environments.

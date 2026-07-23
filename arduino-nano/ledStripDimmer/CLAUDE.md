@@ -1,4 +1,4 @@
-# nano/ledStripDimmer — Project Context
+# arduino-nano/ledStripDimmer — Project Context
 
 Arduino Nano firmware: a generic **N-channel dimmer → WS2812 LED-strip controller**. Each channel
 reads one dimmer (potentiometer) and drives one WS2812 LED strip via a level→color curve. The
@@ -30,7 +30,7 @@ firmware models the *mechanism*, not any application — an example use is in `d
 
 ## Naming
 
-- This project = `nano/ledStripDimmer/` (board `nano`, project `ledStripDimmer`) — see the root
+- This project = `arduino-nano/ledStripDimmer/` (board `arduino-nano`, project `ledStripDimmer`) — see the root
   `CLAUDE.md` for the monorepo's folder/naming scheme.
 - A different board gets its own top-level folder in this repo (e.g. `esp32/ledStripDimmer`), not a
   separate repo — the board is still the project boundary.
@@ -39,7 +39,7 @@ firmware models the *mechanism*, not any application — an example use is in `d
 ## Build / flash
 
 ```bash
-pio run                 # build (nano)
+pio run                 # build (arduino-nano)
 pio run -t upload       # build + flash  (CH340 clone: tap RESET as the upload starts)
 pio device monitor      # serial monitor
 pio test -e native      # off-device unit tests

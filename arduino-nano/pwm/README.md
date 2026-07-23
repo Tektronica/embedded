@@ -1,8 +1,8 @@
-# nano/pwm
+# arduino-nano/pwm
 
 > Arduino Nano firmware: a potentiometer-controlled PWM output. The pot sets duty cycle (0–100%).
 
-This project lives at `nano/pwm/` in the `fw-arduino` monorepo.
+This project lives at `arduino-nano/pwm/` in the `embedded` monorepo.
 
 ## What it does
 
@@ -61,7 +61,7 @@ duty→register) and no class hierarchies or interfaces.
 Requires [PlatformIO](https://platformio.org/) (VSCode extension or CLI) — no Arduino IDE needed.
 
 ```bash
-cd fw-arduino/nano/pwm
+cd embedded/arduino-nano/pwm
 pio run                 # build
 pio run -t upload       # build + flash the Nano
 pio test -e native      # off-device unit tests
