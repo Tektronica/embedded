@@ -72,9 +72,14 @@ duty→register) and no class hierarchies or interfaces.
 ## Quick start
 
 Requires [PlatformIO](https://platformio.org/) (VSCode extension or CLI) — no Arduino IDE needed.
+If `pio` isn't on your shell `PATH` (VSCode-extension-only installs), add it:
 
 ```bash
-cd embedded/arduino-nano/pwm
+export PATH="$HOME/.platformio/penv/bin:$PATH"
+```
+
+```bash
+cd arduino-nano/pwm
 pio run                 # build
 pio run -t upload       # build + flash the Nano
 pio test -e native      # off-device unit tests
