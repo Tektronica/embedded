@@ -41,7 +41,7 @@
       "id": "led1",
       "top": -51.6,
       "left": 301.8,
-      "attrs": { "color": "green", "flip": "1" }
+      "attrs": { "color": "green", "flip": "1", "label": "CH0" }
     },
     {
       "type": "wokwi-resistor",
@@ -55,7 +55,7 @@
       "id": "led2",
       "top": -3.6,
       "left": 301.8,
-      "attrs": { "color": "green", "flip": "1" }
+      "attrs": { "color": "green", "flip": "1", "label": "CH1" }
     },
     {
       "type": "wokwi-resistor",
@@ -69,7 +69,7 @@
       "id": "led3",
       "top": 44.4,
       "left": 301.8,
-      "attrs": { "color": "green", "flip": "1" }
+      "attrs": { "color": "green", "flip": "1", "label": "CH2" }
     },
     {
       "type": "wokwi-resistor",
@@ -83,7 +83,7 @@
       "id": "led4",
       "top": 92.4,
       "left": 301.8,
-      "attrs": { "color": "green", "flip": "1" }
+      "attrs": { "color": "green", "flip": "1", "label": "CH3" }
     },
     {
       "type": "wokwi-resistor",
@@ -106,18 +106,18 @@
     [ "pot4:SIG", "nano:A3", "green", [ "h37.3", "v0.4", "h212.3" ] ],
     [ "pot4:VCC", "nano:5V", "red", [ "h28.8", "v39.2", "h268.8" ] ],
     [ "pot4:GND", "nano:GND.1", "black", [ "h19.2", "v28.8", "h297.6" ] ],
-    [ "nano:9", "r1:1", "green", [ "v-67.2", "h182.4", "v57.6" ] ],
+    [ "nano:11", "r1:1", "green", [ "v-76.8", "h192", "v67.2" ] ],
     [ "r1:2", "led1:A", "green", [ "h18" ] ],
-    [ "led1:C", "nano:GND.1", "black", [ "v9.6", "h-134.8", "v144", "h-48" ] ],
-    [ "nano:10", "r2:1", "green", [ "v-57.6", "h182.4", "v96" ] ],
+    [ "led1:C", "nano:GND.1", "black", [ "h18.8", "v9.6", "h-163.2", "v144", "h-38.4" ] ],
+    [ "nano:10", "r2:1", "green", [ "v-67.2", "h172.8", "v105.6" ] ],
     [ "r2:2", "led2:A", "green", [ "h17.6" ] ],
-    [ "led2:C", "nano:GND.1", "black", [ "v9.6", "h-134.8", "v96", "h-48" ] ],
-    [ "nano:3", "r3:1", "green", [ "v-48", "h105.6", "v134.4" ] ],
+    [ "led2:C", "nano:GND.1", "black", [ "h18.8", "v9.6", "h-163.2", "v96", "h-38.4" ] ],
+    [ "nano:9", "r3:1", "green", [ "v-57.6", "h153.6", "v144" ] ],
     [ "r3:2", "led3:A", "green", [ "h17.6" ] ],
-    [ "led3:C", "nano:GND.1", "black", [ "v9.6", "h-134.8", "v48", "h-48" ] ],
-    [ "nano:11", "r4:1", "green", [ "v-38.4", "h172.8", "v172.8" ] ],
+    [ "led3:C", "nano:GND.1", "black", [ "h18.8", "v9.6", "h-163.2", "v48", "h-38.4" ] ],
+    [ "nano:3", "r4:1", "green", [ "v-48", "h86.4", "v182.4" ] ],
     [ "r4:2", "led4:A", "green", [ "h17.6" ] ],
-    [ "led4:C", "nano:GND.1", "black", [ "v9.6", "h-298" ] ]
+    [ "led4:C", "nano:GND.1", "black", [ "h18.8", "v9.6", "h-201.6" ] ]
   ],
   "dependencies": {}
 }

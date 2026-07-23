@@ -4,11 +4,11 @@
 
 namespace {
 
-// Pin assignments (see ../KiCad schematic: PWM_1..4 -> D9/D10/D3/D11, RV1..4 -> A0..A3). D9/D10
-// (Timer1) and D3/D11 (Timer2) share the same default ~490 Hz Phase-Correct PWM under
-// analogWrite(), so all 4 channels run at one shared frequency with zero timer register setup.
+// Pin assignments: CH0..3 -> D11/D10/D9/D3, potentiometers -> A0..A3. D9/D10 (Timer1) and D11/D3
+// (Timer2) share the same default ~490 Hz Phase-Correct PWM under analogWrite(), so all 4
+// channels run at one shared frequency with zero timer register setup.
 constexpr uint8_t PIN_POT[pwm::CHANNEL_COUNT] = {A0, A1, A2, A3};
-constexpr uint8_t PIN_PWM[pwm::CHANNEL_COUNT] = {9, 10, 3, 11};
+constexpr uint8_t PIN_PWM[pwm::CHANNEL_COUNT] = {11, 10, 9, 3};
 
 constexpr uint8_t EMA_SHIFT = 3;  // pot smoothing strength
 
