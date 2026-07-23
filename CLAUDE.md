@@ -4,8 +4,8 @@ A personal monorepo of Arduino/embedded firmware projects, one PlatformIO projec
 
 ## Folder / naming scheme
 
-- `[board]/[camelCaseProject]/` — board = chip/platform (`arduino-nano`, `attiny`, `esp32`, ...),
-  project in camelCase (e.g. `arduino-nano/ledStripDimmer/`).
+- `[board]/[kebab-case-project]/` — board = chip/platform (`arduino-nano`, `attiny`, `esp32`, ...),
+  project in kebab-case (e.g. `arduino-nano/led-dimmer-ws2812/`).
 - Each project folder is fully self-contained: its own `platformio.ini`, `include/`/`src/`/`test/`,
   `docs/`, `README.md`, and `CLAUDE.md`.
 - A new board or a new project on an existing board is a new top-level folder here, not a new repo.
