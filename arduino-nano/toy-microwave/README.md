@@ -59,6 +59,23 @@ this specific display — check it once the display is wired up and adjust if th
 Pin assignments (placeholder pending a real schematic): matrix rows D2–D5, columns D6–D9, buzzer
 D10, motor D11, fan D12, light D13, display CLK A0 / DIO A1.
 
+## Quick start
+
+Requires [PlatformIO](https://platformio.org/) (VSCode extension or CLI) — no Arduino IDE needed.
+If `pio` isn't on your shell `PATH` (VSCode-extension-only installs), add it:
+
+```bash
+export PATH="$HOME/.platformio/penv/bin:$PATH"
+```
+
+```bash
+cd arduino-nano/toy-microwave
+pio run                 # build
+pio run -t upload       # build + flash the Nano
+pio device monitor      # serial monitor
+pio test -e native      # off-device unit tests
+```
+
 ## Simulate (Wokwi)
 
 `wokwi.toml` + `diagram.json` cover the keypad, display, buzzer, and motor/fan/light LEDs. Build
