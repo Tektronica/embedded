@@ -1,0 +1,7 @@
+[wokwi]
+version = 1
+# Simulate the firmware PlatformIO already builds for the arduino-nano env. The nRF24L01+ isn't
+# in Wokwi's part library, so this only covers the ballast motor and heartbeat LED -- flip
+# DEBUG_TRACE_ENABLED (see main.cpp) to watch phase transitions in the Serial monitor instead.
+firmware = ".pio/build/arduino-nano/firmware.hex"
+elf = ".pio/build/arduino-nano/firmware.elf"

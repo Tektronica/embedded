@@ -1,0 +1,52 @@
+{
+  "version": 1,
+  "author": "Ryan Bryson",
+  "editor": "wokwi",
+  "parts": [
+    { "type": "wokwi-arduino-nano", "id": "nano", "top": 4.8, "left": -0.5, "attrs": {} },
+    { "type": "wokwi-a4988", "id": "driver", "top": -139.2, "left": 216, "attrs": {} },
+    {
+      "type": "wokwi-stepper-motor",
+      "id": "motor",
+      "top": -303.59,
+      "left": 336.43,
+      "attrs": { "size": "17" }
+    },
+    {
+      "type": "wokwi-led",
+      "id": "led-heartbeat",
+      "top": -147.6,
+      "left": -5.8,
+      "attrs": { "color": "green", "label": "HEARTBEAT" }
+    },
+    {
+      "type": "wokwi-resistor",
+      "id": "r-heartbeat",
+      "top": -44.6,
+      "left": 27.95,
+      "rotate": 270,
+      "attrs": { "value": "330" }
+    }
+  ],
+  "connections": [
+    [ "nano:2", "driver:DIR", "green", [ "v-76.8" ] ],
+    [ "nano:3", "driver:STEP", "green", [ "v-86.4" ] ],
+    [ "nano:7", "driver:ENABLE", "green", [ "v-144" ] ],
+    [ "nano:6", "driver:MS1", "green", [ "v-134.4" ] ],
+    [ "nano:5", "driver:MS2", "green", [ "v-124.8", "h134.4" ] ],
+    [ "nano:4", "driver:MS3", "green", [ "v-115.2" ] ],
+    [ "driver:RESET", "driver:SLEEP", "red", [ "h-9.6", "v9.6" ] ],
+    [ "driver:SLEEP", "nano:5V", "red", [ "h-9.6", "v182.4", "h-86.4" ] ],
+    [ "driver:VDD", "nano:5V", "red", [ "h19.35", "v172.88", "h-163.2" ] ],
+    [ "driver:GND", "nano:GND.1", "black", [] ],
+    [ "driver:VMOT", "nano:5V", "red", [ "v-19.12", "h-67.05", "v249.6", "h-76.8" ] ],
+    [ "driver:1A", "motor:A+", "blue", [] ],
+    [ "driver:1B", "motor:A-", "blue", [] ],
+    [ "driver:2A", "motor:B+", "blue", [] ],
+    [ "driver:2B", "motor:B-", "blue", [] ],
+    [ "nano:8", "r-heartbeat:1", "green", [] ],
+    [ "r-heartbeat:2", "led-heartbeat:A", "green", [ "v-37.2" ] ],
+    [ "nano:GND.1", "led-heartbeat:C", "black", [ "v19.2", "h-163.2", "v-192" ] ]
+  ],
+  "dependencies": {}
+}
