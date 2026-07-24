@@ -1,0 +1,57 @@
+{
+  "version": 1,
+  "author": "Ami Sung",
+  "editor": "wokwi",
+  "parts": [
+    { "type": "wokwi-arduino-nano", "id": "nano", "top": 90.93, "left": -190.84, "attrs": {} },
+    { "type": "board-ssd1306", "id": "oled1", "top": 121.27, "left": 158.38, "attrs": {} },
+    { "type": "wokwi-ky-040", "id": "encoder1", "top": 268.93, "left": 115.97, "attrs": {} },
+    {
+      "type": "wokwi-buzzer",
+      "id": "bz1",
+      "top": -41.84,
+      "left": 252.89,
+      "attrs": { "volume": "0.1" }
+    },
+    {
+      "type": "wokwi-tm1637-7segment",
+      "id": "sevseg1",
+      "top": -48.04,
+      "left": 35.83,
+      "attrs": { "color": "red" }
+    }
+  ],
+  "connections": [
+    [ "sevseg1:VCC", "nano:5V", "red", [ "h29.56", "v86.4", "h-183.16", "v249.6", "h-123.14" ] ],
+    [ "encoder1:VCC", "nano:5V", "red", [ "h17.63", "v71.64", "h-315.14" ] ],
+    [ "oled1:VCC", "nano:5V", "red", [ "v-41.33", "h-148.4", "v249.6", "h-123.14" ] ],
+    [
+      "sevseg1:GND",
+      "nano:GND.1",
+      "black",
+      [ "h17.94", "v38.55", "h-209.94", "v153.45", "h-65.54" ]
+    ],
+    [ "bz1:1", "nano:GND.1", "black", [ "v5.84", "h-260.69", "v153.6", "h-65.54" ] ],
+    [
+      "encoder1:SW",
+      "nano:3",
+      "gray",
+      [ "h27.23", "v-73.42", "h-115.08", "v-164.91", "h-228.86" ]
+    ],
+    [ "encoder1:DT", "nano:4", "gold", [ "h17.63", "v-54.93", "h-112.14", "v-164.2", "h-231.8" ] ],
+    [
+      "encoder1:CLK",
+      "nano:2",
+      "orange",
+      [ "h8.03", "v-35.79", "h-112.19", "v-164.24", "h-202.95" ]
+    ],
+    [ "bz1:2", "nano:10", "purple", [ "v15.53", "h50.01", "v-147.54", "h-370.71" ] ],
+    [ "sevseg1:DIO", "nano:5", "green", [ "h28.8", "v-57.18", "h-343.94" ] ],
+    [ "sevseg1:CLK", "nano:6", "green", [ "h19.2", "v-56.48", "h-343.94" ] ],
+    [ "oled1:SCL", "nano:A5", "blue", [ "v-34.37", "h62.95", "v303.38", "h-372.74" ] ],
+    [ "oled1:SDA", "nano:A4", "green", [ "v-23.17", "h62.72", "v300.18", "h-391.94" ] ],
+    [ "oled1:GND", "nano:GND.1", "black", [ "v-31.73", "h-177.35", "v105.6", "h-65.54" ] ],
+    [ "encoder1:GND", "nano:GND.1", "black", [ "h8.03", "v50.37", "h-286.34" ] ]
+  ],
+  "dependencies": {}
+}
