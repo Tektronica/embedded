@@ -19,18 +19,36 @@
       "top": -303.59,
       "left": 336.43,
       "attrs": { "size": "17" }
+    },
+    {
+      "type": "wokwi-pushbutton",
+      "id": "btn-run-stop",
+      "top": -22.6,
+      "left": -268.8,
+      "attrs": { "color": "green", "label": "RUN/STOP" }
+    },
+    {
+      "type": "wokwi-pushbutton",
+      "id": "btn-direction",
+      "top": -22.6,
+      "left": -182.4,
+      "attrs": { "color": "blue", "label": "CW/CCW" }
     }
   ],
   "connections": [
     [ "pot1:SIG", "nano:A0", "green", [ "h57.6", "v-66.8" ] ],
     [ "pot1:VCC", "nano:5V", "red", [ "h200.3", "v0.8", "h-65.9" ] ],
-    [ "pot1:GND", "nano:GND.1", "black", [] ],
+    [ "pot1:GND", "nano:GND.1", "black", [ "h57.6", "v48", "h96" ] ],
     [ "nano:2", "driver:DIR", "green", [ "v-24", "v-43.2" ] ],
     [ "nano:3", "driver:STEP", "green", [ "v-33.6", "v-43.2" ] ],
-    [ "driver:ENABLE", "nano:GND.1", "black", [ "h-38.4", "v268.8", "h-38.4" ] ],
-    [ "driver:MS1", "nano:GND.1", "black", [ "h-38.4", "v259.2", "h-38.4" ] ],
-    [ "driver:MS2", "nano:GND.1", "black", [ "h-38.4", "v249.6", "h-38.4" ] ],
-    [ "driver:MS3", "nano:GND.1", "black", [ "h-38.4", "v240", "h-38.4" ] ],
+    [ "nano:4", "btn-run-stop:1.l", "green", [ "v-76.8", "h-374.4", "v67.2" ] ],
+    [ "btn-run-stop:2.l", "nano:GND.1", "black", [ "h-9.6", "v173", "h307.2" ] ],
+    [ "nano:5", "btn-direction:1.l", "green", [ "v-67.2", "h-278.4", "v67.2" ] ],
+    [ "btn-direction:2.l", "nano:GND.1", "black", [ "h-9.6", "v173", "h393.6" ] ],
+    [ "driver:ENABLE", "nano:GND.1", "black", [ "h-38.4", "v316.8", "h-38.4" ] ],
+    [ "driver:MS1", "nano:GND.1", "black", [ "h-38.4", "v307.2", "h-38.4" ] ],
+    [ "driver:MS2", "nano:GND.1", "black", [ "h-38.4", "v297.6", "h-38.4" ] ],
+    [ "driver:MS3", "nano:GND.1", "black", [ "h-38.4", "v288", "h-38.4" ] ],
     [ "driver:RESET", "driver:SLEEP", "red", [ "h-9.6", "v9.6" ] ],
     [ "driver:SLEEP", "nano:5V", "red", [ "h-28.8", "v201.6", "h-67.2" ] ],
     [ "driver:VDD", "nano:5V", "red", [ "h19.35", "v28.88", "h-96", "v163.2", "h-67.2" ] ],

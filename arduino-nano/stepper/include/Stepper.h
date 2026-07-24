@@ -5,7 +5,9 @@
 // Potentiometer -> stepper speed. Hardware-free (no Arduino/AVR headers) so it unit-tests
 // off-device. One pot sets rotation speed (0..MAX_SPEED_STEPS_PER_SEC), rendered by one of two
 // strategies in main.cpp -- the AccelStepper library's constant-speed mode, or a from-scratch
-// step-pulse generator -- see README's "Stepper strategy" section for why both exist.
+// step-pulse generator -- see README's "Stepper strategy" section for why both exist. Knows
+// nothing about the run/stop or direction buttons (see Button.h) -- main.cpp reads those and
+// passes plain speed/clockwise values in.
 namespace stepper {
 
 constexpr uint16_t ADC_MAX = 1023;
