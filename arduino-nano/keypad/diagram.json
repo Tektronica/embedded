@@ -1,0 +1,38 @@
+{
+  "version": 1,
+  "author": "Ryan Bryson",
+  "editor": "wokwi",
+  "parts": [
+    { "type": "wokwi-arduino-nano", "id": "nano", "top": 369.6, "left": -221.3, "attrs": {} },
+    { "type": "wokwi-membrane-keypad", "id": "keypad", "top": -40.4, "left": -272.8, "attrs": {} },
+    {
+      "type": "wokwi-led",
+      "id": "led1",
+      "top": 284.4,
+      "left": -303.4,
+      "attrs": { "color": "green", "label": "KEY" }
+    },
+    {
+      "type": "wokwi-resistor",
+      "id": "r1",
+      "top": 321.05,
+      "left": -251,
+      "rotate": 180,
+      "attrs": { "value": "330" }
+    }
+  ],
+  "connections": [
+    [ "keypad:R1", "nano:9", "green", [] ],
+    [ "keypad:R2", "nano:8", "green", [] ],
+    [ "keypad:R3", "nano:7", "green", [] ],
+    [ "keypad:R4", "nano:6", "green", [] ],
+    [ "keypad:C1", "nano:5", "blue", [] ],
+    [ "keypad:C2", "nano:4", "blue", [] ],
+    [ "keypad:C3", "nano:3", "blue", [] ],
+    [ "keypad:C4", "nano:2", "blue", [] ],
+    [ "nano:10", "r1:1", "green", [ "v-48", "h-9.6" ] ],
+    [ "r1:2", "led1:A", "green", [ "h-8.4", "v-9.6" ] ],
+    [ "led1:C", "nano:GND.1", "black", [ "h-18.8", "v134.4", "h220.8" ] ]
+  ],
+  "dependencies": {}
+}
