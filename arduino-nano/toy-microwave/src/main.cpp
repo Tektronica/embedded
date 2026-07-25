@@ -3,14 +3,15 @@
 
 #include "Buzzer.h"
 #include "KeyMatrix.h"
+#include "MatrixScanner.h"
 #include "Microwave.h"
 #include "SevenSegment.h"
 
 namespace {
 
 // Matrix rows/cols — a 4x4 matrix keypad (see README's BOM; tested against Wokwi's matrix pad).
-constexpr uint8_t ROW_PINS[keymatrix::ROWS] = {2, 3, 4, 5};
-constexpr uint8_t COL_PINS[keymatrix::COLS] = {6, 7, 8, 9};
+constexpr uint8_t ROW_PINS[keymatrix::ROWS] = {9, 8, 7, 6};
+constexpr uint8_t COL_PINS[keymatrix::COLS] = {5, 4, 3, 2};
 
 constexpr uint8_t PIN_BUZZER = 10;
 constexpr uint8_t PIN_MOTOR  = 11;
@@ -27,7 +28,8 @@ constexpr uint16_t BLINK_PERIOD_MS = 1000;        // colon/display blink cycle w
 constexpr uint8_t COLON_DIGIT_INDEX = 1;
 constexpr uint8_t COLON_BIT = 0x80;
 
-keymatrix::Scanner       keyScanner;
+matrixscanner::Scanner    matrixScanner(ROW_PINS, COL_PINS);
+keymatrix::Scanner        keyScanner;
 microwave::Controller     controller;
 microwave::State          previousState = microwave::State::Idle;
 TM1637Display             display(PIN_DISPLAY_CLK, PIN_DISPLAY_DIO);
@@ -35,21 +37,6 @@ TM1637Display             display(PIN_DISPLAY_CLK, PIN_DISPLAY_DIO);
 buzzer::Pattern activeBuzzerPattern  = buzzer::Pattern::None;
 uint32_t        buzzerPatternStartMs = 0;
 uint32_t        lastTickMs           = 0;
-
-// Scan all rows/columns once; returns the raw key index for keymatrix::Scanner, or NO_KEY.
-uint8_t scanRawKeyIndex() {
-  for (uint8_t r = 0; r < keymatrix::ROWS; ++r) {
-    digitalWrite(ROW_PINS[r], LOW);
-    for (uint8_t c = 0; c < keymatrix::COLS; ++c) {
-      if (digitalRead(COL_PINS[c]) == LOW) {
-        digitalWrite(ROW_PINS[r], HIGH);
-        return static_cast<uint8_t>(r * keymatrix::COLS + c);
-      }
-    }
-    digitalWrite(ROW_PINS[r], HIGH);
-  }
-  return keymatrix::NO_KEY;
-}
 
 // Map a settled key character to a microwave::Event. Returns false for keys this project
 // doesn't use (B-D) — the keypad is a standard 16-key layout; see README for the full mapping.
@@ -130,13 +117,7 @@ void updateDisplay() {
 }  // namespace
 
 void setup() {
-  for (uint8_t r = 0; r < keymatrix::ROWS; ++r) {
-    pinMode(ROW_PINS[r], OUTPUT);
-    digitalWrite(ROW_PINS[r], HIGH);
-  }
-  for (uint8_t c = 0; c < keymatrix::COLS; ++c) {
-    pinMode(COL_PINS[c], INPUT_PULLUP);
-  }
+  matrixScanner.begin();
 
   pinMode(PIN_BUZZER, OUTPUT);
   pinMode(PIN_MOTOR, OUTPUT);
@@ -147,7 +128,7 @@ void setup() {
 }
 
 void loop() {
-  char key = keyScanner.scan(scanRawKeyIndex());
+  char key = keyScanner.scan(matrixScanner.scan());
   microwave::Event event;
   if (key != '\0' && translateKey(key, event)) {
     controller.handle(event);
