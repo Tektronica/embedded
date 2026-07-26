@@ -1,0 +1,30 @@
+{
+  "version": 1,
+  "author": "Ryan Bryson",
+  "editor": "wokwi",
+  "parts": [
+    { "type": "wokwi-arduino-nano", "id": "nano", "top": 0, "left": 0, "attrs": {} },
+    {
+      "type": "wokwi-buzzer",
+      "id": "buzzer1",
+      "top": -204.3,
+      "left": 148.5,
+      "rotate": 90,
+      "attrs": { "volume": "0.1" }
+    },
+    {
+      "type": "wokwi-pushbutton",
+      "id": "btn-beep",
+      "top": -109,
+      "left": 153.6,
+      "attrs": { "color": "green", "label": "BEEP" }
+    }
+  ],
+  "connections": [
+    [ "nano:9", "buzzer1:1", "green", [ "h-0.5", "v-24", "v-153.6" ] ],
+    [ "nano:2", "btn-beep:1.l", "green", [ "h-0.5", "v-100.8" ] ],
+    [ "nano:GND.2", "btn-beep:2.l", "black", [ "v0" ] ],
+    [ "nano:GND.2", "buzzer1:2", "black", [ "v0" ] ]
+  ],
+  "dependencies": {}
+}
