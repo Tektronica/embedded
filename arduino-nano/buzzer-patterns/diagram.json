@@ -1,0 +1,48 @@
+{
+  "version": 1,
+  "author": "Ryan Bryson",
+  "editor": "wokwi",
+  "parts": [
+    { "type": "wokwi-arduino-nano", "id": "nano", "top": 0, "left": 0, "attrs": {} },
+    {
+      "type": "wokwi-buzzer",
+      "id": "buzzer1",
+      "top": -204.3,
+      "left": 148.5,
+      "rotate": 90,
+      "attrs": { "volume": "0.1" }
+    },
+    {
+      "type": "wokwi-pushbutton",
+      "id": "btn-keypress",
+      "top": -109,
+      "left": 153.6,
+      "attrs": { "color": "green", "label": "KEYPRESS" }
+    },
+    {
+      "type": "wokwi-pushbutton",
+      "id": "btn-done",
+      "top": -109,
+      "left": 240,
+      "attrs": { "color": "blue", "label": "DONE" }
+    },
+    {
+      "type": "wokwi-pushbutton",
+      "id": "btn-error",
+      "top": -109,
+      "left": 326.4,
+      "attrs": { "color": "red", "label": "ERROR" }
+    }
+  ],
+  "connections": [
+    [ "nano:9", "buzzer1:1", "green", [ "h-0.5", "v-24", "v-153.6" ] ],
+    [ "nano:2", "btn-keypress:1.l", "green", [ "h-0.5", "v-100.8" ] ],
+    [ "nano:GND.2", "btn-keypress:2.l", "black", [ "v-33.6", "h-0.5", "v-48.2" ] ],
+    [ "nano:3", "btn-done:1.l", "blue", [ "h-0.5", "v-120", "h124.8", "v19.2" ] ],
+    [ "nano:GND.2", "btn-done:2.l", "black", [ "v-33.6", "h105.1", "v-48.2" ] ],
+    [ "nano:4", "btn-error:1.l", "red", [ "h-0.5", "v-129.6", "h220.8", "v28.8" ] ],
+    [ "nano:GND.2", "btn-error:2.l", "black", [ "v-33.6", "h191.5", "v-48.2" ] ],
+    [ "nano:GND.2", "buzzer1:2", "black", [ "v0" ] ]
+  ],
+  "dependencies": {}
+}
