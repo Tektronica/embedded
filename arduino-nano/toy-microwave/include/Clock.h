@@ -2,11 +2,13 @@
 
 #include <stdint.h>
 
-// A time-of-day clock: seconds since midnight, advanced by ticks. Hardware-free so it unit-tests
-// off-device. Delegated to by Microwave.h's Controller rather than absorbed into it, since
-// time-keeping is a distinct concern from the cook-timer state machine that uses it.
+// Generic, hardware-free time-keeping building blocks -- the same trio a real RTC chip (e.g. the
+// DS3231 named below) typically exposes: a time-of-day clock, a countdown timer, and (not yet
+// needed by anything in this project, so not added speculatively) an alarm. Delegated to by
+// Microwave.h's Controller rather than absorbed into it, since time-keeping is a distinct concern
+// from the cook-timer/kitchen-timer state machine that uses it.
 //
-// There is no RTC chip in the BOM, so this is a plain software counter that resets to 0:00 on
+// There is no RTC chip in the BOM, so `Clock` is a plain software counter that resets to 0:00 on
 // every power loss or reset. Fine for a toy/prop build; a battery-backed RTC (e.g. DS3231) would
 // be needed for the clock to survive a power cycle.
 //
@@ -27,6 +29,35 @@ class Clock {
 
  private:
   uint32_t secondsOfDay_ = 0;
+};
+
+// A generic countdown: start it with a duration, tick it down, and ask whether it's still
+// running. Knows nothing about what should happen at zero -- that's the caller's business
+// (a cook-timer state machine turning off a motor, a plain kitchen timer just beeping, or
+// anything else that needs "count down N seconds and tell me when you hit zero").
+class Timer {
+ public:
+  void start(uint16_t seconds) {
+    remaining_ = seconds;
+    running_ = seconds > 0;  // starting at 0 is immediately expired, not "running"
+  }
+
+  void cancel() {
+    remaining_ = 0;
+    running_ = false;
+  }
+
+  void tick() {
+    if (!running_) return;
+    if (--remaining_ == 0) running_ = false;
+  }
+
+  uint16_t remaining() const { return remaining_; }
+  bool isRunning() const { return running_; }
+
+ private:
+  uint16_t remaining_ = 0;
+  bool running_ = false;
 };
 
 // Shift a new digit into a raw HH:MM entry buffer the way a real keypad does (each press

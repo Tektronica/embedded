@@ -22,6 +22,7 @@ constexpr uint8_t PIN_DISPLAY_CLK = A0;
 constexpr uint8_t PIN_DISPLAY_DIO = A1;
 constexpr uint8_t DISPLAY_BRIGHTNESS = 7;         // 0..7, this library's max
 constexpr uint16_t BLINK_PERIOD_MS = 1000;        // colon/display blink cycle while Setting/Done
+constexpr uint32_t DONE_REMINDER_INTERVAL_MS = 10000;  // re-beep this often if Done goes unacknowledged
 // Which digit's decimal-point segment drives the physical colon varies by board. 0x80 on digit
 // index 1 matches most common 4-digit TM1637 clock boards, but confirm against this one once
 // it's wired up and adjust COLON_DIGIT_INDEX/COLON_BIT if the colon doesn't light.
@@ -37,9 +38,10 @@ TM1637Display             display(PIN_DISPLAY_CLK, PIN_DISPLAY_DIO);
 buzzer::Pattern activeBuzzerPattern  = buzzer::Pattern::None;
 uint32_t        buzzerPatternStartMs = 0;
 uint32_t        lastTickMs           = 0;
+uint32_t        doneReminderMs       = 0;  // last time the Done reminder beeped (or Done began)
 
 // Map a settled key character to a microwave::Event. Returns false for keys this project
-// doesn't use (B-D) — the keypad is a standard 16-key layout; see README for the full mapping.
+// doesn't use (C-D) — the keypad is a standard 16-key layout; see README for the full mapping.
 bool translateKey(char key, microwave::Event& event) {
   if (key >= '0' && key <= '9') {
     event = microwave::Event{microwave::EventType::Digit, static_cast<uint8_t>(key - '0')};
@@ -55,6 +57,10 @@ bool translateKey(char key, microwave::Event& event) {
   }
   if (key == 'A') {
     event = microwave::Event{microwave::EventType::Clock, 0};
+    return true;
+  }
+  if (key == 'B') {
+    event = microwave::Event{microwave::EventType::Timer, 0};
     return true;
   }
   return false;
@@ -74,7 +80,7 @@ void updateBuzzer() {
   }
 
   buzzer::Pattern pattern = activeBuzzerPattern;
-  if (pattern == buzzer::Pattern::None && controller.state() == microwave::State::Running) {
+  if (pattern == buzzer::Pattern::None && controller.isCooking()) {
     pattern = buzzer::Pattern::Hum;
   }
 
@@ -87,10 +93,10 @@ void updateBuzzer() {
 }
 
 void updateOutputs() {
-  bool running = controller.state() == microwave::State::Running;
-  digitalWrite(PIN_MOTOR, running ? HIGH : LOW);
-  digitalWrite(PIN_FAN, running ? HIGH : LOW);
-  digitalWrite(PIN_LIGHT, running ? HIGH : LOW);
+  bool cooking = controller.isCooking();
+  digitalWrite(PIN_MOTOR, cooking ? HIGH : LOW);
+  digitalWrite(PIN_FAN, cooking ? HIGH : LOW);
+  digitalWrite(PIN_LIGHT, cooking ? HIGH : LOW);
 }
 
 // Renders the current value (MM:SS for the cook timer, HH:MM for the clock) to the TM1637.
@@ -142,6 +148,13 @@ void loop() {
 
   if (previousState != microwave::State::Done && controller.state() == microwave::State::Done) {
     startBuzzerPattern(buzzer::Pattern::Done);
+    doneReminderMs = millis();
+  } else if (controller.state() == microwave::State::Done &&
+             millis() - doneReminderMs >= DONE_REMINDER_INTERVAL_MS) {
+    // Done hasn't been acknowledged (no Cancel/Start/Digit yet) -- re-beep so it isn't silently
+    // ignored, same as a real microwave nagging until the door opens or a button is pressed.
+    startBuzzerPattern(buzzer::Pattern::Done);
+    doneReminderMs = millis();
   }
   previousState = controller.state();
 

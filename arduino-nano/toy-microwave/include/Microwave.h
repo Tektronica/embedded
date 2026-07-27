@@ -5,18 +5,28 @@
 #include "Clock.h"
 
 // Top-level control-flow state machine: Idle -> Setting -> Running -> Done, plus ClockSet
-// (reachable from Idle) for setting the time-of-day clock Idle displays. Coordinates the
-// display, buzzer, motor, fan, and light without touching any hardware directly, so it
-// unit-tests off-device. Takes abstract input events rather than reading any specific keypad
-// wiring, so it doesn't need to wait on the matrix-vs-individual-switches decision — main.cpp
-// maps real key reads to Event and real peripheral writes to the reported State.
+// (reachable from Idle) for setting the time-of-day clock Idle displays. Setting/Running/Done
+// serve two distinct Functions -- CookTime and Timer (a plain kitchen timer) -- sharing one flow
+// rather than duplicating it, since digit entry, Start/Cancel, and counting down to Done are
+// identical either way; only isCooking() (CookTime + Running) distinguishes them for main.cpp's
+// hardware gating. Coordinates the display, buzzer, motor, fan, and light without touching any
+// hardware directly, so it unit-tests off-device. Takes abstract input events rather than reading
+// any specific keypad wiring, so it doesn't need to wait on the matrix-vs-individual-switches
+// decision — main.cpp maps real key reads to Event and real peripheral writes to the reported
+// State.
 //
-// This is the app-level orchestrator: it owns the cook-timer flow itself but delegates
-// time-of-day keeping to wallclock::Clock (Clock.h) rather than absorbing that concern directly.
+// This is the app-level orchestrator: it owns the cook-timer/kitchen-timer flow itself but
+// delegates time-of-day keeping and countdown-counting to wallclock::Clock/wallclock::Timer
+// (Clock.h) rather than absorbing either concern directly.
 namespace microwave {
 
 enum class State : uint8_t { Idle, Setting, Running, Done, ClockSet };
-enum class EventType : uint8_t { Digit, Start, Cancel, Clock, Tick };
+enum class EventType : uint8_t { Digit, Start, Cancel, Clock, Timer, Tick };
+
+// What an active Setting/Running/Done countdown is for -- orthogonal to State, since the digit
+// entry, Start/Cancel handling, and countdown-to-Done logic are identical either way. Only the
+// hardware side (main.cpp's isCooking()-gated motor/fan/light/hum) cares which one it is.
+enum class Function : uint8_t { CookTime, Timer };
 
 struct Event {
   EventType type;
@@ -45,9 +55,15 @@ class Controller {
  public:
   State state() const { return state_; }
 
+  // True only while an actual cook is running -- main.cpp gates the motor/fan/light/hum on this
+  // rather than bare Running, since Running also covers a plain kitchen-timer countdown, which
+  // shouldn't turn any of that hardware on.
+  bool isCooking() const { return state_ == State::Running && function_ == Function::CookTime; }
+
   // The value to show, where value/60 and value%60 are the two displayed digit pairs: the
   // current time-of-day (HH:MM, from the delegated Clock) while Idle, the in-progress entry
-  // while Setting/ClockSet, or the cook-time countdown while Running/Done.
+  // while Setting/ClockSet, or the countdown (cook time or kitchen timer, from the delegated
+  // Timer) while Running/Done.
   uint16_t displayValue() const {
     switch (state_) {
       case State::Idle:     return clock_.minutesOfDay();
@@ -55,7 +71,7 @@ class Controller {
       case State::ClockSet: return wallclock::decodeEnteredMinutes(enteredClockDigits_);
       case State::Running:
       case State::Done:
-      default:              return remainingSeconds_;
+      default:              return timer_.remaining();
     }
   }
 
@@ -69,7 +85,12 @@ class Controller {
     switch (state_) {
       case State::Idle:
         if (event.type == EventType::Digit) {
+          function_ = Function::CookTime;
           enteredDigits_ = nextEnteredSeconds(0, event.digit);
+          state_ = State::Setting;
+        } else if (event.type == EventType::Timer) {
+          function_ = Function::Timer;
+          enteredDigits_ = 0;
           state_ = State::Setting;
         } else if (event.type == EventType::Clock) {
           enteredClockDigits_ = 0;
@@ -83,27 +104,27 @@ class Controller {
         } else if (event.type == EventType::Start) {
           uint16_t seconds = decodeEnteredSeconds(enteredDigits_);
           if (seconds > 0) {
-            remainingSeconds_ = seconds;
+            timer_.start(seconds);
             state_ = State::Running;
           }
         } else if (event.type == EventType::Cancel) {
-          resetCookTimer();
+          resetCountdown();
         }
         break;
 
       case State::Running:
         if (event.type == EventType::Tick) {
-          if (remainingSeconds_ > 0) --remainingSeconds_;
-          if (remainingSeconds_ == 0) state_ = State::Done;
+          timer_.tick();
+          if (!timer_.isRunning()) state_ = State::Done;
         } else if (event.type == EventType::Cancel) {
-          resetCookTimer();
+          resetCountdown();
         }
         break;
 
       case State::Done:
         if (event.type == EventType::Cancel || event.type == EventType::Start ||
             event.type == EventType::Digit) {
-          resetCookTimer();
+          resetCountdown();
         }
         break;
 
@@ -121,17 +142,18 @@ class Controller {
   }
 
  private:
-  void resetCookTimer() {
+  void resetCountdown() {
     state_ = State::Idle;
     enteredDigits_ = 0;
-    remainingSeconds_ = 0;
+    timer_.cancel();
   }
 
-  State           state_ = State::Idle;
-  uint16_t        enteredDigits_ = 0;        // raw digit buffer while Setting; see decodeEnteredSeconds
-  uint16_t        remainingSeconds_ = 0;     // counts down while Running; holds at 0 through Done
-  uint16_t        enteredClockDigits_ = 0;   // raw digit buffer while ClockSet; see wallclock::decodeEnteredMinutes
-  wallclock::Clock clock_;                   // delegated time-of-day keeping
+  State            state_ = State::Idle;
+  Function         function_ = Function::CookTime;  // which kind of countdown is active
+  uint16_t         enteredDigits_ = 0;        // raw digit buffer while Setting; see decodeEnteredSeconds
+  uint16_t         enteredClockDigits_ = 0;   // raw digit buffer while ClockSet; see wallclock::decodeEnteredMinutes
+  wallclock::Clock clock_;                    // delegated time-of-day keeping
+  wallclock::Timer timer_;                    // delegated countdown, cook time or kitchen timer
 };
 
 }  // namespace microwave
