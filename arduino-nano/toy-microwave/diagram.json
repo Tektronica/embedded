@@ -6,6 +6,13 @@
     { "type": "wokwi-arduino-nano", "id": "nano", "top": 0, "left": 100, "attrs": {} },
     { "type": "wokwi-membrane-keypad", "id": "keypad", "top": -40.4, "left": -282.4, "attrs": {} },
     {
+      "type": "wokwi-text",
+      "id": "keyLegend",
+      "top": 9.6,
+      "left": -374.4,
+      "attrs": { "text": "A = Clock\nB = Timer\n# = Start\n* = Cancel" }
+    },
+    {
       "type": "wokwi-tm1637-7segment",
       "id": "display1",
       "top": -249.64,
@@ -64,14 +71,14 @@
     }
   ],
   "connections": [
-    [ "keypad:R1", "nano:9", "green", [ "v144", "h259.2", "v-499.2", "h71.7" ] ],
-    [ "keypad:R2", "nano:8", "green", [ "v134.4", "h239.6", "v-499.2", "h90.9" ] ],
-    [ "keypad:R3", "nano:7", "green", [ "v124.8", "h220.5", "v-499.2", "h110.1" ] ],
-    [ "keypad:R4", "nano:6", "green", [ "v115.2", "h201.4", "v-499.2", "h129.3" ] ],
-    [ "keypad:C1", "nano:5", "blue", [ "v105.6", "h182.3", "v-499.2", "h148.5" ] ],
-    [ "keypad:C2", "nano:4", "blue", [ "v96", "h163.2", "v-499.2", "h167.7" ] ],
-    [ "keypad:C3", "nano:3", "blue", [ "v86.4", "h143.85", "v-499.2", "h186.9" ] ],
-    [ "keypad:C4", "nano:2", "blue", [ "v76.8", "h124.5", "v-499.2", "h206.1" ] ],
+    [ "keypad:R1", "nano:9", "green", [ "v86.4", "h259.2", "v-441.6", "h71.7" ] ],
+    [ "keypad:R2", "nano:8", "green", [ "v76.8", "h239.6", "v-441.6", "h90.9" ] ],
+    [ "keypad:R3", "nano:7", "green", [ "v67.2", "h220.5", "v-441.6", "h110.1" ] ],
+    [ "keypad:R4", "nano:6", "green", [ "v57.6", "h201.4", "v-441.6", "h129.3" ] ],
+    [ "keypad:C1", "nano:5", "blue", [ "v48", "h182.3", "v-441.6", "h148.5" ] ],
+    [ "keypad:C2", "nano:4", "blue", [ "v38.4", "h163.2", "v-441.6", "h167.7" ] ],
+    [ "keypad:C3", "nano:3", "blue", [ "v28.8", "h143.85", "v-441.6", "h186.9" ] ],
+    [ "keypad:C4", "nano:2", "blue", [ "v19.2", "h124.5", "v-441.6", "h206.1" ] ],
     [ "nano:A0", "display1:CLK", "green", [ "v52.8", "h187.5", "v-306.36" ] ],
     [ "nano:A1", "display1:DIO", "blue", [ "v43.2", "h168.3", "v-287.16" ] ],
     [ "display1:VCC", "nano:5V", "red", [ "h38.4", "v297.6", "h-91.5" ] ],
