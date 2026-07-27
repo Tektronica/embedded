@@ -87,6 +87,67 @@ void test_cancel_from_running_resets_to_idle() {
   TEST_ASSERT_EQUAL_UINT16(0, c.displayValue());
 }
 
+void test_cook_time_is_cooking_while_running() {
+  Controller c;
+  c.handle(Event{EventType::Digit, 5});
+  c.handle(Event{EventType::Start, 0});
+  TEST_ASSERT_TRUE(c.isCooking());
+}
+
+void test_timer_key_from_idle_enters_setting_as_a_kitchen_timer() {
+  Controller c;
+  c.handle(Event{EventType::Timer, 0});
+  TEST_ASSERT_TRUE(c.state() == State::Setting);
+  TEST_ASSERT_EQUAL_UINT16(0, c.displayValue());  // starts blank, unlike Digit which seeds a digit
+}
+
+void test_timer_counts_down_like_cook_time_but_is_not_cooking() {
+  Controller c;
+  c.handle(Event{EventType::Timer, 0});
+  c.handle(Event{EventType::Digit, 5});
+  c.handle(Event{EventType::Start, 0});
+
+  TEST_ASSERT_TRUE(c.state() == State::Running);
+  TEST_ASSERT_FALSE(c.isCooking());  // a kitchen timer never turns on the motor/fan/light
+  TEST_ASSERT_EQUAL_UINT16(5, c.displayValue());
+
+  for (int i = 0; i < 5; ++i) c.handle(Event{EventType::Tick, 0});
+  TEST_ASSERT_TRUE(c.state() == State::Done);
+  TEST_ASSERT_FALSE(c.isCooking());
+}
+
+void test_cancel_from_timer_setting_clears_it_like_cook_time() {
+  Controller c;
+  c.handle(Event{EventType::Timer, 0});
+  c.handle(Event{EventType::Digit, 9});
+  c.handle(Event{EventType::Cancel, 0});
+  TEST_ASSERT_TRUE(c.state() == State::Idle);
+  TEST_ASSERT_EQUAL_UINT16(0, c.displayValue());
+}
+
+void test_cancel_from_running_timer_ends_it() {
+  Controller c;
+  c.handle(Event{EventType::Timer, 0});
+  c.handle(Event{EventType::Digit, 5});
+  c.handle(Event{EventType::Start, 0});
+  c.handle(Event{EventType::Cancel, 0});
+  TEST_ASSERT_TRUE(c.state() == State::Idle);
+  TEST_ASSERT_FALSE(c.isCooking());
+}
+
+void test_digit_from_idle_after_a_timer_is_cooking_again() {
+  // A later cook-time entry must not be mistaken for a leftover kitchen timer.
+  Controller c;
+  c.handle(Event{EventType::Timer, 0});
+  c.handle(Event{EventType::Digit, 5});
+  c.handle(Event{EventType::Start, 0});
+  c.handle(Event{EventType::Cancel, 0});
+
+  c.handle(Event{EventType::Digit, 5});
+  c.handle(Event{EventType::Start, 0});
+  TEST_ASSERT_TRUE(c.isCooking());
+}
+
 void test_any_key_from_done_resets_to_idle() {
   Controller c;
   c.handle(Event{EventType::Digit, 1});
@@ -175,6 +236,12 @@ int main(int, char**) {
   RUN_TEST(test_start_with_no_time_entered_is_ignored);
   RUN_TEST(test_start_after_entering_time_runs_and_counts_down);
   RUN_TEST(test_cancel_from_running_resets_to_idle);
+  RUN_TEST(test_cook_time_is_cooking_while_running);
+  RUN_TEST(test_timer_key_from_idle_enters_setting_as_a_kitchen_timer);
+  RUN_TEST(test_timer_counts_down_like_cook_time_but_is_not_cooking);
+  RUN_TEST(test_cancel_from_timer_setting_clears_it_like_cook_time);
+  RUN_TEST(test_cancel_from_running_timer_ends_it);
+  RUN_TEST(test_digit_from_idle_after_a_timer_is_cooking_again);
   RUN_TEST(test_any_key_from_done_resets_to_idle);
   RUN_TEST(test_clock_key_from_idle_enters_clock_set);
   RUN_TEST(test_entering_1930_in_clock_set_reads_as_seven_thirty_pm);
