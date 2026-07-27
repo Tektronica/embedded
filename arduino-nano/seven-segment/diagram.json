@@ -1,0 +1,31 @@
+{
+  "version": 1,
+  "author": "Ryan Bryson",
+  "editor": "wokwi",
+  "parts": [
+    { "type": "wokwi-arduino-nano", "id": "nano", "top": 0, "left": 0, "attrs": {} },
+    {
+      "type": "wokwi-tm1637-7segment",
+      "id": "display1",
+      "top": -172.84,
+      "left": 179.83,
+      "attrs": {}
+    },
+    {
+      "type": "wokwi-pushbutton",
+      "id": "btn-mode",
+      "top": -70.6,
+      "left": 240,
+      "attrs": { "color": "green", "label": "MODE" }
+    }
+  ],
+  "connections": [
+    [ "nano:A0", "display1:CLK", "green", [ "v52.8", "h354.7", "v-259.2" ] ],
+    [ "nano:A1", "display1:DIO", "blue", [ "v43.2", "h335.5", "v-240" ] ],
+    [ "display1:VCC", "nano:5V", "red", [ "h28.8", "v220.8", "h-258.7" ] ],
+    [ "display1:GND", "nano:GND.1", "black", [ "h19.2", "v201.6", "h-229.9" ] ],
+    [ "nano:2", "btn-mode:1.l", "green", [ "h-0.5", "v-14.4", "v-48" ] ],
+    [ "btn-mode:2.l", "nano:GND.1", "black", [ "h-19.2", "v125", "h-76.3" ] ]
+  ],
+  "dependencies": {}
+}
