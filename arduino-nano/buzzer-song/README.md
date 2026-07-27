@@ -68,6 +68,10 @@ shape a hardware sound driver from the 8-bit console era would use: one generic 
 a compact note table out of ROM, rather than bespoke playback code per song (the pattern the
 upstream `arduino-songs` sketches actually use, one copy-pasted playback loop per `.ino` file).
 
+See **[docs/transpiling-songs.md](docs/transpiling-songs.md)** for a full walkthrough of the
+source format and how `scripts/transpile-song.sh` converts one of those sketches into a new
+`songs/<Song>.h` — the process used for Tetris, Mario, Doom, and Nokia.
+
 ## Quick start
 
 Requires [PlatformIO](https://platformio.org/) (VSCode extension or CLI) — no Arduino IDE needed.
