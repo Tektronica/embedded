@@ -24,32 +24,33 @@ Self-contained PlatformIO project (`platformio.ini`, `include/`, `src/`, `test/`
 - **`Buzzer.h`** — tone/frequency selection and beep-pattern timing (key press, done — 4 beeps, error) plus the continuous Running hum, and `isFinished()` to know when a one-shot pattern's whole sequence (not just its current on/off phase) has completed.
 - **`KeyMatrix.h`** — debounced key detection across a 4x4 matrix, using the same debounce pattern as `arduino-nano/led-dimmer-ws2812`'s `Button` class generalized to a 16-way key index. Named to avoid colliding with the well-known Arduino `Keypad` library.
 - **`MatrixScanner.h`** — the generic row/column GPIO scan technique (drive each row low, read back the active column), separate from `KeyMatrix.h`'s debouncing/layout lookup. Hardware-coupled, not unit-tested — same shape as `stepper`'s `Stepper.h` and `robot-buoy`'s `Radio.h`. Identical technique, standalone with its own tests, lives at `arduino-nano/keypad`.
-- **`Clock.h`** (namespace `wallclock`, to avoid shadowing the C standard library's `clock()`) — a hardware-free time-of-day counter (seconds since midnight, advanced by `tick()`) plus its own digit-entry helpers for HH:MM. No RTC chip is in the BOM, so this is a plain software clock that resets to 0:00 on every power loss or reset — fine for a toy/prop build; a battery-backed RTC (e.g. DS3231) would be needed for it to survive a power cycle.
-- **`Microwave.h`** — the app-level orchestrator: the Idle → Setting → Running → Done cook-timer state machine (plus `ClockSet`, reachable from Idle), driven by abstract `Event`s (`Digit`/`Start`/`Cancel`/`Clock`/`Tick`) rather than any specific keypad wiring. Owns the cook-timer flow itself but delegates time-of-day keeping to `Clock.h`'s `wallclock::Clock` rather than absorbing that concern directly — `Microwave.h` is the main app, `Clock.h` is a service it composes.
+- **`Clock.h`** (namespace `wallclock`, to avoid shadowing the C standard library's `clock()`) — generic, hardware-free time-keeping building blocks: `Clock`, a time-of-day counter (seconds since midnight, advanced by `tick()`) plus its own digit-entry helpers for HH:MM; and `Timer`, a generic countdown (`start(seconds)`/`tick()`/`cancel()`/`remaining()`/`isRunning()`) that knows nothing about what happens at zero — same trio a real RTC chip (e.g. DS3231) typically exposes (clock, timer, alarm — the last not added until something actually needs it). No RTC chip is in the BOM, so `Clock` is a plain software clock that resets to 0:00 on every power loss or reset — fine for a toy/prop build; a battery-backed RTC would be needed for it to survive a power cycle.
+- **`Microwave.h`** — the app-level orchestrator: the Idle → Setting → Running → Done countdown state machine (plus `ClockSet`, reachable from Idle), driven by abstract `Event`s (`Digit`/`Start`/`Cancel`/`Clock`/`Timer`/`Tick`) rather than any specific keypad wiring. Setting/Running/Done serve two `Function`s — `CookTime` and `Timer` (a plain kitchen timer) — sharing one flow rather than duplicating it, since digit entry, Start/Cancel, and counting down to Done are identical either way; `isCooking()` (`Running` + `Function::CookTime`) is the only thing that distinguishes them, and it's what `main.cpp` gates the motor/fan/light/hum on. Delegates time-of-day keeping and countdown-counting to `Clock.h`'s `wallclock::Clock`/`wallclock::Timer` rather than absorbing either concern directly — `Microwave.h` is the main app, `Clock.h` is a service it composes.
 - **`main.cpp`** — matrix scan → debounced key → `Event` → state machine → buzzer pattern selection, motor/fan/light on/off, and TM1637 display rendering.
 - Motor, fan, and light have no dedicated header — all three are plain on/off hardware glue in `main.cpp`.
 
 ### Behavior
 
-- **Idle** — displays the live time-of-day clock (HH:MM). A digit key starts entering a cook time; `A` starts entering a new clock time.
-- **Setting** — entering cook time digit-by-digit (MM:SS, calculator-style: each press appends to the low end and shifts existing digits left, e.g. `3` → `0:03`, `30` → `0:30`, `300` → `3:00`). `#` starts the countdown if a nonzero time is entered; `*` cancels back to Idle.
-- **Running** — counts down once per second; motor, fan, and light are on, plus the ambient hum. `*` cancels back to Idle at any point.
-- **Done** — countdown reached 0:00; buzzer plays a 4-beep done pattern. Any key returns to Idle.
-- **ClockSet** — entering a new time-of-day, HH:MM, same calculator-style digit entry as cook time (hours clamp to 23, minutes to 59). `#` confirms and returns to Idle with the clock updated; `*` cancels, discarding the entry and leaving the clock unchanged.
-- The clock keeps advancing in the background in every state except while it's actively being set (cooking doesn't stop the time of day).
+- **Idle** — displays the live time-of-day clock (HH:MM). A digit key starts entering a cook time; `B` starts entering a kitchen timer; `A` starts entering a new clock time.
+- **Setting** — entering a countdown digit-by-digit (MM:SS, calculator-style: each press appends to the low end and shifts existing digits left, e.g. `3` → `0:03`, `30` → `0:30`, `300` → `3:00`), for whichever `Function` was selected to get here (`CookTime` via a digit key, `Timer` via `B`). `#` starts the countdown if a nonzero time is entered; `*` cancels back to Idle.
+- **Running** — counts down once per second. If this countdown is `CookTime`, the motor, fan, and light are on, plus the ambient hum; a `Timer` (kitchen timer) countdown runs silently in the background with none of that hardware on. `*` cancels back to Idle at any point, ending a cook or a timer the same way.
+- **Done** — countdown reached 0:00; buzzer plays a 4-beep done pattern, whether it was a cook or a kitchen timer, and repeats every 10 seconds as a reminder for as long as Done goes unacknowledged. Any key returns to Idle.
+- **ClockSet** — entering a new time-of-day, HH:MM, same calculator-style digit entry as a countdown (hours clamp to 23, minutes to 59). `#` confirms and returns to Idle with the clock updated; `*` cancels, discarding the entry and leaving the clock unchanged.
+- The clock keeps advancing in the background in every state except while it's actively being set (cooking or timing doesn't stop the time of day).
 
 ### 4x4 keypad mapping
 
 | Key(s) | Action |
 |---|---|
-| `0`-`9` | Enter a digit (cook time while Idle/Setting, clock time while ClockSet) |
-| `#` | Start / confirm (starts the cook timer from Setting; confirms the new clock time from ClockSet) |
-| `*` | Cancel (back to Idle, discarding whatever was being entered) |
+| `0`-`9` | Enter a digit (cook time or kitchen timer while Idle/Setting, clock time while ClockSet) |
+| `#` | Start / confirm (starts the countdown from Setting; confirms the new clock time from ClockSet) |
+| `*` | Cancel (back to Idle, discarding whatever was being entered, or ending a running countdown) |
 | `A` | Clock — from Idle, begin setting the time-of-day clock |
-| `B`, `C`, `D` | Reserved, unused for now |
+| `B` | Timer — from Idle, begin entering a plain kitchen timer (counts down and beeps; doesn't turn on the motor/fan/light) |
+| `C`, `D` | Reserved, unused for now |
 
-`B`/`C`/`D` are left open for future features (e.g. a kitchen-timer-only mode, a light toggle, or a
-child-lock) rather than assigned speculatively now.
+`C`/`D` are left open for future features (e.g. a light toggle or a child-lock) rather than
+assigned speculatively now.
 
 **Display library**: `avishorp/TM1637` pulled directly from GitHub (see `platformio.ini`'s
 `lib_deps` — the PlatformIO registry re-registration has an odd unversioned release, so this
@@ -79,11 +80,12 @@ pio test -e native      # off-device unit tests
 
 ## Simulate (Wokwi)
 
-`wokwi.toml` + `diagram.json` cover the keypad, display, buzzer, and motor/fan/light LEDs. Build
-first (`pio run`), then **F1 → "Wokwi: Start Simulator"** and click the matrix keypad's keys to
-drive the state machine and watch the countdown on the display.
+`wokwi.toml` + `diagram.json` cover the keypad, display, buzzer, and motor/fan/light LEDs, plus a
+text label next to the keypad spelling out what `A`/`B`/`#`/`*` do (digits are self-explanatory).
+Build first (`pio run`), then **F1 → "Wokwi: Start Simulator"** and click the matrix keypad's keys
+to drive the state machine and watch the countdown on the display.
 
 ## Status
 
-BOM set. No hardware design yet. Firmware logic is implemented and tested (43 unit tests across
+BOM set. No hardware design yet. Firmware logic is implemented and tested (54 unit tests across
 the five headers) and wired end-to-end, including the TM1637 display.
