@@ -137,8 +137,12 @@ pio test -e native      # off-device unit tests
 ## Structure
 
 - **`include/EpochClock.h`** — UTC-seconds clock synced externally (no RTC), plus a plausibility
-  check for incoming sync values. Hardware-free, unit-tested. Deliberately unaware of *how* a
-  sync value arrives (main.cpp feeds it whatever the radio received).
+  check for incoming sync values. Between syncs spaced far enough apart to measure reliably, it
+  also learns a drift correction from how far the local millis() clock ran ahead or behind the
+  new reference, and scales future extrapolation by it -- the same clock-discipline idea NTP
+  uses, applied in software since there's no oscillator-steering register on this MCU. Hardware-
+  free, unit-tested. Deliberately unaware of *how* a sync value arrives (main.cpp feeds it
+  whatever the radio received).
 - **`include/Cycle.h`** — the `Surface -> Descent -> Park -> Ascent` phase enum and its (pure,
   tested) transition function.
 - **`include/Ballast.h`** — syringe stroke-length math (microsteps per fill/drain). Hardware-free,
