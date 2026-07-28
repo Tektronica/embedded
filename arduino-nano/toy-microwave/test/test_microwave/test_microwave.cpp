@@ -14,13 +14,15 @@ void test_starts_idle() {
 
 void test_idle_shows_clock_starting_at_midnight() {
   Controller c;
-  TEST_ASSERT_EQUAL_UINT16(0, c.displayValue());  // 0:00, no RTC to seed a real time
+  // Midnight displays as 12:00, not 0:00 -- Idle's display is 12-hour by default (a 12-hour face
+  // has no "0"), even though no RTC seeds a real time here.
+  TEST_ASSERT_EQUAL_UINT16(12 * 60, c.displayValue());
 }
 
 void test_clock_advances_once_per_tick_while_idle() {
   Controller c;
   for (int i = 0; i < 90; ++i) c.handle(Event{EventType::Tick, 0});  // 90 seconds
-  TEST_ASSERT_EQUAL_UINT16(1, c.displayValue());  // 1 minute elapsed, seconds aren't displayed
+  TEST_ASSERT_EQUAL_UINT16(12 * 60 + 1, c.displayValue());  // 12:01, 1 minute past midnight
 }
 
 void test_clock_keeps_ticking_while_cooking() {
@@ -31,7 +33,7 @@ void test_clock_keeps_ticking_while_cooking() {
 
   TEST_ASSERT_TRUE(c.state() == State::Done);
   c.handle(Event{EventType::Cancel, 0});  // back to Idle to read the clock
-  TEST_ASSERT_EQUAL_UINT16(2, c.displayValue());  // the clock kept advancing the whole time
+  TEST_ASSERT_EQUAL_UINT16(12 * 60 + 2, c.displayValue());  // 12:02, the clock kept advancing
 }
 
 void test_digit_from_idle_enters_setting() {
@@ -84,7 +86,7 @@ void test_cancel_from_running_resets_to_idle() {
   c.handle(Event{EventType::Start, 0});
   c.handle(Event{EventType::Cancel, 0});
   TEST_ASSERT_TRUE(c.state() == State::Idle);
-  TEST_ASSERT_EQUAL_UINT16(0, c.displayValue());
+  TEST_ASSERT_EQUAL_UINT16(12 * 60, c.displayValue());  // 12:00, clock never ticked (no Tick here)
 }
 
 void test_cook_time_is_cooking_while_running() {
@@ -122,7 +124,7 @@ void test_cancel_from_timer_setting_clears_it_like_cook_time() {
   c.handle(Event{EventType::Digit, 9});
   c.handle(Event{EventType::Cancel, 0});
   TEST_ASSERT_TRUE(c.state() == State::Idle);
-  TEST_ASSERT_EQUAL_UINT16(0, c.displayValue());
+  TEST_ASSERT_EQUAL_UINT16(12 * 60, c.displayValue());  // 12:00, clock never ticked (no Tick here)
 }
 
 void test_cancel_from_running_timer_ends_it() {
@@ -176,14 +178,26 @@ void test_entering_1930_in_clock_set_reads_as_seven_thirty_pm() {
   TEST_ASSERT_EQUAL_UINT16(19 * 60 + 30, c.displayValue());  // "1930" = 19:30
 }
 
-void test_clock_set_hours_clamp_to_23() {
+void test_clock_set_preview_clamps_hours_to_23_while_typing() {
   Controller c;
   c.handle(Event{EventType::Clock, 0});
   c.handle(Event{EventType::Digit, 2});
   c.handle(Event{EventType::Digit, 4});
   c.handle(Event{EventType::Digit, 0});
-  c.handle(Event{EventType::Digit, 0});  // "2400" -> 24 hours -> clamps to 23:00
+  c.handle(Event{EventType::Digit, 0});  // "2400" -> 24 hours -> live preview clamps to 23:00
   TEST_ASSERT_EQUAL_UINT16(23 * 60, c.displayValue());
+}
+
+void test_clock_set_rejects_out_of_range_hour_on_start() {
+  Controller c;
+  c.handle(Event{EventType::Clock, 0});
+  c.handle(Event{EventType::Digit, 2});
+  c.handle(Event{EventType::Digit, 4});
+  c.handle(Event{EventType::Digit, 0});
+  c.handle(Event{EventType::Digit, 0});  // "2400" -> 24 hours, invalid
+  c.handle(Event{EventType::Start, 0});  // rejected -- stays in ClockSet, nothing committed
+
+  TEST_ASSERT_TRUE(c.state() == State::ClockSet);
 }
 
 void test_start_confirms_clock_set_and_returns_to_idle() {
@@ -213,7 +227,7 @@ void test_cancel_discards_clock_set() {
   c.handle(Event{EventType::Cancel, 0});  // discard the "99:99" entry
 
   TEST_ASSERT_TRUE(c.state() == State::Idle);
-  TEST_ASSERT_EQUAL_UINT16(1, c.displayValue());  // unchanged from before ClockSet
+  TEST_ASSERT_EQUAL_UINT16(12 * 60 + 1, c.displayValue());  // 12:01, unchanged from before ClockSet
 }
 
 void test_clock_does_not_advance_while_being_set() {
@@ -221,7 +235,7 @@ void test_clock_does_not_advance_while_being_set() {
   c.handle(Event{EventType::Clock, 0});
   for (int i = 0; i < 200; ++i) c.handle(Event{EventType::Tick, 0});  // Ticks ignored in ClockSet
   c.handle(Event{EventType::Cancel, 0});
-  TEST_ASSERT_EQUAL_UINT16(0, c.displayValue());  // clock never moved
+  TEST_ASSERT_EQUAL_UINT16(12 * 60, c.displayValue());  // 12:00, clock never moved
 }
 
 int main(int, char**) {
@@ -245,7 +259,8 @@ int main(int, char**) {
   RUN_TEST(test_any_key_from_done_resets_to_idle);
   RUN_TEST(test_clock_key_from_idle_enters_clock_set);
   RUN_TEST(test_entering_1930_in_clock_set_reads_as_seven_thirty_pm);
-  RUN_TEST(test_clock_set_hours_clamp_to_23);
+  RUN_TEST(test_clock_set_preview_clamps_hours_to_23_while_typing);
+  RUN_TEST(test_clock_set_rejects_out_of_range_hour_on_start);
   RUN_TEST(test_start_confirms_clock_set_and_returns_to_idle);
   RUN_TEST(test_cancel_discards_clock_set);
   RUN_TEST(test_clock_does_not_advance_while_being_set);

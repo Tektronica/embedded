@@ -109,6 +109,50 @@ void test_decode_does_not_clamp_valid_digits() {
   TEST_ASSERT_EQUAL_UINT16(0, decodeEnteredMinutes(0));
 }
 
+void test_split_digits_separates_high_and_low_fields() {
+  DigitFields fields = splitDigits(1930);
+  TEST_ASSERT_EQUAL_UINT8(19, fields.high);
+  TEST_ASSERT_EQUAL_UINT8(30, fields.low);
+}
+
+void test_is_valid_time_h24_accepts_full_range() {
+  TEST_ASSERT_TRUE(isValidTime(0, 0, TimeFormat::H24));
+  TEST_ASSERT_TRUE(isValidTime(23, 59, TimeFormat::H24));
+}
+
+void test_is_valid_time_h24_rejects_out_of_range() {
+  TEST_ASSERT_FALSE(isValidTime(24, 0, TimeFormat::H24));
+  TEST_ASSERT_FALSE(isValidTime(0, 60, TimeFormat::H24));
+}
+
+void test_is_valid_time_h12_rejects_hour_zero() {
+  TEST_ASSERT_FALSE(isValidTime(0, 30, TimeFormat::H12));  // a 12-hour face has no "0"
+}
+
+void test_is_valid_time_h12_accepts_one_through_twelve() {
+  TEST_ASSERT_TRUE(isValidTime(1, 0, TimeFormat::H12));
+  TEST_ASSERT_TRUE(isValidTime(12, 59, TimeFormat::H12));
+}
+
+void test_is_valid_time_h12_rejects_above_twelve() {
+  TEST_ASSERT_FALSE(isValidTime(13, 0, TimeFormat::H12));
+}
+
+void test_to12_hour_maps_midnight_and_noon_to_twelve() {
+  TEST_ASSERT_EQUAL_UINT8(12, to12Hour(0));
+  TEST_ASSERT_EQUAL_UINT8(12, to12Hour(12));
+}
+
+void test_to12_hour_leaves_morning_hours_unchanged() {
+  TEST_ASSERT_EQUAL_UINT8(1, to12Hour(1));
+  TEST_ASSERT_EQUAL_UINT8(11, to12Hour(11));
+}
+
+void test_to12_hour_maps_afternoon_hours_down() {
+  TEST_ASSERT_EQUAL_UINT8(1, to12Hour(13));
+  TEST_ASSERT_EQUAL_UINT8(11, to12Hour(23));
+}
+
 int main(int, char**) {
   UNITY_BEGIN();
   RUN_TEST(test_starts_at_midnight);
@@ -124,5 +168,14 @@ int main(int, char**) {
   RUN_TEST(test_next_entered_minutes_hours_clamp_to_23);
   RUN_TEST(test_next_entered_minutes_minutes_clamp_to_59);
   RUN_TEST(test_decode_does_not_clamp_valid_digits);
+  RUN_TEST(test_split_digits_separates_high_and_low_fields);
+  RUN_TEST(test_is_valid_time_h24_accepts_full_range);
+  RUN_TEST(test_is_valid_time_h24_rejects_out_of_range);
+  RUN_TEST(test_is_valid_time_h12_rejects_hour_zero);
+  RUN_TEST(test_is_valid_time_h12_accepts_one_through_twelve);
+  RUN_TEST(test_is_valid_time_h12_rejects_above_twelve);
+  RUN_TEST(test_to12_hour_maps_midnight_and_noon_to_twelve);
+  RUN_TEST(test_to12_hour_leaves_morning_hours_unchanged);
+  RUN_TEST(test_to12_hour_maps_afternoon_hours_down);
   return UNITY_END();
 }
