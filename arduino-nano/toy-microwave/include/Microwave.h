@@ -38,7 +38,7 @@ struct Event {
 // the digit buffer "3053"). Holds the raw digits, not a decoded time -- decode with
 // decodeEnteredSeconds() below, so an earlier field clamping can't corrupt digits typed after it.
 inline uint16_t nextEnteredSeconds(uint16_t enteredDigits, uint8_t digit) {
-  return static_cast<uint16_t>((enteredDigits * 10 + digit) % 10000);
+  return wallclock::shiftEnteredDigit(enteredDigits, digit);
 }
 
 // Decode a raw digit buffer (as built by nextEnteredSeconds) into total seconds. Minutes aren't
@@ -61,12 +61,18 @@ class Controller {
   bool isCooking() const { return state_ == State::Running && function_ == Function::CookTime; }
 
   // The value to show, where value/60 and value%60 are the two displayed digit pairs: the
-  // current time-of-day (HH:MM, from the delegated Clock) while Idle, the in-progress entry
-  // while Setting/ClockSet, or the countdown (cook time or kitchen timer, from the delegated
-  // Timer) while Running/Done.
+  // current time-of-day while Idle (12-hour display, converted from the delegated Clock's
+  // internal 24-hour value -- see wallclock::to12Hour), the in-progress entry while
+  // Setting/ClockSet (ClockSet's entry stays 24-hour-style, matching how it's typed), or the
+  // countdown (cook time or kitchen timer, from the delegated Timer) while Running/Done.
   uint16_t displayValue() const {
     switch (state_) {
-      case State::Idle:     return clock_.minutesOfDay();
+      case State::Idle: {
+        uint16_t minutesOfDay = clock_.minutesOfDay();
+        uint8_t hour24 = static_cast<uint8_t>(minutesOfDay / 60);
+        uint8_t minute = static_cast<uint8_t>(minutesOfDay % 60);
+        return static_cast<uint16_t>(wallclock::to12Hour(hour24)) * 60 + minute;
+      }
       case State::Setting:  return decodeEnteredSeconds(enteredDigits_);
       case State::ClockSet: return wallclock::decodeEnteredMinutes(enteredClockDigits_);
       case State::Running:
@@ -132,8 +138,11 @@ class Controller {
         if (event.type == EventType::Digit) {
           enteredClockDigits_ = wallclock::nextEnteredMinutes(enteredClockDigits_, event.digit);
         } else if (event.type == EventType::Start) {
-          clock_.setMinutesOfDay(wallclock::decodeEnteredMinutes(enteredClockDigits_));
-          state_ = State::Idle;
+          wallclock::DigitFields fields = wallclock::splitDigits(enteredClockDigits_);
+          if (wallclock::isValidTime(fields.high, fields.low, wallclock::TimeFormat::H24)) {
+            clock_.setMinutesOfDay(static_cast<uint16_t>(fields.high) * 60 + fields.low);
+            state_ = State::Idle;
+          }
         } else if (event.type == EventType::Cancel) {
           state_ = State::Idle;
         }

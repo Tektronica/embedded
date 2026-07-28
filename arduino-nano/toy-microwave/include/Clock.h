@@ -60,26 +60,69 @@ class Timer {
   bool running_ = false;
 };
 
-// Shift a new digit into a raw HH:MM entry buffer the way a real keypad does (each press
+// Shift a new digit into a raw 4-digit entry buffer the way a real keypad does (each press
 // appends to the low end, shifting existing digits left, e.g. 0 -> 8 -> 81 -> 815 builds the
-// digit buffer "815"). Holds the raw digits, not a decoded time -- decode with
-// decodeEnteredMinutes() below. Kept raw here (rather than decoding on every keystroke) because
-// decoding clamps, and feeding a clamped value back into the next shift would corrupt later
-// digits once an earlier field clamps (e.g. typing "9","9","3","0" must still read as 23:30 wide
-// open to the last two digits, not lose them to an early clamp).
-inline uint16_t nextEnteredMinutes(uint16_t enteredDigits, uint8_t digit) {
+// digit buffer "815"). Generic across any HH:MM/MM:SS-style entry -- nextEnteredMinutes below and
+// Microwave.h's nextEnteredSeconds are both thin, domain-named wrappers over this one primitive
+// rather than duplicating its body. Holds the raw digits, not a decoded value -- decoding clamps,
+// and feeding a clamped value back into the next shift would corrupt later digits once an earlier
+// field clamps (e.g. typing "9","9","3","0" must still read as 23:30 wide open to the last two
+// digits, not lose them to an early clamp).
+inline uint16_t shiftEnteredDigit(uint16_t enteredDigits, uint8_t digit) {
   return static_cast<uint16_t>((enteredDigits * 10 + digit) % 10000);
+}
+
+inline uint16_t nextEnteredMinutes(uint16_t enteredDigits, uint8_t digit) {
+  return shiftEnteredDigit(enteredDigits, digit);
+}
+
+// Split a raw 4-digit entry buffer (as built by shiftEnteredDigit) into its two 2-digit fields,
+// unclamped -- callers decide policy on top of this: decodeEnteredMinutes below clamps for a live
+// preview while typing, isValidTime rejects outright for a commit decision.
+struct DigitFields {
+  uint8_t high;
+  uint8_t low;
+};
+
+inline DigitFields splitDigits(uint16_t enteredDigits) {
+  return DigitFields{static_cast<uint8_t>(enteredDigits / 100),
+                      static_cast<uint8_t>(enteredDigits % 100)};
 }
 
 // Decode a raw digit buffer (as built by nextEnteredMinutes) into hours*60+minutes, clamping
 // hours to 23 and minutes to 59 rather than carrying overflow, since a real keypad doesn't
-// auto-carry either.
+// auto-carry either. For a live preview while typing, not a validity check -- see isValidTime.
 inline uint16_t decodeEnteredMinutes(uint16_t enteredDigits) {
-  uint8_t hours = static_cast<uint8_t>(enteredDigits / 100);
-  uint8_t minutes = static_cast<uint8_t>(enteredDigits % 100);
-  if (hours > 23) hours = 23;
-  if (minutes > 59) minutes = 59;
+  DigitFields fields = splitDigits(enteredDigits);
+  uint8_t hours = fields.high > 23 ? 23 : fields.high;
+  uint8_t minutes = fields.low > 59 ? 59 : fields.low;
   return static_cast<uint16_t>(hours) * 60 + minutes;
+}
+
+// Whether an hour:minute pair is being interpreted on a 24-hour or 12-hour clock face.
+enum class TimeFormat : uint8_t { H24, H12 };
+
+// True if hour:minute is a legal time in the given format. H24: hour 0-23 (midnight is 0).
+// H12: hour 1-12 (a 12-hour face has no "0"). Doesn't track AM/PM either way -- a caller needing
+// that distinction tracks the period separately, since validating an hour:minute pair doesn't
+// require it.
+inline bool isValidTime(uint8_t hour, uint8_t minute, TimeFormat format) {
+  if (minute > 59) return false;
+
+  switch (format) {
+    case TimeFormat::H24:
+      return hour <= 23;
+    case TimeFormat::H12:
+      return hour >= 1 && hour <= 12;
+  }
+  return false;  // unreachable, silences -Wreturn-type on some compilers
+}
+
+// Convert a 24-hour hour value (0-23) to its 12-hour-clock equivalent (1-12) -- midnight (0) and
+// noon (12) both read as 12, same as any 12-hour clock face. Loses AM/PM, same as isValidTime.
+inline uint8_t to12Hour(uint8_t hour24) {
+  uint8_t h = hour24 % 12;
+  return h == 0 ? 12 : h;
 }
 
 }  // namespace wallclock
