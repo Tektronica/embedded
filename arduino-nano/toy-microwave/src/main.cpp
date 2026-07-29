@@ -100,26 +100,34 @@ void updateOutputs() {
 }
 
 // Renders the current value (MM:SS for the cook timer, HH:MM for the clock) to the TM1637.
-// The colon blinks in every state except Running, where it stays solid — Idle's blink doubles
-// as a live "the clock is still running" heartbeat, and Setting/Done reuse the same blink to
-// show they're not the live countdown/clock. ClockSet blinks the whole display instead of just
-// the colon, since it's the one state where you're actively changing the clock, not just reading
-// it or entering a countdown — the display should read as "editing" at a glance.
+// The colon stays solid in every state. The whole display blanks instead in two cases: on the
+// blink's off phase throughout ClockSet, since that's the one state where you're actively
+// changing the clock rather than just reading it or entering a countdown; and, while Done, only
+// during the moments the buzzer is actually sounding a done/reminder beep, in exact sync with
+// buzzer::toneStateFor's on/off phases -- so the panel flashes with the beeper rather than on its
+// own separate timer, and stays steady in between reminders.
 void updateDisplay() {
   sevenseg::Digits d = sevenseg::secondsToDigits(controller.displayValue());
 
   bool blinkPhaseOn = sevenseg::blinkOn(static_cast<uint16_t>(millis() % 60000), BLINK_PERIOD_MS);
-  bool colonOn = controller.state() == microwave::State::Running ? true : blinkPhaseOn;
+  bool blankForClockSet = controller.state() == microwave::State::ClockSet && !blinkPhaseOn;
+
+  bool blankForDoneBeep = false;
+  if (controller.state() == microwave::State::Done &&
+      activeBuzzerPattern == buzzer::Pattern::Done) {
+    uint32_t beepElapsedMs = millis() - buzzerPatternStartMs;
+    blankForDoneBeep = !buzzer::toneStateFor(buzzer::Pattern::Done, beepElapsedMs).on;
+  }
 
   uint8_t segments[4];
-  if (controller.state() == microwave::State::ClockSet && !blinkPhaseOn) {
-    segments[0] = segments[1] = segments[2] = segments[3] = 0;  // blank on the blink's off phase
+  if (blankForClockSet || blankForDoneBeep) {
+    segments[0] = segments[1] = segments[2] = segments[3] = 0;
   } else {
     segments[0] = display.encodeDigit(d.minutesTens);
     segments[1] = display.encodeDigit(d.minutesOnes);
     segments[2] = display.encodeDigit(d.secondsTens);
     segments[3] = display.encodeDigit(d.secondsOnes);
-    if (colonOn) segments[COLON_DIGIT_INDEX] |= COLON_BIT;
+    segments[COLON_DIGIT_INDEX] |= COLON_BIT;
   }
   display.setSegments(segments);
 }
