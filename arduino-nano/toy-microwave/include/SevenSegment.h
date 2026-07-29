@@ -30,8 +30,9 @@ inline Digits secondsToDigits(uint16_t totalSeconds) {
 }
 
 // Is the display "on" for this frame of a blink cycle? `frame` increments once per call from the
-// main loop; `periodFrames` is the full on+off cycle length. Used for the colon while Setting and
-// the whole display while Done, so the panel doesn't just sit static in those states.
+// main loop; `periodFrames` is the full on+off cycle length. A generic on/off cycle a caller can
+// apply to whatever it needs to signal -- this header has no opinion on which display state that
+// is or what it should mean.
 inline bool blinkOn(uint16_t frame, uint16_t periodFrames) {
   if (periodFrames == 0) return true;
   return (frame % periodFrames) < (periodFrames / 2);
