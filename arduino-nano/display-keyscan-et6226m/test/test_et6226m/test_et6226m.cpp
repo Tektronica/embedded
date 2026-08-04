@@ -71,18 +71,21 @@ void test_decode_key_code_rejects_gaps_between_grid_columns() {
   TEST_ASSERT_EQUAL_UINT8(0, key.segment);
 }
 
-void test_encode_display_control_matches_datasheet_example() {
-  // The datasheet's own example: "X9H" (brightness=0, display on) is 7-segment mode.
-  TEST_ASSERT_EQUAL_HEX8(0x09, encodeDisplayControl(0, true));
+void test_encode_display_control_matches_datasheet_examples() {
+  // The datasheet's own examples: "X9H" is 7-segment mode, "X1H" is 8-segment mode (brightness=0,
+  // display on, in both cases).
+  TEST_ASSERT_EQUAL_HEX8(0x09, encodeDisplayControl(0, true, SegmentMode::SevenSegment));
+  TEST_ASSERT_EQUAL_HEX8(0x01, encodeDisplayControl(0, true, SegmentMode::EightSegment));
 }
 
 void test_encode_display_control_brightness_and_display_off() {
-  TEST_ASSERT_EQUAL_HEX8(0x79, encodeDisplayControl(MAX_BRIGHTNESS, true));
-  TEST_ASSERT_EQUAL_HEX8(0x08, encodeDisplayControl(0, false));
+  TEST_ASSERT_EQUAL_HEX8(0x79, encodeDisplayControl(MAX_BRIGHTNESS, true, SegmentMode::SevenSegment));
+  TEST_ASSERT_EQUAL_HEX8(0x08, encodeDisplayControl(0, false, SegmentMode::SevenSegment));
 }
 
 void test_encode_display_control_clamps_brightness() {
-  TEST_ASSERT_EQUAL_HEX8(encodeDisplayControl(MAX_BRIGHTNESS, true), encodeDisplayControl(255, true));
+  TEST_ASSERT_EQUAL_HEX8(encodeDisplayControl(MAX_BRIGHTNESS, true, SegmentMode::SevenSegment),
+                          encodeDisplayControl(255, true, SegmentMode::SevenSegment));
 }
 
 void test_decode_key_code_rejects_above_table_range() {
@@ -101,7 +104,7 @@ int main(int, char**) {
   RUN_TEST(test_decode_key_code_rejects_below_table_range);
   RUN_TEST(test_decode_key_code_rejects_gaps_between_grid_columns);
   RUN_TEST(test_decode_key_code_rejects_above_table_range);
-  RUN_TEST(test_encode_display_control_matches_datasheet_example);
+  RUN_TEST(test_encode_display_control_matches_datasheet_examples);
   RUN_TEST(test_encode_display_control_brightness_and_display_off);
   RUN_TEST(test_encode_display_control_clamps_brightness);
   return UNITY_END();
