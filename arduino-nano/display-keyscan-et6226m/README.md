@@ -25,9 +25,20 @@ project's purpose.
 ## Design
 
 - **`include/ET6226MCodec.h`** — hardware-free (unit-tested via `pio test -e native`):
-  `encodeDigit()` (digit 0-9 → segment byte), `encodeDisplayControl()` (brightness + on/off →
-  the Display Control Command's data byte), and `decodeKeyCode()` (raw key code → which
-  grid/segment scan line produced it, reversing the datasheet's Key Code Command table).
+  `encodeDigit()` (digit 0-9 → segment byte), `encodeChar()`/`encodeText()` (ASCII character/
+  string → segment byte(s), covering space, 0-9, and A-Z — case-insensitive, since a real
+  seven-segment display has exactly one physical shape per letter; input is normalized to
+  uppercase before a single canonical lookup, so `"DONE"`/`"done"`/`"DoNe"` all render identically.
+  O is the one letter with no distinct alternative shape, so it intentionally renders the same as
+  digit 0. Values derived by bit-reversing a commonly-circulated 7-segment font that uses the
+  opposite bit order, then cross-checked against this file's own digit table),
+  `encodeDisplayControl()`
+  (brightness + on/off → the Display Control Command's data byte), and `decodeKeyCode()` (raw key
+  code → which grid/segment scan line produced it, reversing the datasheet's Key Code Command
+  table). `encodeText()` doesn't
+  wrap or scroll text longer than the destination buffer — it just stops — since nothing
+  currently needs that; a caller wanting a specific alignment (e.g. right-aligned) controls it
+  with literal leading/trailing spaces in the string.
 - **`include/ET6226M.h`** — the `ET6226M` driver class: hardware-coupled (bit-banged CLK/DAT), not
   unit-tested. A from-scratch driver, not a third-party library wrapper — none exists for this
   chip. The two-wire framing (start/stop conditions, byte+ACK) is shaped like TM1637's, but the
