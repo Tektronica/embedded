@@ -47,7 +47,12 @@ Jul.2025). What the full datasheet confirmed or added:
   on/off. Reconstructed from the datasheet's own worked examples (`X1H`=8-segment mode,
   `X9H`=7-segment mode, `04H`=sleep mode, and "D0 and D2 cannot be 1 at the same time").
   `encodeDisplayControl()`/`setBrightness()`/`setDisplayOn()` implement brightness and on/off;
-  sleep mode (D2) is identified but not exposed, since nothing needs it yet.
+  sleep mode (D2) is identified but not exposed, since nothing needs it yet. The 7-segment/8-segment
+  select (D3) is exposed as `et6226m::SegmentMode`, a required constructor argument on `ET6226M`
+  (defaulted to `SevenSegment` here) rather than a runtime toggle, since which mode a board needs
+  is a property of how its DP/KP pin is wired, not something that changes while running — see
+  `toy-microwave-et6226m`, whose display ties DP/KP directly to its display module's shared DP
+  line and so needs `EightSegment` instead.
 - **No auto-increment addressing** — confirmed. The Display Data Command table only has the 4
   fixed grid addresses used today; `setGrid()`'s one-transaction-per-grid design was correct.
 - **Key code reads return one key only**, not a full matrix scan — confirmed from the Key Code
@@ -62,23 +67,18 @@ Jul.2025). What the full datasheet confirmed or added:
   though the table's exact column-to-parameter alignment didn't survive text extraction cleanly
   enough to trust precisely -- worth a direct look at the datasheet's own table/diagram rendering
   before tightening this delay for real.
-- **7-segment mode and the colon** — the datasheet notes "when the circuit operate at 7 segment
-  mode or 8 segment mode, DP/KP ports working condition is different, and need the peripheral
-  circuit is also different." This driver fixes 7-segment mode (matching our 4-digit 7-segment
-  display), which dedicates the single `DP/KP` pin to its `KP` role instead of a lit decimal
-  point/colon. What `KP` actually does isn't established from the datasheet text (the pin
-  description's "output for keyboard symbol" doesn't specify a function, and it's a separate pin
-  from the SG1-7×GR1-4 key-scan matrix `readKeyCode()`/`decodeKeyCode()` actually use either way)
-  — but it doesn't need to be: **the colon is handled by wiring an independent LED to its own
-  spare GPIO pin, driven with a plain `digitalWrite()`, bypassing the chip's two-wire protocol
-  entirely.** That sidesteps the 7-segment/8-segment trade-off rather than resolving it, and
-  matches how `toy-microwave-tm1637` already treats the motor/fan/light — plain on/off GPIO glue
-  with no dedicated header, not something wrapped into a chip driver class. This belongs in
-  whatever `main.cpp` eventually orchestrates `toy-microwave-et6226m`, not in `ET6226M.h`, since
-  the LED has nothing to do with this chip at all. One hardware caveat: this only works if the
-  actual display module's colon LED is broken out as its own anode/cathode pair rather than
-  hard-wired to share a digit's DP trace — worth checking once a specific display module is
-  chosen.
+- **7-segment vs. 8-segment mode and the colon** — the datasheet notes "when the circuit operate
+  at 7 segment mode or 8 segment mode, DP/KP ports working condition is different, and need the
+  peripheral circuit is also different." Whether this matters depends entirely on how a specific
+  board wires `DP/KP`, which is why `SegmentMode` is a constructor argument rather than a fixed
+  assumption in the driver. `toy-microwave-et6226m`'s schematic settled this concretely: its
+  16-key matrix is fully covered by `SG1-4`×`GR1-4` (confirmed via the schematic's own netlist),
+  so `DP/KP` was never wired into key scanning at all — it goes directly to the display module's
+  shared DP line, so that project uses `EightSegment` and gets a normal, per-grid-multiplexed
+  colon with no trade-off and no extra pin needed. Whatever `KP` does in `SevenSegment` mode
+  (the pin description's "output for keyboard symbol" doesn't specify a function) turned out to
+  be moot here, not something worth resolving further — this project's own demo has no specific
+  display board chosen yet, so it keeps `SevenSegment` as a harmless default until one is.
 
 Still genuinely open, not resolved by the full datasheet:
 
