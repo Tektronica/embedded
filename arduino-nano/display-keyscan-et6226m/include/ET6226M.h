@@ -21,7 +21,14 @@ class ET6226M {
  public:
   static constexpr uint8_t GRID_COUNT = 4;
 
-  ET6226M(uint8_t pinClk, uint8_t pinDat) : pinClk_(pinClk), pinDat_(pinDat) {}
+  // segmentMode reflects how DP/KP is wired on the target board (see et6226m::SegmentMode) --
+  // a hardware fact fixed at construction, not something changed at runtime. Defaults to
+  // SevenSegment, matching this project's own demo, which has no specific display board wiring
+  // DP/KP as a segment; a consumer whose board does (e.g. tying DP to a display's shared DP line)
+  // should pass EightSegment explicitly.
+  ET6226M(uint8_t pinClk, uint8_t pinDat,
+          et6226m::SegmentMode segmentMode = et6226m::SegmentMode::SevenSegment)
+      : pinClk_(pinClk), pinDat_(pinDat), segmentMode_(segmentMode) {}
 
   // Configures CLK/DAT pin modes, idles the bus, and sends an initial Display Control Command
   // (full brightness, display on) so the chip is actually driving the display before the first
@@ -97,7 +104,7 @@ class ET6226M {
   void writeDisplayControl() {
     start();
     writeByte(static_cast<uint8_t>(Command::DisplayControl));
-    writeByte(et6226m::encodeDisplayControl(brightness_, displayOn_));
+    writeByte(et6226m::encodeDisplayControl(brightness_, displayOn_, segmentMode_));
     stop();
   }
 
@@ -178,6 +185,7 @@ class ET6226M {
 
   uint8_t pinClk_;
   uint8_t pinDat_;
+  et6226m::SegmentMode segmentMode_;
   uint8_t brightness_ = et6226m::MAX_BRIGHTNESS;
   bool displayOn_ = true;
 };

@@ -21,16 +21,22 @@ inline uint8_t encodeDigit(uint8_t digit) {
 
 constexpr uint8_t MAX_BRIGHTNESS = 7;  // 0 = dimmest (datasheet's "1 step"), 7 = brightest ("8 step")
 
+// D3 of the Display Control Command: whether DP/KP acts as an 8th segment output (EightSegment)
+// or is freed for its KP role instead (SevenSegment). This is a property of how a specific board
+// wires DP/KP -- e.g. tied to a display's shared DP line, or left for keyboard use -- not a
+// runtime preference, so callers pick one at construction (see ET6226M's constructor) rather
+// than switching modes live.
+enum class SegmentMode : uint8_t { EightSegment = 0x00, SevenSegment = 0x08 };
+
 // Builds the Display Control Command's data byte (sent after command 0x48): D6-D4 = brightness
-// (0-7, clamped), D3 = 1 to fix this driver to 7-segment mode -- matching a 4-digit 7-segment
-// display, this project's target -- rather than the datasheet's alternative 8-segment mode,
-// which repurposes DP/KP as an extra segment output instead of its keyboard-scan role. Sleep
-// mode (D2) isn't exposed yet -- see README.md's "Open questions". Reconstructed from the
-// datasheet's own worked examples ("X1H" = 8-segment mode, "X9H" = 7-segment mode, "04H" =
-// sleep mode, and "D0 and D2 cannot be 1 at the same time").
-inline uint8_t encodeDisplayControl(uint8_t brightness, bool displayOn) {
+// (0-7, clamped), D3 = the given SegmentMode, D0 = display on/off. Sleep mode (D2) isn't exposed
+// yet -- see README.md's "Open questions". Reconstructed from the datasheet's own worked examples
+// ("X1H" = 8-segment mode, "X9H" = 7-segment mode, "04H" = sleep mode, and "D0 and D2 cannot be 1
+// at the same time").
+inline uint8_t encodeDisplayControl(uint8_t brightness, bool displayOn, SegmentMode mode) {
   uint8_t clamped = brightness > MAX_BRIGHTNESS ? MAX_BRIGHTNESS : brightness;
-  return static_cast<uint8_t>((clamped << 4) | 0x08 | (displayOn ? 0x01 : 0x00));
+  return static_cast<uint8_t>((clamped << 4) | static_cast<uint8_t>(mode) |
+                               (displayOn ? 0x01 : 0x00));
 }
 
 // A scanned key position: 1-based grid (1-4) and segment (1-7); {0, 0} means no key.
