@@ -25,6 +25,13 @@ constexpr uint32_t DONE_REMINDER_INTERVAL_MS = 10000;  // re-beep this often if 
 constexpr uint8_t COLON_DIGIT_INDEX = 1;
 constexpr uint8_t COLON_BIT = 0x80;
 
+// Segment bytes spelling "End" (bit0..6 = a..g, the same convention et6226m::encodeDigit() uses)
+// for the last 3 grids, shown once Done is reached instead of a static/flashing "0:00" -- this
+// app's own message, not something the generic digit codec should know a letter alphabet for.
+constexpr uint8_t SEGMENTS_E = 0x79;
+constexpr uint8_t SEGMENTS_N = 0x54;
+constexpr uint8_t SEGMENTS_D = 0x5E;
+
 ET6226M display(PIN_ET6226M_CLK, PIN_ET6226M_DAT, et6226m::SegmentMode::EightSegment);
 keydebounce::Debouncer  keyDebouncer;
 microwave::Controller   controller;
@@ -108,34 +115,41 @@ void updateOutputs() {
 }
 
 // Renders the current value (MM:SS for the cook timer, HH:MM for the clock) to the ET6226M,
-// including the colon (DP, asserted during COLON_DIGIT_INDEX's grid slot). The colon stays solid
-// in every state. Both the digits and the colon blank instead in two cases: on the blink's off
-// phase throughout ClockSet, since that's the one state where you're actively changing the clock
-// rather than just reading it or entering a countdown; and, while Done, only during the moments
-// the buzzer is actually sounding a done/reminder beep, in exact sync with
+// including the colon (DP, asserted during COLON_DIGIT_INDEX's grid slot) -- except while Done,
+// which shows "End" instead of a static/flashing "0:00", with no colon (it's a word, not a time).
+// The colon stays solid in every other state. Everything shown blanks instead in two cases: on
+// the blink's off phase throughout ClockSet, since that's the one state where you're actively
+// changing the clock rather than just reading it or entering a countdown; and, while Done, only
+// during the moments the buzzer is actually sounding a done/reminder beep, in exact sync with
 // buzzer::toneStateFor's on/off phases -- so the panel flashes with the beeper rather than on its
 // own separate timer, and stays steady in between reminders.
 void updateDisplay() {
-  sevenseg::Digits d = sevenseg::secondsToDigits(controller.displayValue());
+  bool isDone = controller.state() == microwave::State::Done;
 
   bool blinkPhaseOn = sevenseg::blinkOn(static_cast<uint16_t>(millis() % 60000), BLINK_PERIOD_MS);
   bool blankForClockSet = controller.state() == microwave::State::ClockSet && !blinkPhaseOn;
 
   bool blankForDoneBeep = false;
-  if (controller.state() == microwave::State::Done &&
-      activeBuzzerPattern == buzzer::Pattern::Done) {
+  if (isDone && activeBuzzerPattern == buzzer::Pattern::Done) {
     uint32_t beepElapsedMs = millis() - buzzerPatternStartMs;
     blankForDoneBeep = !buzzer::toneStateFor(buzzer::Pattern::Done, beepElapsedMs).on;
   }
 
   bool blank = blankForClockSet || blankForDoneBeep;
-  uint8_t segments[ET6226M::GRID_COUNT] = {
-      blank ? uint8_t{0} : et6226m::encodeDigit(d.minutesTens),
-      blank ? uint8_t{0} : et6226m::encodeDigit(d.minutesOnes),
-      blank ? uint8_t{0} : et6226m::encodeDigit(d.secondsTens),
-      blank ? uint8_t{0} : et6226m::encodeDigit(d.secondsOnes),
-  };
-  if (!blank) segments[COLON_DIGIT_INDEX] |= COLON_BIT;
+  uint8_t segments[ET6226M::GRID_COUNT];
+  if (isDone) {
+    segments[0] = 0;
+    segments[1] = blank ? uint8_t{0} : SEGMENTS_E;
+    segments[2] = blank ? uint8_t{0} : SEGMENTS_N;
+    segments[3] = blank ? uint8_t{0} : SEGMENTS_D;
+  } else {
+    sevenseg::Digits d = sevenseg::secondsToDigits(controller.displayValue());
+    segments[0] = blank ? uint8_t{0} : et6226m::encodeDigit(d.minutesTens);
+    segments[1] = blank ? uint8_t{0} : et6226m::encodeDigit(d.minutesOnes);
+    segments[2] = blank ? uint8_t{0} : et6226m::encodeDigit(d.secondsTens);
+    segments[3] = blank ? uint8_t{0} : et6226m::encodeDigit(d.secondsOnes);
+    if (!blank) segments[COLON_DIGIT_INDEX] |= COLON_BIT;
+  }
   display.setSegments(segments);
 }
 
