@@ -1,4 +1,4 @@
-# arduino-nano/toy-microwave
+# arduino-nano/toy-microwave-tm1637
 
 Arduino Nano firmware for a toy/prop microwave oven control panel: a countdown timer on a 4-digit
 display, a turntable motor, a done/alert buzzer, a cooling fan and buzzer-tone layer for the
@@ -71,7 +71,7 @@ export PATH="$HOME/.platformio/penv/bin:$PATH"
 ```
 
 ```bash
-cd arduino-nano/toy-microwave
+cd arduino-nano/toy-microwave-tm1637
 pio run                 # build
 pio run -t upload       # build + flash the Nano
 pio device monitor      # serial monitor
@@ -89,3 +89,8 @@ to drive the state machine and watch the countdown on the display.
 
 BOM set. No hardware design yet. Firmware logic is implemented and tested (64 unit tests across
 the five headers) and wired end-to-end, including the TM1637 display.
+
+**Retired.** The live project is pivoting to the UMW ET6226M, which drives the display and scans
+the keypad through one chip instead of a separate TM1637 + 4x4 matrix keypad — see
+`arduino-nano/toy-microwave-et6226m/`. This project is frozen as the complete, working reference
+for the original hardware approach, not under active development.
