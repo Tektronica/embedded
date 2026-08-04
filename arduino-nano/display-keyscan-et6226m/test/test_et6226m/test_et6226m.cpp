@@ -94,6 +94,91 @@ void test_decode_key_code_rejects_above_table_range() {
   TEST_ASSERT_EQUAL_UINT8(0, key.segment);
 }
 
+void test_encode_char_digits_match_encode_digit() {
+  for (uint8_t d = 0; d <= 9; ++d) {
+    TEST_ASSERT_EQUAL_HEX8(encodeDigit(d), encodeChar(static_cast<char>('0' + d)));
+  }
+}
+
+void test_encode_char_letters_used_in_end() {
+  // Regression check: these are the exact values main.cpp hardcoded for "End" before this table
+  // existed.
+  TEST_ASSERT_EQUAL_HEX8(0x79, encodeChar('E'));
+  TEST_ASSERT_EQUAL_HEX8(0x54, encodeChar('n'));
+  TEST_ASSERT_EQUAL_HEX8(0x5E, encodeChar('d'));
+}
+
+void test_encode_char_space_and_unsupported_are_blank() {
+  TEST_ASSERT_EQUAL_HEX8(0x00, encodeChar(' '));
+  TEST_ASSERT_EQUAL_HEX8(0x00, encodeChar('!'));
+  TEST_ASSERT_EQUAL_HEX8(0x00, encodeChar('~'));
+}
+
+void test_encode_char_is_case_invariant() {
+  // A real seven-segment display has exactly one shape per letter -- 'D' and 'd' must return the
+  // same value, since there's no separate uppercase/lowercase font on the hardware itself.
+  const char* pairs = "AaBbCcDdEeFfGgHhIiJjKkLlMmNnOoPpQqRrSsTtUuVvWwXxYyZz";
+  for (uint8_t i = 0; pairs[i] != '\0'; i += 2) {
+    TEST_ASSERT_EQUAL_HEX8(encodeChar(pairs[i]), encodeChar(pairs[i + 1]));
+  }
+}
+
+void test_encode_char_d_does_not_collide_with_zero() {
+  // D's canonical rendering is the lowercase-style glyph, not the closed loop that collides with
+  // digit 0 -- unlike O, which has no distinct alternative and does collide.
+  TEST_ASSERT_NOT_EQUAL(encodeDigit(0), encodeChar('D'));
+  TEST_ASSERT_EQUAL_HEX8(encodeDigit(0), encodeChar('O'));
+}
+
+void test_encode_text_any_casing_of_done_matches() {
+  // The exact regression this project was built to satisfy: DONE, done, DoNe, and dOnE must all
+  // render identically.
+  uint8_t a[4], b[4], c[4], d[4];
+  encodeText("DONE", a, 4);
+  encodeText("done", b, 4);
+  encodeText("DoNe", c, 4);
+  encodeText("dOnE", d, 4);
+  TEST_ASSERT_EQUAL_UINT8_ARRAY(a, b, 4);
+  TEST_ASSERT_EQUAL_UINT8_ARRAY(a, c, 4);
+  TEST_ASSERT_EQUAL_UINT8_ARRAY(a, d, 4);
+}
+
+void test_encode_text_right_aligned_end() {
+  uint8_t segments[4];
+  encodeText(" End", segments, 4);
+  TEST_ASSERT_EQUAL_HEX8(0x00, segments[0]);
+  TEST_ASSERT_EQUAL_HEX8(0x79, segments[1]);
+  TEST_ASSERT_EQUAL_HEX8(0x54, segments[2]);
+  TEST_ASSERT_EQUAL_HEX8(0x5E, segments[3]);
+}
+
+void test_encode_text_exact_length_done() {
+  uint8_t segments[4];
+  encodeText("Done", segments, 4);
+  TEST_ASSERT_EQUAL_HEX8(encodeChar('D'), segments[0]);
+  TEST_ASSERT_EQUAL_HEX8(encodeChar('o'), segments[1]);
+  TEST_ASSERT_EQUAL_HEX8(encodeChar('n'), segments[2]);
+  TEST_ASSERT_EQUAL_HEX8(encodeChar('e'), segments[3]);
+}
+
+void test_encode_text_shorter_than_count_blanks_trailing() {
+  uint8_t segments[4] = {0xFF, 0xFF, 0xFF, 0xFF};
+  encodeText("Hi", segments, 4);
+  TEST_ASSERT_EQUAL_HEX8(encodeChar('H'), segments[0]);
+  TEST_ASSERT_EQUAL_HEX8(encodeChar('i'), segments[1]);
+  TEST_ASSERT_EQUAL_HEX8(0x00, segments[2]);
+  TEST_ASSERT_EQUAL_HEX8(0x00, segments[3]);
+}
+
+void test_encode_text_longer_than_count_truncates() {
+  uint8_t segments[4];
+  encodeText("Escape", segments, 4);
+  TEST_ASSERT_EQUAL_HEX8(encodeChar('E'), segments[0]);
+  TEST_ASSERT_EQUAL_HEX8(encodeChar('s'), segments[1]);
+  TEST_ASSERT_EQUAL_HEX8(encodeChar('c'), segments[2]);
+  TEST_ASSERT_EQUAL_HEX8(encodeChar('a'), segments[3]);
+}
+
 int main(int, char**) {
   UNITY_BEGIN();
   RUN_TEST(test_encode_digit_zero_through_nine);
@@ -104,6 +189,16 @@ int main(int, char**) {
   RUN_TEST(test_decode_key_code_rejects_below_table_range);
   RUN_TEST(test_decode_key_code_rejects_gaps_between_grid_columns);
   RUN_TEST(test_decode_key_code_rejects_above_table_range);
+  RUN_TEST(test_encode_char_digits_match_encode_digit);
+  RUN_TEST(test_encode_char_letters_used_in_end);
+  RUN_TEST(test_encode_char_space_and_unsupported_are_blank);
+  RUN_TEST(test_encode_char_is_case_invariant);
+  RUN_TEST(test_encode_char_d_does_not_collide_with_zero);
+  RUN_TEST(test_encode_text_any_casing_of_done_matches);
+  RUN_TEST(test_encode_text_right_aligned_end);
+  RUN_TEST(test_encode_text_exact_length_done);
+  RUN_TEST(test_encode_text_shorter_than_count_blanks_trailing);
+  RUN_TEST(test_encode_text_longer_than_count_truncates);
   RUN_TEST(test_encode_display_control_matches_datasheet_examples);
   RUN_TEST(test_encode_display_control_brightness_and_display_off);
   RUN_TEST(test_encode_display_control_clamps_brightness);
