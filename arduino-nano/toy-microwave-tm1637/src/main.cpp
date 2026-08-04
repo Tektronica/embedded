@@ -99,35 +99,46 @@ void updateOutputs() {
   digitalWrite(PIN_LIGHT, cooking ? HIGH : LOW);
 }
 
-// Renders the current value (MM:SS for the cook timer, HH:MM for the clock) to the TM1637.
-// The colon stays solid in every state. The whole display blanks instead in two cases: on the
-// blink's off phase throughout ClockSet, since that's the one state where you're actively
-// changing the clock rather than just reading it or entering a countdown; and, while Done, only
-// during the moments the buzzer is actually sounding a done/reminder beep, in exact sync with
-// buzzer::toneStateFor's on/off phases -- so the panel flashes with the beeper rather than on its
-// own separate timer, and stays steady in between reminders.
+// Renders the current value (MM:SS for the cook timer, HH:MM for the clock) to the TM1637,
+// including the colon -- except while Done, which shows "End" instead of a static/flashing
+// "0:00", with no colon (it's a word, not a time). The colon stays solid in every other state.
+// Everything shown blanks instead in two cases: on the blink's off phase throughout ClockSet,
+// since that's the one state where you're actively changing the clock rather than just reading it
+// or entering a countdown; and, while Done, only during the moments the buzzer is actually
+// sounding a done/reminder beep, in exact sync with buzzer::toneStateFor's on/off phases -- so the
+// panel flashes with the beeper rather than on its own separate timer, and stays steady in between
+// reminders.
 void updateDisplay() {
-  sevenseg::Digits d = sevenseg::secondsToDigits(controller.displayValue());
+  bool isDone = controller.state() == microwave::State::Done;
 
   bool blinkPhaseOn = sevenseg::blinkOn(static_cast<uint16_t>(millis() % 60000), BLINK_PERIOD_MS);
   bool blankForClockSet = controller.state() == microwave::State::ClockSet && !blinkPhaseOn;
 
   bool blankForDoneBeep = false;
-  if (controller.state() == microwave::State::Done &&
-      activeBuzzerPattern == buzzer::Pattern::Done) {
+  if (isDone && activeBuzzerPattern == buzzer::Pattern::Done) {
     uint32_t beepElapsedMs = millis() - buzzerPatternStartMs;
     blankForDoneBeep = !buzzer::toneStateFor(buzzer::Pattern::Done, beepElapsedMs).on;
   }
 
+  bool blank = blankForClockSet || blankForDoneBeep;
   uint8_t segments[4];
-  if (blankForClockSet || blankForDoneBeep) {
-    segments[0] = segments[1] = segments[2] = segments[3] = 0;
+  if (isDone) {
+    if (blank) {
+      segments[0] = segments[1] = segments[2] = segments[3] = 0;
+    } else {
+      // Written all-caps since encodeChar() is case-insensitive and picks the actual display
+      // shape per letter -- using "END" here (rather than some specific mixed case) makes clear
+      // the app isn't the one choosing glyph case, the codec is. Right-aligned (leading space) to
+      // match how it's centered on a 4-digit display.
+      sevenseg::encodeText(" END", segments, 4);
+    }
   } else {
-    segments[0] = display.encodeDigit(d.minutesTens);
-    segments[1] = display.encodeDigit(d.minutesOnes);
-    segments[2] = display.encodeDigit(d.secondsTens);
-    segments[3] = display.encodeDigit(d.secondsOnes);
-    segments[COLON_DIGIT_INDEX] |= COLON_BIT;
+    sevenseg::Digits d = sevenseg::secondsToDigits(controller.displayValue());
+    segments[0] = blank ? uint8_t{0} : display.encodeDigit(d.minutesTens);
+    segments[1] = blank ? uint8_t{0} : display.encodeDigit(d.minutesOnes);
+    segments[2] = blank ? uint8_t{0} : display.encodeDigit(d.secondsTens);
+    segments[3] = blank ? uint8_t{0} : display.encodeDigit(d.secondsOnes);
+    if (!blank) segments[COLON_DIGIT_INDEX] |= COLON_BIT;
   }
   display.setSegments(segments);
 }
