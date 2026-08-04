@@ -1,10 +1,10 @@
-# arduino-nano/et6226m
+# arduino-nano/display-keyscan-et6226m
 
 > Arduino Nano firmware demonstrating a from-scratch driver for the UMW ET6226M: a single chip
 > that drives a 4-digit 7-segment display and scans a 7x4 keyboard matrix over one two-wire
 > CLK/DAT bus.
 
-This project lives at `arduino-nano/et6226m/` in the `embedded` monorepo.
+This project lives at `arduino-nano/display-keyscan-et6226m/` in the `embedded` monorepo.
 
 ## Why this exists
 
@@ -104,7 +104,7 @@ export PATH="$HOME/.platformio/penv/bin:$PATH"
 ```
 
 ```bash
-cd arduino-nano/et6226m
+cd arduino-nano/display-keyscan-et6226m
 pio run                 # build
 pio run -t upload       # build + flash the Nano
 pio device monitor      # serial monitor
