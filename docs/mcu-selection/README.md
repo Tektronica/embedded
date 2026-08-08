@@ -1,220 +1,250 @@
 # MCU Selection for Low-Cost Hobby Projects
 
-This guide addresses one-off and small-batch hobby builds: the goal is to take an idea from
-concept to a working, hand-assembled board, not to optimize per-unit cost for a production run.
-Two practical constraints matter most in that context:
+This guide covers one-off and small-batch hobby builds. It optimizes for hand-assembly and
+PlatformIO support, not per-unit production cost.
 
-- Can the chip be programmed directly from VSCode using PlatformIO, with mature, ideally official,
-  platform support?
-- Can the chosen package be hand-soldered, either as a bare chip with exposed leads (DIP, SOIC,
-  TSSOP, or QFP) or as a pre-assembled module with through-hole or castellated pins? Packages whose
-  pads sit only underneath the package (QFN, BGA) require hot-air rework or a reflow oven and are
-  excluded here unless bought as a module.
+Two constraints filter every option below:
 
-A third constraint matters if the goal is specifically to solder the bare MCU onto a
-self-designed board (PCB or perfboard) and program it in place, without relying on a dev kit: does
-the chip need an RF matching network for a wireless antenna? A QFN or TSSOP package without a
-radio can still be reflow-soldered onto a custom footprint and programmed over SWD, UPDI, or ISP
-once it is on the board. A wireless chip's antenna matching network is a board-layout problem, not
-a soldering problem, so even with reflow equipment the practical unit becomes a pre-certified RF
-module rather than the bare die; that module is still soldered onto the target board directly, it
-is just not the bare chip.
+- PlatformIO must support the chip from VSCode, ideally through an official platform.
+- The package must be hand-solderable: exposed leads (DIP, SOIC, TSSOP, QFP), or a pre-assembled
+  module with through-hole or castellated pins. QFN and BGA have pads only underneath the package
+  and are excluded unless bought as a module.
 
-Once those constraints are satisfied, the remaining decision comes down to functional need:
+A third constraint applies only when soldering a bare MCU onto a self-designed board rather than
+using a dev kit: does the chip need an RF antenna-matching network? A QFN or TSSOP chip with no
+radio can still be reflow-soldered onto a custom footprint and programmed in place over SWD, UPDI,
+or ISP. A chip with a radio cannot — the antenna-matching network is a board-layout problem, not a
+soldering problem, so the practical unit becomes a pre-certified RF module instead of the bare die.
+That module still solders directly onto the target board; it just isn't the bare chip.
 
-1. Does the design require wireless communication?
-2. Does it require timing precision beyond what a standard hardware timer provides?
-3. Does it require more independent peripherals than an 8-bit device offers?
+If the requirement is specifically the **bare chip, hand-solderable with an iron, no module or dev
+board substitute**, that rules out ESP32, RP2040/RP2350, and the Nordic nRF52 family entirely —
+all three are QFN-only in bare form, and ESP32/nRF52 additionally need an antenna-matching network
+no module conveniently sidesteps. What remains hand-solderable as a bare chip: ATmega328P/328PB,
+tinyAVR, ATmega32U4, STM32 (TSSOP/LQFP packages), Microchip PIC16F145x/PIC18F14K50, and classic
+ATtiny (software USB). See "AVR: ATmega32U4", the USB note in the STM32 section, "Microchip PIC",
+and "Software USB" below for the bare-chip options that also have USB. WCH's CH552 also fits this
+constraint on paper (SOIC-16/TSSOP-20, real USB peripheral) but isn't stocked on Digikey/Mouser —
+see "Excluded" below.
 
-The sections below cover the MCU families that satisfy the PlatformIO and hand-solder constraints,
-the conditions under which each is the appropriate choice, and their principal limitations.
+Once a chip clears both constraints, three questions decide the family:
+
+1. Does the design need wireless communication?
+2. Does it need timing precision beyond a standard hardware timer?
+3. Does it need more independent peripherals than an 8-bit device offers?
 
 ## AVR: ATmega328P
 
-An 8-bit AVR device such as the ATmega328P is typically the lowest-cost, lowest-complexity option
-for digital I/O, PWM generation, and analog sensing. The ATmega328P (Arduino Uno/Nano) operates
-its I/O at 5V, which allows direct interfacing with most 5V sensors and drivers without
-level-shifting. PlatformIO support (`atmelavr` platform, `framework = arduino`) is official and
-mature, with no additional board packages to install; it is the same setup already used
-throughout this repository.
+Use this for digital I/O, PWM, and analog sensing. It's the lowest-cost, lowest-complexity option
+in this guide.
 
-The ATmega328P is available in a 28-pin DIP package, which requires no special soldering
-technique and plugs directly into a breadboard; this is the easiest package in this guide to
-hand-assemble. A 32-pin TQFP package is available for surface-mount designs and remains
-hand-solderable with a fine-tip iron and flux, since its leads are exposed around the perimeter
-of the package. Either package is programmed in place through a 6-pin ISP header (MOSI, MISO,
-SCK, RESET, VCC, GND) wired to the chip; no separate carrier board or chip removal is needed. A
-bootloader can be burned once over that header, after which subsequent uploads can go over a
-3-pin serial connection (RX, TX, DTR) to an external USB-to-serial adapter. A Nano or Uno module
-uses the same serial-bootloader protocol, with the USB-to-serial adapter built onto the board
-instead of wired in externally.
-
-This repository uses the ATmega328P in `arduino-nano/pwm` and `arduino-nano/led-dimmer-4ch`. Both require only a
-small number of PWM channels and analog inputs; verified builds use under 5% of flash and under
-2% of RAM.
-
-Single-unit distributor pricing (Digikey) for the ATmega328P runs $2.66 to $3.03 depending on
-package. The ATmega328PB, a pin-compatible variant with a second USART, SPI, and I2C peripheral,
-is priced lower at $1.63 to $1.70.
-
-The ATmega328P becomes a limiting choice once a design needs more independent timers than the
-three it provides, needs wireless communication, or needs a smaller and cheaper part than a
-28-pin, 2KB-RAM device for a single well-defined job; the modern tinyAVR parts below address that
-last case directly.
+- 5V I/O — interfaces directly with most 5V sensors and drivers, no level-shifting.
+- PlatformIO: official (`atmelavr`, `framework = arduino`), no extra setup. Same config already
+  used throughout this repo.
+- DIP-28 needs no soldering technique — plugs into a breadboard. TQFP-32 is hand-solderable with a
+  fine-tip iron and flux.
+- Programs in place via a 6-pin ISP header (MOSI, MISO, SCK, RESET, VCC, GND). Burn a bootloader
+  once over ISP, then upload over 3-wire serial (RX, TX, DTR) to an external USB-to-serial adapter.
+  A Nano/Uno module is the same thing with that adapter built onto the board.
+- Used in this repo: `arduino-nano/pwm`, `arduino-nano/led-dimmer-4ch`. Both run under 5% flash,
+  under 2% RAM.
+- Single-unit price (Digikey): $2.66-$3.03. The ATmega328PB — pin-compatible, adds a second
+  USART/SPI/I2C — is cheaper: $1.63-$1.70.
+- Limits: three hardware timers, no wireless, and it's overkill (pin count, RAM) for a single
+  well-defined small job — use tinyAVR instead.
 
 ## AVR: Modern tinyAVR (0/1/2-series)
 
-Microchip's tinyAVR 0/1/2-series parts, such as the ATtiny412, ATtiny1614, and ATtiny3224, are
-frequently cited in hobbyist discussion as the preferred choice for a small, single-purpose job
-that does not need the ATmega328P's pin count or memory. The part number encodes flash size,
-series, and (for most of the lineup) pin count directly: ATtiny412 has 4KB of flash and an 8-pin
-package, ATtiny1614 has 16KB of flash and a 14-pin package, and ATtiny3224 has 32KB of flash on
-the newer 2-series core, which adds more timer and ADC capability than the 0- and 1-series parts.
+Use this for a small, single-purpose job that doesn't need the 328P's pin count or memory.
 
-Three properties drive their popularity. First, UPDI programming uses a single pin instead of the
-six-pin SPI header an ISP programmer needs for classic AVR parts; a USB-to-serial adapter with one
-added resistor is enough to build a UPDI programmer, so no dedicated programming hardware is
-required, and the chip is programmed in place through that one pin plus VCC and GND, with no
-removal or carrier board needed. Second, the internal oscillator is accurate enough for these
-parts to run at full rated
-speed without an external crystal or resonator, which removes two components and two board
-footprints from the design. Third, quiescent and sleep current draw is low enough that these parts
-show up regularly in coin-cell and always-on sensor designs.
+The part number encodes flash size and pin count: ATtiny412 = 4KB flash, 8-pin. ATtiny1614 = 16KB
+flash, 14-pin. ATtiny3224 = 32KB flash, newer 2-series core with more timer/ADC capability.
 
-PlatformIO's official `atmelavr` platform does not include board definitions for these parts. In
-practice, they are used through the community-maintained megaTinyCore package, added to
-`platformio.ini` as an extra platform package; this is a real setup step beyond what the
-ATmega328P needs; it is not a one-line `board =` change. The parts are available in SOIC packages
-(ATtiny412 in SOIC-8, ATtiny1614 in SOIC-14) with exposed gull-wing leads, so they remain
-hand-solderable. Single-unit pricing for the ATtiny412 and ATtiny1614 runs $0.55 to $0.92
-(Digikey).
+Three reasons these are popular:
+
+- UPDI programming uses one pin, not ISP's six. A USB-to-serial adapter plus one resistor is a
+  UPDI programmer — no dedicated programming hardware needed.
+- The internal oscillator is accurate enough to run at full rated speed with no external crystal —
+  two fewer components, two fewer footprints.
+- Low sleep current — common in coin-cell and always-on sensor designs.
+
+- PlatformIO: `atmelavr` has no board definitions for these parts. In practice, add megaTinyCore
+  as an extra platform package — a real setup step, not a one-line `board =` change.
+- Packages: ATtiny412 in SOIC-8, ATtiny1614 in SOIC-14 — gull-wing leads, hand-solderable.
+- Single-unit price (Digikey): $0.55-$0.92.
+
+## AVR: ATmega32U4 (native USB, bare-chip hand-solderable)
+
+Use this when the design needs native USB — no external USB-to-serial bridge chip anywhere on the
+board — while staying on the same AVR toolchain and Arduino ecosystem as the 328P/tinyAVR sections
+above.
+
+- Native USB 2.0 full-speed device peripheral on-die (Arduino Leonardo/Micro's CDC-ACM serial, or
+  HID/MSC via firmware). No CH340/CP2102/FT232 bridge chip anywhere on the board.
+- PlatformIO: official (`atmelavr`, `board = leonardo` or `micro`, `framework = arduino`). Same
+  toolchain as 328P/328PB.
+- Package: TQFP-44, 0.8mm pitch — the same solderability class as the 328P's TQFP-32, and the
+  easiest bare-chip native-USB option in this guide. A QFN-44 variant exists too; skip it for hand
+  assembly, since its pads sit only underneath the package.
+- Programs in place the same way as 328P: burn the Caterina USB bootloader once over a 6-pin ISP
+  header, then upload directly over the USB port afterward — no external adapter needed at all,
+  unlike 328P/tinyAVR, which still need one for every upload after the bootloader is burned.
+- Single-unit price (Digikey), TQFP-44: $5.26-$5.40 — roughly double the 328P, triple the 328PB.
+- Limits: the Caterina bootloader uses more flash than 328P's optiboot (~4KB vs ~0.5KB), leaving
+  less usable space out of the same 32KB total. USB enumeration/reset timing is fussier than a
+  plain serial bootloader — occasional double-tap-reset quirks during upload are well documented
+  on Pro Micro clones.
+
+## Software USB: V-USB on classic ATtiny (e.g. ATtiny85)
+
+Use this only for the cheapest possible USB-capable chip, and only for an HID-class device
+(keyboard/mouse emulation, simple control transfers) — not a general-purpose serial link.
+
+- No hardware USB peripheral. USB is implemented entirely in firmware (the V-USB library),
+  bit-banging two GPIO pins at USB 1.1 low-speed (1.5Mbit/s) timing. This is how Digispark-style
+  ATtiny85 boards work.
+- Package: ATtiny85 in SOIC-8 or PDIP-8 — as easy to hand-solder as any AVR in this guide.
+- PlatformIO: `atmelavr` has no ATtiny85 board defs; add ATTinyCore as an extra platform
+  package, the same kind of setup step as megaTinyCore for modern tinyAVR. V-USB itself is a
+  plain C library dependency, not a platform feature.
+- Single-unit price (Digikey), ATtiny85-20SU: $1.50 — the cheapest USB-capable chip in this guide
+  with any Digikey/Mouser stock.
+- Limits: low-speed USB suits HID well; CDC-ACM (virtual serial port) over V-USB is unreliable and
+  nonstandard — don't use this for a "plug in and get a serial port" design. Bit-banging leaves
+  only 2 of 8 pins free once USB is wired up. Timing is sensitive to clock accuracy.
+
+## Microchip PIC: PIC16F1454/1455/1459 and PIC18F14K50
+
+Use this for a native-USB design outside the Arduino/PlatformIO ecosystem entirely — Microchip's
+classic cheap USB PICs, still in production.
+
+- Native USB 2.0 full-speed device peripheral on-die — no bridge chip, no bit-banging.
+- Packages: PIC16F1454/1455 in 14-pin DIP/SOIC/SSOP; PIC16F1459 also in an 18-pin variant with
+  more I/O; PIC18F14K50 in 20-pin DIP/SOIC. All hand-solderable — the 16F145x's DIP-14 is
+  breadboard-friendly, the same class as the 328P's DIP-28.
+- Tooling: **no PlatformIO support**. Programmed via MPLAB X IDE and the XC8 compiler —
+  Microchip's own toolchain, not `pio run` or `framework = arduino`. This is a genuinely different
+  workflow than everything else in this guide, not an extra setup step on top of the same one.
+- Single-unit price (Digikey): PIC16F1455-I/P (DIP-14) $2.14, PIC18F14K50-I/SO (SOIC-20) $3.05 —
+  both cheaper than the 32U4; the 16F1455 is the cheapest DIP native-USB option in this guide.
+- Limits: leaving PlatformIO/VSCode entirely is the real cost here, not price or package. Pick
+  this only if that toolchain switch is acceptable.
 
 ## ESP32
 
-The ESP32 is commonly selected when a design requires Wi-Fi, Bluetooth Low Energy, or both. It has
-a dual-core architecture, and PlatformIO support (`espressif32` platform, `framework = arduino` or
-`espidf`) is official and mature.
+Use this when the design needs Wi-Fi, Bluetooth Low Energy, or both.
 
-The bare ESP32 chip is a QFN package with pads only on its underside, which rules out hand
-soldering. It also needs an RF matching network between the chip and its Wi-Fi/Bluetooth antenna,
-which is a board-layout problem independent of soldering, so reflow equipment alone does not make
-the bare chip practical for a hobby design. The realistic unit is a pre-certified module such as
-an ESP32-WROOM-32, which includes the chip and its matching network on a small board with
-castellated or through-hole edge pads; this module is soldered directly onto the target board and
-programmed in place over its built-in USB-to-serial bootloader (or an external adapter wired to
-its UART pins and a boot-mode strap), the same way the bare chip would be if it were solderable.
-This is a different thing from a full ESP32 DevKitC-style development board, which additionally
-carries a USB connector, voltage regulator, and reset/boot buttons the custom design would
-otherwise provide itself.
-
-The ESP32's I/O operates at 3.3V only; interfacing with 5V peripherals requires level-shifting.
-Its power consumption is higher than an AVR device under comparable load, which makes it a poor
-fit for battery-powered designs that do not require wireless connectivity.
+- PlatformIO: official (`espressif32`, `framework = arduino` or `espidf`).
+- 3.3V only — level-shifting needed for 5V peripherals. Higher power draw than AVR — a poor fit
+  for battery designs that don't need wireless.
+- The bare chip is QFN — pads underneath, not hand-solderable — and needs an antenna-matching
+  network, so a module is the only practical unit regardless of soldering equipment. Use a
+  WROOM-32/-C3/-S3 module: the matching network is on the module itself, with castellated or
+  through-hole pads, soldered directly onto the target board.
+- USB: the original ESP32 has no native USB peripheral. A WROOM-32 module's USB port is a separate
+  CP2102/CH340 bridge chip mounted on the module — the same bridge-chip dependency as an AVR board.
+  ESP32-S2, S3, and C3 have a real on-die USB peripheral (USB Serial/JTAG on C3/S3, USB OTG on
+  S2/S3) — no bridge chip anywhere on the module. To avoid a bridge chip, use C3 or S3, not the
+  original ESP32.
+- A module is not a full DevKitC-style dev board. The dev board adds a USB connector, voltage
+  regulator, and reset/boot buttons that a custom design provides itself.
 
 ## RP2040 and RP2350 (Raspberry Pi Pico)
 
-The RP2040 and RP2350 are appropriate when a design requires signal timing beyond what a standard
-hardware timer supports, such as a custom communication protocol or a PWM signal with parameters
-outside a conventional timer's range. Each chip's PIO (Programmable I/O) block consists of small
-state machines that execute independently of the main CPU; this is the primary technical
-justification for choosing this family over AVR or ESP32. PlatformIO support (`raspberrypi`
-platform, `framework = arduino` via the arduino-pico core) is actively maintained, though it is
-not an official Raspberry Pi package.
+Use this when the design needs signal timing beyond a standard hardware timer — a custom protocol,
+or PWM parameters outside a normal timer's range. The PIO (Programmable I/O) block runs small
+state machines independent of the CPU. That capability is the reason to pick this family over AVR
+or ESP32.
 
-The bare RP2040/RP2350 chip is a QFN package, which rules out a soldering iron, but neither chip
-has a radio, so there is no antenna-matching problem to solve: with a hot-air station or a
-toaster-oven reflow setup, the bare chip can be placed directly on a self-designed PCB. Once
-soldered, it is programmed in place either over SWD or over its built-in USB ROM bootloader, which
-exposes itself as a mass-storage device for drag-and-drop UF2 firmware updates when a BOOTSEL pin
-is held low at power-up; wiring a single button and a USB connector to the chip is enough to
-support that in place, with no separate programmer needed. Without reflow capability, the
-Raspberry Pi Pico board is the practical fallback: it is a fully assembled module with
-through-hole-friendly castellated edge pads.
-
-Neither chip is optimized for low-power operation, which limits their suitability for
-battery-powered designs with long sleep intervals. The RP2040 additionally requires an external
-QSPI flash chip if the bare chip is being placed on a custom board rather than using a Pico
-module. The RP2354, the same silicon as the RP2350 with 2MB of flash added in-package, removes
-that external flash requirement.
+- Native USB (device and host modes) — no bridge chip.
+- PlatformIO: actively maintained, unofficial (`raspberrypi`, arduino-pico core).
+- The bare chip is QFN — no soldering iron — but it has no radio, so a self-designed PCB is viable
+  with hot air or a toaster-oven reflow setup. Without reflow capability, use a Pico board: fully
+  assembled, castellated through-hole-friendly edge pads.
+- Programs in place over SWD, or the built-in USB ROM bootloader (BOOTSEL button, drag-and-drop
+  UF2). One button and one USB connector is enough — no separate programmer needed.
+- Not optimized for low power — a poor fit for long-sleep battery designs.
+- RP2040 needs an external QSPI flash chip on a custom board. RP2350's flash-integrated variant,
+  RP2354, removes that requirement.
 
 ## STM32: F0, G0, C0, and L0 families
 
-STM32 devices are appropriate once a design requires more independent timers or peripherals than
-an AVR or ATtiny device provides. STM32 is widely deployed in industry, so time invested in an
-STM32-based design also builds skills transferable to professional embedded work. PlatformIO
-support (`ststm32` platform) is official; `framework = arduino` gives an Arduino-style API, and
-`framework = stm32cube` exposes the full HAL.
-
-These four families occupy different points in ST's entry-level Cortex-M0/M0+ lineup:
+Use this when the design needs more independent timers or peripherals than AVR/ATtiny provides.
+STM32 skills transfer directly to professional embedded work.
 
 | Family | Core | Purpose |
 |---|---|---|
-| F0 | Cortex-M0, up to 48MHz | ST's original entry-level family. Superseded by G0 for new mainstream designs; still available and inexpensive, but check part availability before committing to a new design. |
-| L0 | Cortex-M0+, up to 32MHz | Ultra-low-power variant, with sub-microamp standby current in its low-power modes. Used for coin-cell and energy-harvesting designs that need an ARM core rather than an 8-bit part. |
-| G0 | Cortex-M0+, up to 64MHz | ST's current mainstream entry-level family and F0's direct successor. More flash and RAM, and a more capable peripheral set (improved ADC, more timer channels), than F0 or C0 at a comparable price. |
-| C0 | Cortex-M0+, up to 48MHz | ST's newest and lowest-cost family, positioned to compete with 8-bit MCUs and low-cost RISC-V parts on price while retaining the full STM32 toolchain. Fewer peripherals and less memory than G0 to reach that price point. |
+| F0 | Cortex-M0, ≤48MHz | Original entry-level family. Superseded by G0; still available and cheap — check part availability before a new design. |
+| L0 | Cortex-M0+, ≤32MHz | Ultra-low-power. Sub-microamp standby. Use for coin-cell/energy-harvesting designs needing an ARM core. |
+| G0 | Cortex-M0+, ≤64MHz | Current mainstream family, F0's successor. More flash/RAM, better peripherals than F0/C0 at a similar price. |
+| C0 | Cortex-M0+, ≤48MHz | Newest, cheapest family — competes with 8-bit MCUs on price. Fewer peripherals and less memory than G0. |
 
-At single-unit distributor pricing, C0 and G0 parts are comparable (see the table below); C0's
-cost advantage is realized at production volume, similar to the CH32V003 pricing distinction
-described above. For a hobby build, the practical choice is G0 by default, L0 if the design must
-run for a long time on a small battery, and F0 or C0 only if a specific part from those families
-is already what a tutorial or reference design targets.
+Default to G0. Use L0 for battery life. Use F0 or C0 only if a specific tutorial or reference
+design already targets that part — at single-unit pricing, C0's cost advantage only appears at
+production volume.
 
-Entry-level STM32 parts are commonly available in TSSOP20 and LQFP32/48 packages. Both have
-exposed gull-wing leads around the package perimeter and are hand-solderable with a fine-tip iron
-and flux, though the lead pitch (0.5 to 0.65mm) makes them noticeably fiddlier than a DIP or SOIC
-AVR part. ST's own Nucleo boards exist for all four families (e.g., Nucleo-F031K6,
-Nucleo-L031K6, Nucleo-G031K8, Nucleo-C031C6) and avoid the soldering question entirely by
-exposing 0.1-inch headers.
-
-Configuration is typically performed through ST's HAL and the CubeMX tool, which introduces a
-steeper initial learning curve than the Arduino core. Programming and debugging use SWD, a 2-wire
-interface (plus power and ground) that a low-cost ST-Link probe connects to directly on the
-target board; like ISP and UPDI, this programs the chip in place with no removal needed, but it
-requires that separate probe rather than the plain serial bootloader AVR and ESP32 boards use.
-
-Single-unit pricing for entry-level parts in these families (STM32G030F6, STM32C011F6,
-STM32F030F4, STM32L031F6) runs $1.34 to $1.94 (Digikey).
+- PlatformIO: official (`ststm32`). `framework = arduino` for an Arduino-style API,
+  `framework = stm32cube` for the full HAL.
+- Packages: TSSOP20, LQFP32/48 — hand-solderable with a fine-tip iron and flux, but 0.5-0.65mm
+  pitch is fiddlier than DIP/SOIC AVR parts.
+- Nucleo boards exist for all four families and skip the soldering question entirely (0.1" headers).
+- Programming and debug: SWD via an ST-Link probe — not the plain serial bootloader AVR/ESP32 use.
+- Configuration goes through ST's HAL and CubeMX — steeper learning curve than the Arduino core.
+- Single-unit price (Digikey), entry-level parts: $1.34-$1.94.
+- Not every part in these families has USB — check the specific device's peripheral list before
+  committing. Base STM32C0 (C011/C031/C051/C092) has no USB at all; **STM32C071** is the C0
+  subfamily that added it. Common hobbyist picks with USB, cheapest first:
+  - **STM32C071F8P6** (TSSOP20, $1.53) — crystal-less USB, the cheapest bare-chip hand-solderable
+    USB part in this entire guide.
+  - **STM32F042F6P6TR** (TSSOP20, $3.64) — crystal-less USB, older and far more documented than
+    C071 (in circulation since ~2014).
+  - **STM32G0B1CBT6** (LQFP48, $4.59) — crystal-less USB, more flash/peripherals than the TSSOP20
+    parts above, at a finer 0.5mm pin pitch.
+  - **STM32F103C8T6** (the "blue pill" chip, LQFP48, $7.30-$7.45) — needs an external HSE crystal
+    for accurate USB timing, the most expensive and least convenient of the four, but the most
+    widely documented online.
 
 ## Nordic nRF52832 and nRF52840
 
-These parts are the appropriate choice when a design requires Bluetooth Low Energy and must
-operate from a small battery for an extended period; Nordic parts are widely cited for leading
-power efficiency in that combination. PlatformIO support (`nordicnrf52` platform, built on
-Adafruit's nRF52 Arduino core) is community-maintained and generally reliable, though not an
-official Nordic package.
+Use this when the design needs Bluetooth Low Energy and long battery life. Nordic leads on power
+efficiency for that combination.
 
-The bare nRF52 chip is available in QFN and WLCSP packages, and like the ESP32, it needs an RF
-matching network for its Bluetooth antenna, so the practical unit is a pre-certified module (for
-example, Raytac's MDBT50Q or Fanstel's BT840 series) rather than the bare die. These modules
-expose castellated or through-hole pins and are soldered directly onto the target board, then
-programmed in place over SWD. This is a different thing from a full development board, such as
-Adafruit's Feather nRF52840, which adds USB, a voltage regulator, and battery-charging circuitry
-on top of the same module.
+- PlatformIO: community-maintained (`nordicnrf52`, built on Adafruit's nRF52 Arduino core).
+- Bare chip: QFN or WLCSP, needs an antenna-matching network like ESP32 — use a certified module
+  (Raytac MDBT50Q, Fanstel BT840), soldered directly onto the target board, programmed over SWD.
+- A module is not a full dev board. A dev board (e.g. Adafruit Feather nRF52840) adds USB, a
+  regulator, and battery charging on top of the same module.
+- Boards cost more than comparable ESP32/RP2040 boards. The SDK's softdevice model has a steeper
+  learning curve.
+- Skip this family unless the design needs both BLE and a tight power budget.
 
-Development boards for this family cost more than comparable ESP32 or RP2040 boards, and the SDK
-is built around Nordic's softdevice model, which has a steeper learning curve than the other
-families covered here. Absent both a BLE requirement and a tight power budget, this family
-exceeds what a hobby project typically needs.
+## Excluded: cost-at-volume and China-only-sourced parts (CH32V003, CH552, and similar)
 
-## Excluded: cost-at-volume parts (CH32V003 and similar)
+Not covered: WCH's CH32V003 and similar sub-$0.50 RISC-V parts. Their only advantage is unit cost
+at production volume — irrelevant for a one-off build. PlatformIO support is unofficial and
+immature; the popular CH32V003Fun framework doesn't integrate with PlatformIO's project structure
+at all.
 
-WCH's CH32V003 and similar sub-$0.50 RISC-V parts are not covered above. Their primary advantage
-is unit cost at production volume, which is not relevant to a one-off hobby build, and PlatformIO
-support for them is unofficial and less mature than the families above (a community-maintained
-platform exists, but the popular CH32V003Fun bare-metal framework does not integrate with
-PlatformIO's normal project structure at all).
+WCH's **CH552** is a different case: an 8051 core with a real on-die USB FS device controller and
+transceiver, in SOIC-16 or TSSOP-20 — both hand-solderable. It has genuine hardware USB, unlike
+the CH32V003. It's excluded from the main comparison for the same reason as WCH's CH340
+USB-UART bridge chip: no Digikey/Mouser stock, sourced through LCSC/AliExpress/Tindie instead, at
+roughly $0.30-$0.40 — dramatically cheaper than anything else in this guide, if that sourcing path
+and its rougher tooling (no PlatformIO support found) are acceptable.
 
 ## Comparison table
 
-| MCU / Family | PlatformIO support | Bare-chip hand assembly | In-circuit programming | Best for | Watch out for |
-|---|---|---|---|---|---|
-| ATmega328P / 328PB (Nano/Uno) | Official (`atmelavr`) | Yes: DIP-28 or TQFP-32 | 6-pin ISP, then a serial bootloader | Simple I/O, PWM, ADC | 2KB of RAM; shared-timer PWM frequency limits (see `arduino-nano/pwm`) |
-| ATtiny (412, 1614, etc.) | Official platform plus a third-party core, such as megaTinyCore | Yes: SOIC-8/SOIC-14 | Single-pin UPDI | Small, single-purpose jobs; no crystal needed | Fewer pins and peripherals; extra board-package setup |
-| ESP32 (including S3, C3) | Official (`espressif32`) | No: bare chip needs an RF matching network for its antenna; use a WROOM-style module | Built-in USB-to-serial ROM bootloader | Wi-Fi, BLE, dual-core headroom | 3.3V only; higher power draw than AVR |
-| RP2040 / RP2350 | Actively maintained, unofficial (arduino-pico) | Reflow/hot-air only: bare chip is QFN but has no radio, so a self-designed PCB is viable; iron-only builds should use a Pico board | SWD, or a built-in USB ROM bootloader (BOOTSEL) | Custom or precise timing through PIO | 3.3V; external flash needed unless using the flash-integrated RP2354; no FPU on the RP2040 |
-| STM32 (F0, G0, C0, L0) | Official (`ststm32`) | Yes: TSSOP20/LQFP32-48 (fine pitch, fiddlier than DIP/SOIC) | SWD via an ST-Link probe | Many independent timers/peripherals; skills that transfer to industry | 3.3V; HAL/CubeMX learning curve; needs a probe, not plain serial upload |
-| Nordic nRF52832 / nRF52840 | Community-maintained (Adafruit nRF52 core) | No: bare chip needs an RF matching network for its antenna; use a certified module (e.g., Raytac MDBT50Q) | SWD | Leading low-power BLE performance | 3.3V; softdevice SDK complexity; pricier boards |
+| MCU / Family | Native USB? | Bare-chip hand assembly | PlatformIO support | In-circuit programming | Best for | Watch out for |
+|---|---|---|---|---|---|---|
+| ATmega328P / 328PB (Nano/Uno) | No | Yes: DIP-28 or TQFP-32 | Official (`atmelavr`) | 6-pin ISP, then a serial bootloader | Simple I/O, PWM, ADC | 2KB of RAM; shared-timer PWM frequency limits (see `arduino-nano/pwm`) |
+| ATtiny (412, 1614, etc.) | No | Yes: SOIC-8/SOIC-14 | Official platform plus a third-party core, such as megaTinyCore | Single-pin UPDI | Small, single-purpose jobs; no crystal needed | Fewer pins and peripherals; extra board-package setup |
+| ATmega32U4 | Yes | Yes: TQFP-44 (skip the QFN-44 variant) | Official (`atmelavr`, board = leonardo/micro) | USB directly, after one ISP-burned bootloader | Bare-chip native USB on a familiar AVR/Arduino toolchain | Pricier than 328P/328PB ($5.26-$5.40); bootloader eats more flash; reset/enumeration quirks |
+| ATtiny85 (V-USB, software) | Yes (software, low-speed only) | Yes: SOIC-8/PDIP-8 | Official platform plus ATTinyCore; V-USB is a separate library | Same ISP/bootloader path as other AVR | Absolute cheapest USB-capable chip with Digikey/Mouser stock ($1.50) | HID-only in practice; CDC/serial is unreliable; only 2 free pins after USB |
+| PIC16F1454/1455/1459, 18F14K50 | Yes | Yes: DIP-14/18/20, SOIC, SSOP | **None** — MPLAB X + XC8, not PlatformIO | USB bootloader or ICSP | Cheapest DIP native-USB option ($2.14-$3.05) | Leaves the PlatformIO/Arduino workflow entirely |
+| ESP32 (including S2, S3, C3) | Original: no (bridge chip on module). S2/S3/C3: yes | No: bare chip needs an RF matching network for its antenna; use a WROOM-style module | Official (`espressif32`) | Original ESP32: bridge chip on the module. S2/S3/C3: real on-die USB, no bridge chip | Wi-Fi, BLE, dual-core headroom | 3.3V only; higher power draw than AVR; bare chip never qualifies as hand-solderable |
+| RP2040 / RP2350 | Yes | Reflow/hot-air only: bare chip is QFN but has no radio, so a self-designed PCB is viable; iron-only builds should use a Pico board | Actively maintained, unofficial (arduino-pico) | SWD, or a built-in USB ROM bootloader (BOOTSEL) | Custom or precise timing through PIO | 3.3V; external flash needed unless using the flash-integrated RP2354; no FPU on the RP2040; bare chip isn't iron-solderable |
+| STM32 (F0, G0, C0, L0) | Some parts — cheapest USB picks are C071F8P6 ($1.53) and F042F6P6TR ($3.64), both TSSOP20 | Yes: TSSOP20/LQFP32-48 (fine pitch, fiddlier than DIP/SOIC) | Official (`ststm32`) | SWD via an ST-Link probe | Many independent timers/peripherals; skills that transfer to industry | 3.3V; HAL/CubeMX learning curve; needs a probe, not plain serial upload |
+| Nordic nRF52832 / nRF52840 | No (BLE, not wired USB) | No: bare chip needs an RF matching network for its antenna; use a certified module (e.g., Raytac MDBT50Q) | Community-maintained (Adafruit nRF52 core) | SWD | Leading low-power BLE performance | 3.3V; softdevice SDK complexity; pricier boards |
 
 ## Decision tree
 
@@ -231,6 +261,6 @@ flowchart TD
 
 ---
 
-This guide was compiled from developer community discussion on r/embedded and r/microcontrollers.
-Pricing figures are single-unit Digikey quotes as of this writing. Check current datasheets and
-pricing before committing to a part.
+Compiled from developer community discussion on r/embedded and r/microcontrollers. Pricing is
+single-unit Digikey, as of this writing. Check current datasheets and pricing before committing to
+a part.
