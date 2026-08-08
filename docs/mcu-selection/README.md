@@ -130,6 +130,22 @@ classic cheap USB PICs, still in production.
 - Limits: leaving PlatformIO/VSCode entirely is the real cost here, not price or package. Pick
   this only if that toolchain switch is acceptable.
 
+## ARM: SAMD21 (Arduino Zero/MKR family)
+
+Use this for native USB on a Cortex-M0+ core with official Arduino board support, as an
+alternative to STM32's HAL/CubeMX workflow.
+
+- Native USB 2.0 full-speed device peripheral on-die.
+- Package: ATSAMD21G18A-AU, TQFP-48, 0.5mm pitch — same solderability class as the STM32 LQFP48
+  parts above, fiddlier than DIP/SOIC AVR parts but doable with a fine-tip iron and flux.
+- PlatformIO: official (`atmelsam`), `framework = arduino` — this is the same chip Arduino's own
+  Zero and MKR boards use, so board support is mature.
+- Single-unit price (Digikey): $4.16 — cheaper than the 32U4 and STM32G0B1CBT6, pricier than the
+  STM32C071F8P6/STM32F042F6P6TR TSSOP20 parts in the STM32 section above.
+- Limits: 3.3V only. No meaningful advantage over STM32C071 for this guide's use case (same price
+  class, harder package, no crystal-free STM32-style USB claim verified) — pick this over STM32
+  specifically for Arduino-framework familiarity, not for a technical edge.
+
 ## ESP32
 
 Use this when the design needs Wi-Fi, Bluetooth Low Energy, or both.
@@ -159,13 +175,22 @@ or ESP32.
 - Native USB (device and host modes) — no bridge chip.
 - PlatformIO: actively maintained, unofficial (`raspberrypi`, arduino-pico core).
 - The bare chip is QFN — no soldering iron — but it has no radio, so a self-designed PCB is viable
-  with hot air or a toaster-oven reflow setup. Without reflow capability, use a Pico board: fully
-  assembled, castellated through-hole-friendly edge pads.
+  with hot air or a toaster-oven reflow setup. Without reflow capability, use a Pico board instead:
+  it's fully assembled, and its edge pads are castellated (half-holes cut through the board edge),
+  so the whole module solders directly onto a custom PCB with a plain iron, exactly like a large
+  through-hole part — no reflow, no bare-chip QFN problem, no external QSPI flash to route
+  yourself. This is the same strategy as mounting an Arduino Nano module directly onto a board
+  instead of a bare ATmega328P/328PB: buy the pre-assembled module, solder its pins/pads straight
+  onto the target board, and skip designing the bare-chip support circuitry from scratch.
 - Programs in place over SWD, or the built-in USB ROM bootloader (BOOTSEL button, drag-and-drop
   UF2). One button and one USB connector is enough — no separate programmer needed.
 - Not optimized for low power — a poor fit for long-sleep battery designs.
 - RP2040 needs an external QSPI flash chip on a custom board. RP2350's flash-integrated variant,
   RP2354, removes that requirement.
+- Single-unit price (Digikey): bare RP2350 (mfr part SC0914(13), 56-VQFN) is $0.76 — Raspberry Pi
+  prices the bare silicon aggressively, the same way RP2040 launched at $1. This is real pricing,
+  not a volume-only figure, and makes RP2350 the cheapest MCU in this entire guide by a wide
+  margin if reflow/hot-air assembly is available.
 
 ## STM32: F0, G0, C0, and L0 families
 
@@ -241,8 +266,9 @@ and its rougher tooling (no PlatformIO support found) are acceptable.
 | ATmega32U4 | Yes | Yes: TQFP-44 (skip the QFN-44 variant) | Official (`atmelavr`, board = leonardo/micro) | USB directly, after one ISP-burned bootloader | Bare-chip native USB on a familiar AVR/Arduino toolchain | Pricier than 328P/328PB ($5.26-$5.40); bootloader eats more flash; reset/enumeration quirks |
 | ATtiny85 (V-USB, software) | Yes (software, low-speed only) | Yes: SOIC-8/PDIP-8 | Official platform plus ATTinyCore; V-USB is a separate library | Same ISP/bootloader path as other AVR | Absolute cheapest USB-capable chip with Digikey/Mouser stock ($1.50) | HID-only in practice; CDC/serial is unreliable; only 2 free pins after USB |
 | PIC16F1454/1455/1459, 18F14K50 | Yes | Yes: DIP-14/18/20, SOIC, SSOP | **None** — MPLAB X + XC8, not PlatformIO | USB bootloader or ICSP | Cheapest DIP native-USB option ($2.14-$3.05) | Leaves the PlatformIO/Arduino workflow entirely |
+| SAMD21 (ATSAMD21G18A-AU) | Yes | Yes: TQFP-48 (0.5mm pitch, fiddlier than DIP/SOIC) | Official (`atmelsam`, `framework = arduino`) | SWD, or the built-in USB bootloader (Zero/MKR-style) | Native USB on the Arduino-framework toolchain | 3.3V only; no clear edge over STM32C071 besides Arduino familiarity ($4.16) |
 | ESP32 (including S2, S3, C3) | Original: no (bridge chip on module). S2/S3/C3: yes | No: bare chip needs an RF matching network for its antenna; use a WROOM-style module | Official (`espressif32`) | Original ESP32: bridge chip on the module. S2/S3/C3: real on-die USB, no bridge chip | Wi-Fi, BLE, dual-core headroom | 3.3V only; higher power draw than AVR; bare chip never qualifies as hand-solderable |
-| RP2040 / RP2350 | Yes | Reflow/hot-air only: bare chip is QFN but has no radio, so a self-designed PCB is viable; iron-only builds should use a Pico board | Actively maintained, unofficial (arduino-pico) | SWD, or a built-in USB ROM bootloader (BOOTSEL) | Custom or precise timing through PIO | 3.3V; external flash needed unless using the flash-integrated RP2354; no FPU on the RP2040; bare chip isn't iron-solderable |
+| RP2040 / RP2350 | Yes | Reflow/hot-air only: bare chip is QFN but has no radio, so a self-designed PCB is viable; iron-only builds should use a Pico board | Actively maintained, unofficial (arduino-pico) | SWD, or a built-in USB ROM bootloader (BOOTSEL) | Custom or precise timing through PIO; cheapest MCU in this guide (bare RP2350: $0.76) if reflow is available | 3.3V; external flash needed unless using the flash-integrated RP2354; no FPU on the RP2040; bare chip isn't iron-solderable |
 | STM32 (F0, G0, C0, L0) | Some parts — cheapest USB picks are C071F8P6 ($1.53) and F042F6P6TR ($3.64), both TSSOP20 | Yes: TSSOP20/LQFP32-48 (fine pitch, fiddlier than DIP/SOIC) | Official (`ststm32`) | SWD via an ST-Link probe | Many independent timers/peripherals; skills that transfer to industry | 3.3V; HAL/CubeMX learning curve; needs a probe, not plain serial upload |
 | Nordic nRF52832 / nRF52840 | No (BLE, not wired USB) | No: bare chip needs an RF matching network for its antenna; use a certified module (e.g., Raytac MDBT50Q) | Community-maintained (Adafruit nRF52 core) | SWD | Leading low-power BLE performance | 3.3V; softdevice SDK complexity; pricier boards |
 
