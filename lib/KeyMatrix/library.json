@@ -1,0 +1,7 @@
+{
+  "name": "KeyMatrix",
+  "version": "1.0.0",
+  "description": "Row/column key matrix GPIO scan driver. Returns a raw key index; debouncing and layout stay in the app.",
+  "frameworks": "arduino",
+  "platforms": "*"
+}

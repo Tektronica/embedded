@@ -1,0 +1,7 @@
+{
+  "name": "Debounce",
+  "version": "1.0.0",
+  "description": "Hardware-free debouncing: Debouncer<T> for any comparable reading, and a push Button built on it.",
+  "frameworks": "*",
+  "platforms": "*"
+}
