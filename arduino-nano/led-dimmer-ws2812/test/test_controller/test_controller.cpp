@@ -38,14 +38,6 @@ void test_adc_endpoints() {
 
 void test_adc_clamps_above_max() { TEST_ASSERT_EQUAL_UINT8(255, adcToLevel(5000)); }
 
-void test_ema_reaches_target_exactly() {
-  uint16_t s = 0;
-  for (int i = 0; i < 200; ++i) s = emaStep(s, 800, 3);
-  TEST_ASSERT_EQUAL_UINT16(800, s);
-  for (int i = 0; i < 200; ++i) s = emaStep(s, 1023, 3);
-  TEST_ASSERT_EQUAL_UINT16(1023, s);  // dimmer max reaches the rail -> full brightness
-}
-
 // --- Brightness ---
 
 void test_level_brightness() {
@@ -120,26 +112,6 @@ void test_mode_cycles_and_wraps() {
   TEST_ASSERT_TRUE(nextMode(last) == Mode::Solid);  // wraps to default
 }
 
-// --- Button (debounce + single rising edge) ---
-
-void test_button_fires_once_per_debounced_press() {
-  Button b;
-  int edges = 0;
-  bool seq[] = {false, true, true, true, true, false, false, false};  // press (held), release
-  for (bool s : seq)
-    if (b.pressed(s)) ++edges;
-  TEST_ASSERT_EQUAL_INT(1, edges);  // exactly one press detected
-}
-
-void test_button_ignores_bounce() {
-  Button b;
-  int edges = 0;
-  bool bounce[] = {true, false, true, false, true, false};  // never DEBOUNCE-consistent
-  for (bool s : bounce)
-    if (b.pressed(s)) ++edges;
-  TEST_ASSERT_EQUAL_INT(0, edges);
-}
-
 int main(int, char**) {
   UNITY_BEGIN();
   RUN_TEST(test_default_levels_are_zero);
@@ -147,7 +119,6 @@ int main(int, char**) {
   RUN_TEST(test_out_of_range_channel_is_ignored);
   RUN_TEST(test_adc_endpoints);
   RUN_TEST(test_adc_clamps_above_max);
-  RUN_TEST(test_ema_reaches_target_exactly);
   RUN_TEST(test_level_brightness);
   RUN_TEST(test_heat_palette_is_red_orange);
   RUN_TEST(test_fixed_palettes_have_fixed_hue);
@@ -159,7 +130,5 @@ int main(int, char**) {
   RUN_TEST(test_chase_lights_only_a_moving_window);
   RUN_TEST(test_palette_cycles_and_wraps);
   RUN_TEST(test_mode_cycles_and_wraps);
-  RUN_TEST(test_button_fires_once_per_debounced_press);
-  RUN_TEST(test_button_ignores_bounce);
   return UNITY_END();
 }

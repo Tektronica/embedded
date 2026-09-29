@@ -1,6 +1,6 @@
 #include <unity.h>
 
-#include "Clock.h"
+#include "WallClock.h"
 
 using namespace wallclock;
 
