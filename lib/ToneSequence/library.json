@@ -1,0 +1,7 @@
+{
+  "name": "ToneSequence",
+  "version": "1.0.0",
+  "description": "Hardware-free, non-blocking tone sequencing from {frequency, duration} step tables.",
+  "frameworks": "*",
+  "platforms": "*"
+}
