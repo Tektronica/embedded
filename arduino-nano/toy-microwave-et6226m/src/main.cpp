@@ -9,8 +9,8 @@
 namespace
 {
 
-  constexpr uint8_t PIN_ET6226M_CLK = 2;
-  constexpr uint8_t PIN_ET6226M_DAT = 3;
+  constexpr uint8_t PIN_ET6226M_CLK = 8;
+  constexpr uint8_t PIN_ET6226M_DAT = 9;
 
   constexpr uint8_t PIN_BUZZER = 10;
   constexpr uint8_t PIN_MOTOR = 11;
@@ -201,7 +201,7 @@ void loop()
 
   if (millis() - lastTickMs >= 1000)
   {
-    lastTickMs = millis();
+    lastTickMs += 1000; // not millis(): that would drop each second's loop overshoot and drift the clock
     controller.handle(microwave::Event{microwave::EventType::Tick, 0});
   }
 
