@@ -72,15 +72,16 @@ void test_decode_key_code_rejects_gaps_between_grid_columns() {
 }
 
 void test_encode_display_control_matches_datasheet_examples() {
-  // The datasheet's own examples: "X9H" is 7-segment mode, "X1H" is 8-segment mode (brightness=0,
-  // display on, in both cases).
-  TEST_ASSERT_EQUAL_HEX8(0x09, encodeDisplayControl(0, true, SegmentMode::SevenSegment));
-  TEST_ASSERT_EQUAL_HEX8(0x01, encodeDisplayControl(0, true, SegmentMode::EightSegment));
+  // The datasheet's own examples: "X9H" is 7-segment mode, "X1H" is 8-segment mode (X=0 is the
+  // brightest step, display on, in both cases).
+  TEST_ASSERT_EQUAL_HEX8(0x09, encodeDisplayControl(MAX_BRIGHTNESS, true, SegmentMode::SevenSegment));
+  TEST_ASSERT_EQUAL_HEX8(0x01, encodeDisplayControl(MAX_BRIGHTNESS, true, SegmentMode::EightSegment));
 }
 
 void test_encode_display_control_brightness_and_display_off() {
-  TEST_ASSERT_EQUAL_HEX8(0x79, encodeDisplayControl(MAX_BRIGHTNESS, true, SegmentMode::SevenSegment));
-  TEST_ASSERT_EQUAL_HEX8(0x08, encodeDisplayControl(0, false, SegmentMode::SevenSegment));
+  TEST_ASSERT_EQUAL_HEX8(0x19, encodeDisplayControl(0, true, SegmentMode::SevenSegment));  // "1 step"
+  TEST_ASSERT_EQUAL_HEX8(0x79, encodeDisplayControl(6, true, SegmentMode::SevenSegment));  // "7 step"
+  TEST_ASSERT_EQUAL_HEX8(0x18, encodeDisplayControl(0, false, SegmentMode::SevenSegment));
 }
 
 void test_encode_display_control_clamps_brightness() {
