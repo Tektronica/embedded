@@ -1,7 +1,8 @@
 #include <Arduino.h>
 #include <AccelStepper.h>
 
-#include "Button.h"
+#include "Debounce.h"
+#include "PotInput.h"
 #include "Stepper.h"
 
 namespace {
@@ -34,11 +35,12 @@ constexpr bool     DEBUG_TRACE_ENABLED     = false;
 constexpr uint32_t DEBUG_TRACE_INTERVAL_MS = 200;
 
 uint16_t smoothed = 0;
+potinput::Deadzone deadzone;
 bool     running   = false;  // starts stopped -- safer default than spinning on power-up
 bool     clockwise = true;
 
-input::Button runStopButton;
-input::Button directionButton;
+debounce::Button runStopButton;
+debounce::Button directionButton;
 
 AccelStepper accelStepper(AccelStepper::DRIVER, PIN_STEP, PIN_DIR);
 bool         lastClockwise = true;  // direction the current moveTo() target was set for
@@ -116,8 +118,8 @@ void loop() {
   if (directionButton.pressed(digitalRead(PIN_BTN_DIRECTION) == LOW)) clockwise = !clockwise;
 
   uint16_t raw = analogRead(PIN_POT);
-  smoothed = stepper::emaStep(smoothed, raw, EMA_SHIFT);
-  uint16_t speed = running ? stepper::potToSpeed(smoothed) : 0;
+  smoothed = potinput::emaStep(smoothed, raw, EMA_SHIFT);
+  uint16_t speed = running ? stepper::potToSpeed(deadzone.apply(smoothed)) : 0;
 
   if (STEP_MODE == StepMode::Library) renderLibrary(speed, clockwise);
   else renderDirectPulse(speed, clockwise);

@@ -53,15 +53,6 @@ inline uint8_t adcToLevel(uint16_t raw) {
   return static_cast<uint8_t>(static_cast<uint32_t>(raw) * 255u / ADC_MAX);
 }
 
-// One EMA step toward `raw`; larger `shift` = smoother/slower. The `step != 0` guard removes the
-// integer dead-band so it converges exactly (dimmer at max really reaches full brightness).
-inline uint16_t emaStep(uint16_t smoothed, uint16_t raw, uint8_t shift) {
-  int16_t delta = static_cast<int16_t>(raw - smoothed);
-  int16_t step = static_cast<int16_t>(delta >> shift);
-  if (step == 0 && delta != 0) step = (delta > 0) ? 1 : -1;
-  return static_cast<uint16_t>(smoothed + step);
-}
-
 // --- Switch cycling (wrap past Count back to 0) ---
 inline Palette nextPalette(Palette p) {
   uint8_t n = static_cast<uint8_t>(p) + 1;
@@ -138,26 +129,5 @@ inline Hsv pixelColor(Palette pal, Mode mode, uint8_t level, uint8_t pixelIndex,
   if (v == 0 || !modeLit(mode, pixelIndex, stripLength, frame)) return Hsv{0, 0, 0};
   return Hsv{paletteHue(pal, level, pixelIndex, stripLength), paletteSaturation(pal), v};
 }
-
-// --- Debounced push switch (pure). Feed the raw "pressed" state once per frame; returns true
-// once on each fresh press (rising edge) after DEBOUNCE consistent samples. ---
-class Button {
- public:
-  bool pressed(bool raw) {
-    if (raw == state_) {
-      count_ = 0;
-      return false;
-    }
-    if (++count_ < DEBOUNCE) return false;  // not yet stable
-    count_ = 0;
-    state_ = raw;       // commit the new debounced state
-    return state_;      // a fresh press only (true when committing pressed)
-  }
-
- private:
-  static constexpr uint8_t DEBOUNCE = 3;
-  bool state_ = false;     // committed state: false = released
-  uint8_t count_ = 0;      // consecutive samples differing from state_
-};
 
 }  // namespace controller

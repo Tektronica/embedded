@@ -1,6 +1,7 @@
 #include <Arduino.h>
 
-#include "Pwm.h"
+#include "PotInput.h"
+#include "PwmDuty.h"
 
 namespace {
 
@@ -26,22 +27,23 @@ constexpr uint32_t DEBUG_TRACE_INTERVAL_MS = 200;
 
 uint16_t top      = 0;
 uint16_t smoothed = 0;
+potinput::Deadzone deadzone;
 
 // Maps the pure Prescaler choice to Timer1's CS12:CS10 bits (the one hardware-specific spot).
-void applyPrescalerBits(pwm::Prescaler p) {
+void applyPrescalerBits(pwmduty::Prescaler p) {
   switch (p) {
-    case pwm::Prescaler::Div1:    TCCR1B |= _BV(CS10); break;
-    case pwm::Prescaler::Div8:    TCCR1B |= _BV(CS11); break;
-    case pwm::Prescaler::Div64:   TCCR1B |= _BV(CS11) | _BV(CS10); break;
-    case pwm::Prescaler::Div256:  TCCR1B |= _BV(CS12); break;
-    case pwm::Prescaler::Div1024: TCCR1B |= _BV(CS12) | _BV(CS10); break;
+    case pwmduty::Prescaler::Div1:    TCCR1B |= _BV(CS10); break;
+    case pwmduty::Prescaler::Div8:    TCCR1B |= _BV(CS11); break;
+    case pwmduty::Prescaler::Div64:   TCCR1B |= _BV(CS11) | _BV(CS10); break;
+    case pwmduty::Prescaler::Div256:  TCCR1B |= _BV(CS12); break;
+    case pwmduty::Prescaler::Div1024: TCCR1B |= _BV(CS12) | _BV(CS10); break;
   }
 }
 
 // Timer1, Fast PWM mode 14 (WGM13:0 = 14): ICR1 holds TOP (frequency), OCR1A is the duty compare
 // register, non-inverting output on OC1A.
 void setupDirectTimerPwm() {
-  pwm::TimerConfig cfg = pwm::computeTimerConfig(F_CPU, PWM_FREQUENCY_HZ);
+  pwmduty::TimerConfig cfg = pwmduty::computeTimerConfig(F_CPU, PWM_FREQUENCY_HZ);
   top = cfg.top;
 
   TCCR1A = _BV(COM1A1) | _BV(WGM11);
@@ -51,10 +53,10 @@ void setupDirectTimerPwm() {
   OCR1A = 0;
 }
 
-void renderDirectTimerPwm(uint8_t duty) { OCR1A = pwm::dutyToOcr(duty, top); }
+void renderDirectTimerPwm(uint8_t duty) { OCR1A = pwmduty::dutyToOcr(duty, top); }
 
 // analogWrite() fallback: fixed ~490 Hz on D9/D10, but the only path Wokwi simulates correctly.
-void renderAnalogWritePwm(uint8_t duty) { analogWrite(PIN_PWM, pwm::dutyToPwm8(duty)); }
+void renderAnalogWritePwm(uint8_t duty) { analogWrite(PIN_PWM, pwmduty::dutyToPwm8(duty)); }
 
 // Teleplot-format trace (raw pot -> duty), throttled so it doesn't flood Serial.
 void logDebugTrace(uint16_t raw, uint8_t duty) {
@@ -79,10 +81,10 @@ void setup() {
 }
 
 void loop() {
-  // read pot input -> duty (linear; see Pwm.h's gammaCorrect() for real-LED/eye perceptual correction)
+  // read pot input -> duty (linear; pwmduty::gammaCorrect() adds real-LED/eye perceptual correction)
   uint16_t raw = analogRead(PIN_POT);
-  smoothed = pwm::emaStep(smoothed, raw, EMA_SHIFT);
-  uint8_t duty = pwm::dutyFromAdc(smoothed);
+  smoothed = potinput::emaStep(smoothed, raw, EMA_SHIFT);
+  uint8_t duty = potinput::toPercent(deadzone.apply(smoothed));
 
   // render duty -> PWM output
   if (PWM_MODE == PwmMode::DirectTimer) renderDirectTimerPwm(duty);

@@ -1,7 +1,9 @@
 #include <Arduino.h>
 #include <FastLED.h>
 
+#include "Debounce.h"
 #include "LEDStripDimmer.h"
+#include "PotInput.h"
 
 namespace {
 
@@ -22,11 +24,12 @@ constexpr uint8_t  EMA_SHIFT        = 3;      // dimmer smoothing strength
 CRGB leds[controller::LED_TOTAL];
 controller::Levels levels;
 uint16_t smoothed[controller::CHANNEL_COUNT];
+potinput::Deadzone deadzones[controller::CHANNEL_COUNT];
 
 controller::Mode    mode    = controller::Mode::Solid;            // default when the switch is unwired
 controller::Palette palette = controller::Palette::HeatRedOrange; // default when the switch is unwired
-controller::Button modeButton;
-controller::Button colorButton;
+debounce::Button modeButton;
+debounce::Button colorButton;
 uint16_t frame = 0;
 
 }  // namespace
@@ -46,8 +49,8 @@ void setup() {
 void loop() {
   // read dimmer inputs -> levels
   for (uint8_t ch = 0; ch < controller::CHANNEL_COUNT; ++ch) {
-    smoothed[ch] = controller::emaStep(smoothed[ch], analogRead(PIN_DIMMER[ch]), EMA_SHIFT);
-    levels.setLevel(ch, controller::adcToLevel(smoothed[ch]));
+    smoothed[ch] = potinput::emaStep(smoothed[ch], analogRead(PIN_DIMMER[ch]), EMA_SHIFT);
+    levels.setLevel(ch, controller::adcToLevel(deadzones[ch].apply(smoothed[ch])));
   }
 
   // read switches (INPUT_PULLUP: LOW = pressed); a fresh press cycles mode / palette
