@@ -55,7 +55,8 @@ Jul.2025). What the full datasheet confirmed or added:
 
 - **Display Control Command (`0x48`)** exists: one data byte packs brightness (3 bits, 0=dimmest
   "1 step" .. 7=brightest "8 step"), a 7-segment/8-segment mode select, sleep mode, and display
-  on/off. Reconstructed from the datasheet's own worked examples (`X1H`=8-segment mode,
+  on/off. The datasheet puts "8 step" at `000` and "7 step" at `111`, so level N is encoded as
+  `(N + 1) mod 8`. Reconstructed from the datasheet's own worked examples (`X1H`=8-segment mode,
   `X9H`=7-segment mode, `04H`=sleep mode, and "D0 and D2 cannot be 1 at the same time").
   `encodeDisplayControl()`/`setBrightness()`/`setDisplayOn()` implement brightness and on/off;
   sleep mode (D2) is identified but not exposed, since nothing needs it yet. The 7-segment/8-segment
@@ -69,7 +70,7 @@ Jul.2025). What the full datasheet confirmed or added:
 - **Key code reads return one key only**, not a full matrix scan — confirmed from the Key Code
   Command's single-byte format.
 - **DAT's pull-up is real but weak** — the Electrical Characteristics table gives a "DAT pin
-  input pull-up current" in the tens-of-µA range, confirming the "built-in drain mode" pin
+  input pull-up current" of 150-400 µA, confirming the "built-in drain mode" pin
   description means genuinely open-drain, and that the chip's own pull-up alone may be too weak
   for a fast, clean rise — the driver's `INPUT_PULLUP` release (rather than driving DAT high)
   adds the AVR's own pull-up in parallel rather than conflicting with it.
@@ -97,10 +98,6 @@ Still genuinely open, not resolved by the full datasheet:
   of the display board's wiring, not the chip itself; `encodeDigit()` assumes SG1=a...SG7=g, the
   common convention, but this needs confirming against the actual board once wired up — same kind
   of guess `toy-microwave-tm1637`'s `COLON_DIGIT_INDEX`/`COLON_BIT` needed to be confirmed.
-- **Brightness step direction** — the datasheet lists "8 step (highest)" and "1 step (lowest)"
-  without pinning down which binary value is which; `encodeDisplayControl()` assumes 0=dimmest,
-  7=brightest. Low-risk if wrong (an easy one-line fix once observed on real hardware), but not
-  yet verified.
 - **Read-back ACK** — `readKeyCode()` reads the chip's returned byte without the master sending
   its own ACK/NACK afterward. The timing waveform section's "ACK/Key Back data" label suggests
   this is correct, but isn't fully unambiguous from the text alone.

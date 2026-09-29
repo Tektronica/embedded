@@ -1,7 +1,7 @@
 # arduino-nano/led-dimmer-4ch/fw
 
 Firmware for the 4-channel LED dimmer: 4 potentiometers (A0–A3) each drive one PT4115 LED
-driver's DIM pin via PWM (D11, D10, D9, D3), one channel per pot. See the
+driver's DIM pin via PWM (D9, D10, D3, D11), one channel per pot. See the
 [project README](../README.md) for the full board — BOM, PWM pin reference, KiCad, datasheets.
 
 ## Quick start

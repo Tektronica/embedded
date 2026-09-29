@@ -12,13 +12,17 @@ as a reference once this project moved to the ET6226M.
 
 | Qty | Role (generic) | Part chosen | Notes |
 |---|---|---|---|
-| 1 | 4-digit 7-segment display | Kingbright CA56-12EWA, common anode | Per `KiCad/microwave`'s schematic (`U2`). Driven entirely through the ET6226M -- no separate display driver chip. |
+| 1 | 4-digit 7-segment display | Kingbright CC56-12SURKWA, common cathode | Per `KiCad/microwave`'s schematic (`U2`). Driven entirely through the ET6226M -- no separate display driver chip. Must be common cathode: the ET6226M's SG pins source current and its GR pins sink it. Pin-for-pin with the CA56-12 footprint. |
 | 1 | Display + keypad-scan driver | UMW ET6226M (SOP-16) | Per the schematic (`U5`). Two-wire CLK/DAT to the MCU; drives the display's 4 digits and scans the 16-key matrix, sharing its GR/SG lines with the display per the schematic's `SEG_x/ROWn` and `DIG_CAn/COLn` nets. Runs in `EightSegment` mode, since `DP/KP` is wired directly to the display's shared DP line, not into the key matrix. |
 | 16 | Keyswitches | Cherry MX-style (`MX1`-`MX16` in the schematic) | Diode-per-key matrix (`D1`-`D16`), `SG1-4` as rows / `GR1-4` as columns -- the same 4x4 layout and key legends (`1-9,0,*,#,A-D`) as `toy-microwave-tm1637`'s membrane keypad, just wired through the ET6226M instead of directly to the MCU. |
-| 1 | Buzzer (done/alert tone, button feedback, running hum) | 12085 buzzer, 12×8.5mm, 42Ω, 3–12V | Sold in a 20-pack. Passive — driven via `tone()`/PWM; also layers a quiet low-frequency tone during Running, alongside the fan and motor, for the ambient hum. |
+| 1 | Buzzer (done/alert tone, button feedback, running hum) | 12085 buzzer, 12×8.5mm, 42Ω, 3–12V | Sold in a 20-pack. Passive, electromagnetic (the 42Ω is its coil) — driven via `tone()`/PWM; also layers a quiet low-frequency tone during Running, alongside the fan and motor, for the ambient hum. |
+| 1 | Buzzer driver | AO3400A (`Q2`), 100Ω gate resistor (`R9`), SS14 flyback (`D18`) | Low-side switch: the coil draws ~119mA at 5V, over the ATmega328P's 40mA pin limit. `D18` clamps the coil's turn-off spike to `+5V`. |
 | 1 | Turntable motor | TYC-50 synchronous motor, 12V DC, 5–6 RPM, CW/CCW, 4W | Matches a real microwave turntable's rotation speed; its own running sound also contributes to the hum. |
 | 1 | Cooling fan (running hum) | Generic 12V DC brushless fan, 40×40×10mm, sleeve bearing, ~0.08A | A commodity spec, not a specific listing — any 12V 40mm fan matches. Matches the 12V rail already used by the motor/light rather than introducing a separate 5V domain. Needs a transistor/MOSFET driver, same as the motor — not a direct GPIO connection. |
 | 1 | Interior/status light | 80mm white COB LED ring ("angel eye" halo ring) | Sold in a 2-pack. 12V/24V rated — confirm current draw and how it's switched (relay/MOSFET vs. direct GPIO) before wiring. |
+
+Motor, fan, and light are reserved, not wired. `CTRL_MOTOR`/`CTRL_FAN`/`CTRL_LIGHT` (D11-D13) only
+reach `J2`, with no driver on this board. Don't connect a 12V load to `J2` directly.
 
 ## Firmware
 
@@ -66,9 +70,9 @@ uses the same DP-bit-on-one-grid trick `toy-microwave-tm1637` used with TM1637, 
 the schematic rather than guessed — the Kingbright display's shared DP line is wired straight to
 the ET6226M's `DP/KP` pin (`EightSegment` mode).
 
-Pin assignments: ET6226M `CLK`/`DAT` on D2/D3, buzzer D10, motor D11, fan D12, light D13. The old
-TM1637 approach's separate matrix row/column pins (D2-D9) are gone entirely — the keypad is
-scanned by the ET6226M, not the MCU.
+Pin assignments, per `KiCad/microwave`: ET6226M `CLK`/`DAT` on D8/D9, buzzer D10, motor D11, fan
+D12, light D13. The old TM1637 approach's 8 matrix row/column pins are gone entirely — the keypad
+is scanned by the ET6226M, not the MCU.
 
 ## Quick start
 
@@ -93,6 +97,6 @@ Not available — the ET6226M isn't a part Wokwi supports.
 
 ## Status
 
-Schematic exists (`KiCad/microwave`): ET6226M-driven display and 16-key diode matrix, ATmega328PB
-MCU. Firmware logic is implemented and tested (74 unit tests across seven headers) against that
-schematic, but not yet run on real hardware.
+Schematic exists (`KiCad/microwave`): ET6226M-driven display and 16-key diode matrix, Arduino
+Nano module. Firmware logic is implemented and tested (84 unit tests across six headers) against
+that schematic, but not yet run on real hardware.
