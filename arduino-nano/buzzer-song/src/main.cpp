@@ -1,6 +1,6 @@
 #include <Arduino.h>
 
-#include "Button.h"
+#include "Debounce.h"
 #include "Song.h"
 #include "SongPlayer.h"
 
@@ -13,7 +13,7 @@ constexpr uint8_t PIN_BUTTON = 2;  // momentary pushbutton, wired to GND (INPUT_
 constexpr bool     DEBUG_TRACE_ENABLED     = false;
 constexpr uint32_t DEBUG_TRACE_INTERVAL_MS = 200;
 
-input::Button button;
+debounce::Button button;
 song::Track   currentTrack = song::Track::Scale;
 uint32_t      trackStartMs = 0;
 

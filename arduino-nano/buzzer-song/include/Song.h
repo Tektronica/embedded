@@ -3,11 +3,12 @@
 #include <stdint.h>
 
 #include "Notes.h"
+#include "ToneSequence.h"
 
 // Pure music-timing toolkit: note/duration types and the tempo math to turn them into
 // milliseconds, plus the one small, original looping track (Scale). Hardware-free (no
-// Arduino.h) so it unit-tests off-device; main.cpp/SongPlayer.h map ToneState to tone()/noTone()
-// calls. Same ToneState shape as toy-microwave's and game-dino-run's Buzzer.h.
+// Arduino.h) so it unit-tests off-device; main.cpp/SongPlayer.h map ToneState (lib/ToneSequence's)
+// to tone()/noTone() calls.
 //
 // Larger, borrowed songs (Tetris, Mario, Doom -- see songs/) reuse durationMs() for their timing
 // math but store their note tables PROGMEM and walk them separately, since reading PROGMEM needs
@@ -50,12 +51,7 @@ inline uint16_t durationMs(int8_t divider, uint16_t tempoBpm) {
 // than one continuous tone. Matches the 90/10 split this song data was originally authored with.
 constexpr uint8_t NOTE_ON_PERCENT = 90;
 
-// Whether the buzzer should be sounding right now, and at what frequency, `elapsedMs` into a
-// looping track.
-struct ToneState {
-  bool     on;
-  uint16_t frequencyHz;
-};
+using tonesequence::ToneState;
 
 // Loops a RAM-resident `notes` array forever; `elapsedMs` is the position since the loop started.
 inline ToneState toneStateFor(const Note* notes, uint8_t count, uint16_t tempoBpm,

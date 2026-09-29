@@ -2,7 +2,7 @@
 #include <TM1637Display.h>
 #include <stdio.h>
 
-#include "Button.h"
+#include "Debounce.h"
 #include "SevenSegment.h"
 
 // Demonstrates that Mode is independent of Content: the value on screen is always the same
@@ -25,26 +25,26 @@ constexpr uint16_t ROLL_FRAMES_PER_STEP = 6;   // ~300ms per scroll step at 50ms
 // the counter itself, not a truncated fragment of unrelated text.
 constexpr uint8_t LABEL_LENGTH = 12;
 
-sevenseg::Mode nextMode(sevenseg::Mode m) {
+segdisplay::Mode nextMode(segdisplay::Mode m) {
   switch (m) {
-    case sevenseg::Mode::Static:   return sevenseg::Mode::Flashing;
-    case sevenseg::Mode::Flashing: return sevenseg::Mode::Rolling;
-    case sevenseg::Mode::Rolling:
-    default:                       return sevenseg::Mode::Static;
+    case segdisplay::Mode::Static:   return segdisplay::Mode::Flashing;
+    case segdisplay::Mode::Flashing: return segdisplay::Mode::Rolling;
+    case segdisplay::Mode::Rolling:
+    default:                       return segdisplay::Mode::Static;
   }
 }
 
-uint16_t periodFramesFor(sevenseg::Mode m) {
+uint16_t periodFramesFor(segdisplay::Mode m) {
   switch (m) {
-    case sevenseg::Mode::Flashing: return FLASH_PERIOD_FRAMES;
-    case sevenseg::Mode::Rolling:  return ROLL_FRAMES_PER_STEP;
-    case sevenseg::Mode::Static:
+    case segdisplay::Mode::Flashing: return FLASH_PERIOD_FRAMES;
+    case segdisplay::Mode::Rolling:  return ROLL_FRAMES_PER_STEP;
+    case segdisplay::Mode::Static:
     default:                       return 0;
   }
 }
 
-sevenseg::Mode currentMode = sevenseg::Mode::Static;
-input::Button  button;
+segdisplay::Mode currentMode = segdisplay::Mode::Static;
+debounce::Button  button;
 TM1637Display  display(PIN_DISPLAY_CLK, PIN_DISPLAY_DIO);
 
 uint16_t frame       = 0;
@@ -77,7 +77,7 @@ void loop() {
   char label[LABEL_LENGTH + 1];
   snprintf(label, sizeof(label), "%04u    %04u", counter, counter);
 
-  sevenseg::Segments segments = sevenseg::render(sevenseg::labelContent(label, LABEL_LENGTH),
+  segdisplay::Segments segments = segdisplay::render(segdisplay::labelContent(label, LABEL_LENGTH),
                                                   currentMode, frame, periodFramesFor(currentMode));
   display.setSegments(segments.values);
 }

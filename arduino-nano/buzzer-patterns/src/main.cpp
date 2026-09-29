@@ -1,6 +1,6 @@
 #include <Arduino.h>
 
-#include "Button.h"
+#include "Debounce.h"
 #include "Buzzer.h"
 
 namespace {
@@ -14,9 +14,9 @@ constexpr uint8_t PIN_BTN_ERROR    = 4;
 constexpr bool     DEBUG_TRACE_ENABLED     = false;
 constexpr uint32_t DEBUG_TRACE_INTERVAL_MS = 200;
 
-input::Button keyPressButton;
-input::Button doneButton;
-input::Button errorButton;
+debounce::Button keyPressButton;
+debounce::Button doneButton;
+debounce::Button errorButton;
 
 buzzer::Pattern activePattern  = buzzer::Pattern::None;
 uint32_t        patternStartMs = 0;

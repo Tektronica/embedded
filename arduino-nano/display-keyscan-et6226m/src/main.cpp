@@ -1,6 +1,7 @@
 #include <Arduino.h>
 
 #include "ET6226M.h"
+#include "SevenSeg.h"
 
 namespace {
 
@@ -15,10 +16,10 @@ uint8_t  lastKeyCode = 0x00;
 
 void showCounter() {
   uint8_t segments[ET6226M::GRID_COUNT] = {
-      et6226m::encodeDigit(static_cast<uint8_t>((counter / 1000) % 10)),
-      et6226m::encodeDigit(static_cast<uint8_t>((counter / 100) % 10)),
-      et6226m::encodeDigit(static_cast<uint8_t>((counter / 10) % 10)),
-      et6226m::encodeDigit(static_cast<uint8_t>(counter % 10)),
+      sevenseg::encodeDigit(static_cast<uint8_t>((counter / 1000) % 10)),
+      sevenseg::encodeDigit(static_cast<uint8_t>((counter / 100) % 10)),
+      sevenseg::encodeDigit(static_cast<uint8_t>((counter / 10) % 10)),
+      sevenseg::encodeDigit(static_cast<uint8_t>(counter % 10)),
   };
   display.setSegments(segments);
 }

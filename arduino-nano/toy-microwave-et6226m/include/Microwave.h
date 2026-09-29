@@ -2,7 +2,7 @@
 
 #include <stdint.h>
 
-#include "Clock.h"
+#include "WallClock.h"
 
 // Top-level control-flow state machine: Idle -> Setting -> Running -> Done, plus ClockSet
 // (reachable from Idle) for setting the time-of-day clock Idle displays. Setting/Running/Done
@@ -17,7 +17,7 @@
 //
 // This is the app-level orchestrator: it owns the cook-timer/kitchen-timer flow itself but
 // delegates time-of-day keeping and countdown-counting to wallclock::Clock/wallclock::Timer
-// (Clock.h) rather than absorbing either concern directly.
+// (lib/WallClock) rather than absorbing either concern directly.
 namespace microwave {
 
 enum class State : uint8_t { Idle, Setting, Running, Done, ClockSet };

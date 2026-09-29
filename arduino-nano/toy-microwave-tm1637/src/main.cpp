@@ -2,16 +2,24 @@
 #include <TM1637Display.h>
 
 #include "Buzzer.h"
+#include "Debounce.h"
 #include "KeyMatrix.h"
-#include "MatrixScanner.h"
 #include "Microwave.h"
-#include "SevenSegment.h"
+#include "SevenSeg.h"
 
 namespace {
 
 // Matrix rows/cols — a 4x4 matrix keypad (see README's BOM; tested against Wokwi's matrix pad).
-constexpr uint8_t ROW_PINS[keymatrix::ROWS] = {9, 8, 7, 6};
-constexpr uint8_t COL_PINS[keymatrix::COLS] = {5, 4, 3, 2};
+constexpr uint8_t ROWS = 4;
+constexpr uint8_t COLS = 4;
+constexpr uint8_t ROW_PINS[ROWS] = {9, 8, 7, 6};
+constexpr uint8_t COL_PINS[COLS] = {5, 4, 3, 2};
+constexpr char LAYOUT[ROWS][COLS] = {
+    {'1', '2', '3', 'A'},
+    {'4', '5', '6', 'B'},
+    {'7', '8', '9', 'C'},
+    {'*', '0', '#', 'D'},
+};
 
 constexpr uint8_t PIN_BUZZER = 10;
 constexpr uint8_t PIN_MOTOR  = 11;
@@ -29,8 +37,8 @@ constexpr uint32_t DONE_REMINDER_INTERVAL_MS = 10000;  // re-beep this often if 
 constexpr uint8_t COLON_DIGIT_INDEX = 1;
 constexpr uint8_t COLON_BIT = 0x80;
 
-matrixscanner::Scanner    matrixScanner(ROW_PINS, COL_PINS);
-keymatrix::Scanner        keyScanner;
+keymatrix::MatrixScanner     matrixScanner(ROW_PINS, ROWS, COL_PINS, COLS);
+debounce::Debouncer<uint8_t> keyDebouncer(keymatrix::NO_KEY);
 microwave::Controller     controller;
 microwave::State          previousState = microwave::State::Idle;
 TM1637Display             display(PIN_DISPLAY_CLK, PIN_DISPLAY_DIO);
@@ -126,11 +134,8 @@ void updateDisplay() {
     if (blank) {
       segments[0] = segments[1] = segments[2] = segments[3] = 0;
     } else {
-      // Written all-caps since encodeChar() is case-insensitive and picks the actual display
-      // shape per letter -- using "END" here (rather than some specific mixed case) makes clear
-      // the app isn't the one choosing glyph case, the codec is. Right-aligned (leading space) to
-      // match how it's centered on a 4-digit display.
-      sevenseg::encodeText(" END", segments, 4);
+      // Right-aligned (leading space) on the 4-digit display.
+      sevenseg::encodeText(" End", segments, 4);
     }
   } else {
     sevenseg::Digits d = sevenseg::secondsToDigits(controller.displayValue());
@@ -157,7 +162,8 @@ void setup() {
 }
 
 void loop() {
-  char key = keyScanner.scan(matrixScanner.scan());
+  bool pressed = keyDebouncer.update(matrixScanner.scan()) && keyDebouncer.value() != keymatrix::NO_KEY;
+  char key = pressed ? LAYOUT[keyDebouncer.value() / COLS][keyDebouncer.value() % COLS] : '\0';
   microwave::Event event;
   if (key != '\0' && translateKey(key, event)) {
     controller.handle(event);
@@ -165,7 +171,7 @@ void loop() {
   }
 
   if (millis() - lastTickMs >= 1000) {
-    lastTickMs = millis();
+    lastTickMs += 1000;  // not millis(): that would drop each second's loop overshoot and drift the clock
     controller.handle(microwave::Event{microwave::EventType::Tick, 0});
   }
 

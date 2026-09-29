@@ -2,9 +2,9 @@
 
 #include "Buzzer.h"
 #include "ET6226M.h"
-#include "KeyDebounce.h"
+#include "Debounce.h"
 #include "Microwave.h"
-#include "SevenSegment.h"
+#include "SevenSeg.h"
 
 namespace
 {
@@ -27,7 +27,7 @@ namespace
   constexpr uint8_t COLON_BIT = 0x80;
 
   ET6226M display(PIN_ET6226M_CLK, PIN_ET6226M_DAT, et6226m::SegmentMode::EightSegment);
-  keydebounce::Debouncer keyDebouncer;
+  debounce::Debouncer<et6226m::KeyPosition> keyDebouncer(et6226m::KeyPosition{0, 0});
   microwave::Controller controller;
   microwave::State previousState = microwave::State::Idle;
 
@@ -156,20 +156,17 @@ namespace
       }
       else
       {
-        // Written all-caps since encodeChar() is case-insensitive and picks the actual display
-        // shape per letter -- using "END" here (rather than some specific mixed case) makes clear
-        // the app isn't the one choosing glyph case, the codec is. Right-aligned (leading space)
-        // to match how it's centered on a 4-digit display.
-        et6226m::encodeText(" END", segments, ET6226M::GRID_COUNT);
+        // Right-aligned (leading space) on the 4-digit display.
+        sevenseg::encodeText(" End", segments, ET6226M::GRID_COUNT);
       }
     }
     else
     {
       sevenseg::Digits d = sevenseg::secondsToDigits(controller.displayValue());
-      segments[0] = blank ? uint8_t{0} : et6226m::encodeDigit(d.minutesTens);
-      segments[1] = blank ? uint8_t{0} : et6226m::encodeDigit(d.minutesOnes);
-      segments[2] = blank ? uint8_t{0} : et6226m::encodeDigit(d.secondsTens);
-      segments[3] = blank ? uint8_t{0} : et6226m::encodeDigit(d.secondsOnes);
+      segments[0] = blank ? uint8_t{0} : sevenseg::encodeDigit(d.minutesTens);
+      segments[1] = blank ? uint8_t{0} : sevenseg::encodeDigit(d.minutesOnes);
+      segments[2] = blank ? uint8_t{0} : sevenseg::encodeDigit(d.secondsTens);
+      segments[3] = blank ? uint8_t{0} : sevenseg::encodeDigit(d.secondsOnes);
       if (!blank)
         segments[COLON_DIGIT_INDEX] |= COLON_BIT;
     }
@@ -190,10 +187,10 @@ void setup()
 
 void loop()
 {
-  et6226m::KeyPosition rawKey = et6226m::decodeKeyCode(display.readKeyCode());
-  et6226m::KeyPosition key = keyDebouncer.scan(rawKey);
+  bool pressed = keyDebouncer.update(et6226m::decodeKeyCode(display.readKeyCode())) &&
+                 keyDebouncer.value().grid != 0;
   microwave::Event event;
-  if (key.grid != 0 && translateKey(key, event))
+  if (pressed && translateKey(keyDebouncer.value(), event))
   {
     controller.handle(event);
     startBuzzerPattern(buzzer::Pattern::KeyPress);

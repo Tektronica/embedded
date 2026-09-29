@@ -2,6 +2,8 @@
 
 #include <stdint.h>
 
+#include "SevenSeg.h"
+
 // 4-digit 7-segment display (TM1637 driver board, same part toy-microwave uses). Hardware-free
 // (no Arduino.h, no TM1637 library dependency) so it unit-tests off-device; main.cpp hands
 // render()'s output straight to TM1637Display::setSegments().
@@ -14,71 +16,7 @@
 // switch inside render() is deliberately preferred over a Strategy-pattern class hierarchy here
 // -- the mode set is small and fixed at compile time, so virtual dispatch would only cost flash
 // and indirection for no real flexibility gained.
-namespace sevenseg {
-
-// Segment bit layout matches TM1637Display's SEG_* constants (bit0=A .. bit6=G, bit7=DP) so
-// render()'s output can be passed directly to TM1637Display::setSegments() with no translation.
-// Named SEGBIT_* rather than SEG_* here: TM1637Display.h defines SEG_A etc. as #define macros,
-// not namespaced, so a same-named constexpr in this header collides (and fails to compile) the
-// moment a single .cpp includes both headers -- which main.cpp always will.
-//
-//   -A-
-//  F   B
-//   -G-
-//  E   C
-//   -D-
-constexpr uint8_t SEGBIT_A = 0x01, SEGBIT_B = 0x02, SEGBIT_C = 0x04, SEGBIT_D = 0x08,
-                   SEGBIT_E = 0x10, SEGBIT_F = 0x20, SEGBIT_G = 0x40, SEGBIT_DP = 0x80;
-
-constexpr uint8_t BLANK = 0x00;
-constexpr uint8_t DASH  = SEGBIT_G;  // shown for any character with no defined segment pattern
-
-// Maps one character to its segment pattern: digits 0-9 and the subset of the alphabet that's
-// actually legible on seven segments. K, M, Q (upper), V, W, X, and anything else not listed are
-// not renderable -- they'd be indistinguishable from other letters or digits -- and fall back to
-// DASH rather than silently showing something misleading. Space is BLANK, not DASH.
-inline uint8_t segmentsForChar(char c) {
-  switch (c) {
-    case ' ': return BLANK;
-
-    case '0': return SEGBIT_A | SEGBIT_B | SEGBIT_C | SEGBIT_D | SEGBIT_E | SEGBIT_F;
-    case '1': return SEGBIT_B | SEGBIT_C;
-    case '2': return SEGBIT_A | SEGBIT_B | SEGBIT_D | SEGBIT_E | SEGBIT_G;
-    case '3': return SEGBIT_A | SEGBIT_B | SEGBIT_C | SEGBIT_D | SEGBIT_G;
-    case '4': return SEGBIT_B | SEGBIT_C | SEGBIT_F | SEGBIT_G;
-    case '5': return SEGBIT_A | SEGBIT_C | SEGBIT_D | SEGBIT_F | SEGBIT_G;
-    case '6': return SEGBIT_A | SEGBIT_C | SEGBIT_D | SEGBIT_E | SEGBIT_F | SEGBIT_G;
-    case '7': return SEGBIT_A | SEGBIT_B | SEGBIT_C;
-    case '8': return SEGBIT_A | SEGBIT_B | SEGBIT_C | SEGBIT_D | SEGBIT_E | SEGBIT_F | SEGBIT_G;
-    case '9': return SEGBIT_A | SEGBIT_B | SEGBIT_C | SEGBIT_D | SEGBIT_F | SEGBIT_G;
-
-    case 'A': return SEGBIT_A | SEGBIT_B | SEGBIT_C | SEGBIT_E | SEGBIT_F | SEGBIT_G;
-    case 'b': return SEGBIT_C | SEGBIT_D | SEGBIT_E | SEGBIT_F | SEGBIT_G;
-    case 'C': return SEGBIT_A | SEGBIT_D | SEGBIT_E | SEGBIT_F;
-    case 'd': return SEGBIT_B | SEGBIT_C | SEGBIT_D | SEGBIT_E | SEGBIT_G;
-    case 'E': return SEGBIT_A | SEGBIT_D | SEGBIT_E | SEGBIT_F | SEGBIT_G;
-    case 'F': return SEGBIT_A | SEGBIT_E | SEGBIT_F | SEGBIT_G;
-    case 'G': return SEGBIT_A | SEGBIT_C | SEGBIT_D | SEGBIT_E | SEGBIT_F;
-    case 'H': return SEGBIT_B | SEGBIT_C | SEGBIT_E | SEGBIT_F | SEGBIT_G;
-    case 'h': return SEGBIT_C | SEGBIT_E | SEGBIT_F | SEGBIT_G;
-    case 'I': return SEGBIT_E | SEGBIT_F;
-    case 'J': return SEGBIT_B | SEGBIT_C | SEGBIT_D;
-    case 'L': return SEGBIT_D | SEGBIT_E | SEGBIT_F;
-    case 'n': return SEGBIT_C | SEGBIT_E | SEGBIT_G;
-    case 'o': return SEGBIT_C | SEGBIT_D | SEGBIT_E | SEGBIT_G;
-    case 'P': return SEGBIT_A | SEGBIT_B | SEGBIT_E | SEGBIT_F | SEGBIT_G;
-    case 'q': return SEGBIT_A | SEGBIT_B | SEGBIT_C | SEGBIT_F | SEGBIT_G;
-    case 'r': return SEGBIT_E | SEGBIT_G;
-    case 'S': return SEGBIT_A | SEGBIT_C | SEGBIT_D | SEGBIT_F | SEGBIT_G;
-    case 't': return SEGBIT_D | SEGBIT_E | SEGBIT_F | SEGBIT_G;
-    case 'U': return SEGBIT_B | SEGBIT_C | SEGBIT_D | SEGBIT_E | SEGBIT_F;
-    case 'u': return SEGBIT_C | SEGBIT_D | SEGBIT_E;
-    case 'y': return SEGBIT_B | SEGBIT_C | SEGBIT_D | SEGBIT_F | SEGBIT_G;
-    case 'Z': return SEGBIT_A | SEGBIT_B | SEGBIT_D | SEGBIT_E | SEGBIT_G;
-
-    default: return DASH;
-  }
-}
+namespace segdisplay {
 
 // What to show -- built by numberContent()/labelContent() rather than aggregate-initialized
 // directly, so a caller never has to know which fields a given ContentType actually uses.
@@ -101,14 +39,6 @@ inline Content labelContent(const char* label, uint8_t labelLength) {
 
 // How to show it, independent of what it is.
 enum class Mode : uint8_t { Static, Flashing, Rolling };
-
-// Is the display "on" for this frame of a blink cycle? `frame` increments once per call from the
-// main loop; `periodFrames` is the full on+off cycle length. Same helper toy-microwave's
-// SevenSegment.h uses for its colon/whole-display blinking.
-inline bool blinkOn(uint16_t frame, uint16_t periodFrames) {
-  if (periodFrames == 0) return true;
-  return (frame % periodFrames) < (periodFrames / 2);
-}
 
 constexpr uint8_t WINDOW = 4;  // this display's digit count
 
@@ -133,14 +63,14 @@ inline Segments renderContent(const Content& content) {
   Segments out{};
   if (content.type == ContentType::Number) {
     uint16_t n = content.number > 9999 ? 9999 : content.number;
-    out.values[0] = segmentsForChar(static_cast<char>('0' + (n / 1000) % 10));
-    out.values[1] = segmentsForChar(static_cast<char>('0' + (n / 100) % 10));
-    out.values[2] = segmentsForChar(static_cast<char>('0' + (n / 10) % 10));
-    out.values[3] = segmentsForChar(static_cast<char>('0' + n % 10));
+    out.values[0] = sevenseg::encodeChar(static_cast<char>('0' + (n / 1000) % 10));
+    out.values[1] = sevenseg::encodeChar(static_cast<char>('0' + (n / 100) % 10));
+    out.values[2] = sevenseg::encodeChar(static_cast<char>('0' + (n / 10) % 10));
+    out.values[3] = sevenseg::encodeChar(static_cast<char>('0' + n % 10));
   } else {
     for (uint8_t i = 0; i < WINDOW; ++i) {
       char c = (i < content.labelLength) ? content.label[i] : ' ';
-      out.values[i] = segmentsForChar(c);
+      out.values[i] = sevenseg::encodeChar(c);
     }
   }
   return out;
@@ -161,14 +91,14 @@ inline Segments render(const Content& content, Mode mode, uint16_t frame, uint16
     for (uint8_t i = 0; i < WINDOW; ++i) {
       uint16_t idx = (offset + i) % cycleLen;
       char     c   = (idx < content.labelLength) ? content.label[idx] : ' ';
-      out.values[i] = segmentsForChar(c);
+      out.values[i] = sevenseg::encodeChar(c);
     }
     return out;
   }
 
   Segments out = detail::renderContent(content);
-  if (mode == Mode::Flashing && !blinkOn(frame, periodFrames)) {
-    for (uint8_t i = 0; i < WINDOW; ++i) out.values[i] = BLANK;
+  if (mode == Mode::Flashing && !sevenseg::blinkOn(frame, periodFrames)) {
+    for (uint8_t i = 0; i < WINDOW; ++i) out.values[i] = sevenseg::BLANK;
   }
   return out;
 }
@@ -180,12 +110,11 @@ inline Segments render(const Content& content, Mode mode, uint16_t frame, uint16
 // clock shows a static or rolling value with an independently blinking colon. Drive `colonOn`
 // with the same blinkOn() used for Flashing, on whatever schedule the caller wants.
 //
-// `colonDigitIndex` and which bit is actually wired to the colon both vary by board -- SEGBIT_DP
-// is the common one, but confirm against your specific display (same caveat toy-microwave's
-// SevenSegment.h notes for its own colon wiring).
+// `colonDigitIndex` and which bit is actually wired to the colon both vary by board --
+// sevenseg::SEGBIT_DP is the common one, but confirm against your specific display.
 inline Segments withColon(Segments segments, uint8_t colonDigitIndex, bool colonOn) {
-  if (colonOn && colonDigitIndex < WINDOW) segments.values[colonDigitIndex] |= SEGBIT_DP;
+  if (colonOn && colonDigitIndex < WINDOW) segments.values[colonDigitIndex] |= sevenseg::SEGBIT_DP;
   return segments;
 }
 
-}  // namespace sevenseg
+}  // namespace segdisplay
