@@ -1,0 +1,7 @@
+{
+  "name": "ET6226M",
+  "version": "1.0.0",
+  "description": "UMW ET6226M LED display and key-scan driver (bit-banged two-wire bus) and its hardware-free codec.",
+  "frameworks": "*",
+  "platforms": "*"
+}

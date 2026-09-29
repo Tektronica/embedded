@@ -1,0 +1,7 @@
+{
+  "name": "SevenSeg",
+  "version": "1.0.0",
+  "description": "Hardware-free 7-segment encoding: one legible font, text, blink phase, and MM:SS digits.",
+  "frameworks": "*",
+  "platforms": "*"
+}

@@ -1,0 +1,7 @@
+{
+  "name": "WallClock",
+  "version": "1.0.0",
+  "description": "Hardware-free time-of-day clock, countdown timer, and HH:MM / MM:SS digit-entry helpers.",
+  "frameworks": "*",
+  "platforms": "*"
+}
