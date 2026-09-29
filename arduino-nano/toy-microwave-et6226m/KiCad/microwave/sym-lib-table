@@ -1,0 +1,4 @@
+(sym_lib_table
+	(version 7)
+	(lib (name "embedded")(type "KiCad")(uri "${KIPRJMOD}/../../../../kicad/embedded.kicad_sym")(options "")(descr "Shared symbols for the embedded monorepo"))
+)
