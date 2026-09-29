@@ -91,13 +91,15 @@ constexpr uint8_t MAX_BRIGHTNESS = 7;  // 0 = dimmest (datasheet's "1 step"), 7 
 enum class SegmentMode : uint8_t { EightSegment = 0x00, SevenSegment = 0x08 };
 
 // Builds the Display Control Command's data byte (sent after command 0x48): D6-D4 = brightness
-// (0-7, clamped), D3 = the given SegmentMode, D0 = display on/off. Sleep mode (D2) isn't exposed
-// yet -- see README.md's "Open questions". Reconstructed from the datasheet's own worked examples
+// step, D3 = the given SegmentMode, D0 = display on/off. The datasheet puts its brightest step at
+// 000 and steps 1-7 at 001-111, so level 0-7 (clamped) is encoded as (level + 1) mod 8. Sleep
+// mode (D2) isn't exposed yet -- see README.md's "Open questions". Reconstructed from the datasheet's own worked examples
 // ("X1H" = 8-segment mode, "X9H" = 7-segment mode, "04H" = sleep mode, and "D0 and D2 cannot be 1
 // at the same time").
 inline uint8_t encodeDisplayControl(uint8_t brightness, bool displayOn, SegmentMode mode) {
   uint8_t clamped = brightness > MAX_BRIGHTNESS ? MAX_BRIGHTNESS : brightness;
-  return static_cast<uint8_t>((clamped << 4) | static_cast<uint8_t>(mode) |
+  uint8_t step = static_cast<uint8_t>((clamped + 1) & 0x07);
+  return static_cast<uint8_t>((step << 4) | static_cast<uint8_t>(mode) |
                                (displayOn ? 0x01 : 0x00));
 }
 
