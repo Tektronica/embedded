@@ -1,0 +1,7 @@
+{
+  "name": "PotInput",
+  "version": "1.0.0",
+  "description": "Hardware-free potentiometer ADC conditioning: EMA smoothing and a rail deadzone with hysteresis.",
+  "frameworks": "*",
+  "platforms": "*"
+}

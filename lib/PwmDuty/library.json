@@ -1,0 +1,7 @@
+{
+  "name": "PwmDuty",
+  "version": "1.0.0",
+  "description": "Hardware-free duty-cycle math: percent to analogWrite() and ATmega328 Timer1 values, plus gamma correction.",
+  "frameworks": "*",
+  "platforms": "*"
+}
