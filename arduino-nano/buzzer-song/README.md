@@ -53,9 +53,7 @@ there).
   the single production entry point `main.cpp` calls, regardless of which track (or storage
   backing) is active. Scale stays RAM-resident since it's tiny, walked directly by
   `song::toneStateFor()`.
-- **`include/Button.h`** — a debounced push-button edge detector (unit-tested), duplicated from
-  `stepper`'s `Button.h` per this repo's convention of small utilities living standalone in each
-  project rather than a shared library.
+- **`lib/Debounce`** — `debounce::Button`, the debounced push-button edge detector.
 - **`src/main.cpp`** — pins, one `Button` instance advancing `currentTrack` via `song::next()` on
   each fresh press, and the loop mapping `songplayer::update()` to `tone()`/`noTone()`.
   `DEBUG_TRACE_ENABLED` (off by default) prints a Teleplot-format trace of the active track and
@@ -124,5 +122,5 @@ Doom, and Nokia.
 
 ## Status
 
-Built and tested (native unit tests for `Song.h`/`Button.h`); not yet verified against real
-hardware.
+Built and tested (native unit tests for `Song.h`, plus `lib/Debounce`); not yet verified against
+real hardware.

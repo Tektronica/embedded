@@ -27,13 +27,10 @@ again) and then falls silent until the next press. Non-blocking throughout — n
 ## Design
 
 - **`include/Buzzer.h`** — hardware-free (unit-tested via `pio test -e native`): the `Pattern`
-  enum (`None`/`KeyPress`/`Done`/`Error`), `ToneState{on, frequencyHz}`, `toneStateFor(pattern,
-  elapsedMs)`, and `isFinished(pattern, elapsedMs)` — the same pattern/`ToneState` shape as
-  `toy-microwave`'s and `game-dino-run`'s `Buzzer.h`, verbatim except dropping `Hum` (that pattern
-  is tied to a microwave's continuous Running state, not a one-shot button press).
-- **`include/Button.h`** — a debounced push-button edge detector (unit-tested), duplicated from
-  `stepper`'s `Button.h` per this repo's convention of small utilities living standalone in each
-  project rather than a shared library.
+  enum (`None`/`KeyPress`/`Done`/`Error`) and one `{frequency, duration}` step table per pattern,
+  played by `lib/ToneSequence`. `toneStateFor(pattern, elapsedMs)` and `isFinished(pattern,
+  elapsedMs)` are thin wrappers over it.
+- **`lib/Debounce`** — `debounce::Button`, the debounced push-button edge detector.
 - **`src/main.cpp`** — pins, three `Button` instances each starting their own `Pattern` on a fresh
   press, and the loop mapping `buzzer::toneStateFor()` to `tone()`/`noTone()`, resetting to
   `Pattern::None` once `isFinished()` says the active pattern's sequence has completed.
@@ -77,5 +74,5 @@ pattern.
 
 ## Status
 
-Built and tested (native unit tests for `Buzzer.h`/`Button.h`); not yet verified against real
-hardware.
+Built and tested (native unit tests for `Buzzer.h`, plus `lib/Debounce` and `lib/ToneSequence`);
+not yet verified against real hardware.

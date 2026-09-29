@@ -18,8 +18,10 @@ cd arduino-nano/led-dimmer-4ch/fw
 pio run                 # build
 pio run -t upload       # build + flash the Nano
 pio device monitor      # serial monitor
-pio test -e native      # off-device unit tests
 ```
+
+Unit tests live with the shared libraries this firmware uses: `pio test -d lib/PotInput` and
+`pio test -d lib/PwmDuty` from the repo root.
 
 ## Simulate (Wokwi)
 

@@ -40,7 +40,7 @@ constant, `STEP_MODE` (a `StepMode` enum, default `StepMode::Library`):
   going library-free, not an oversight: building an equivalent ramp by hand would erase most of
   the "one line of math" simplicity this path is demonstrating.
 
-Unlike the `pwm` project's `DirectTimer` path, both strategies here are just `micros()` +
+Unlike the `pwm-pot-demo` project's `DirectTimer` path, both strategies here are just `micros()` +
 `digitalWrite()` (or `AccelStepper` calls that do the same under the hood) — no hardware timer
 register modes are involved, so both are expected to simulate correctly in Wokwi. Flip
 `STEP_MODE` to compare them; the wiring is identical either way.
@@ -49,15 +49,13 @@ register modes are involved, so both are expected to simulate correctly in Wokwi
 
 - **`include/Stepper.h`** — hardware-free logic (unit-tested via `pio test -e native`), shared by
   both strategies:
-  - `potToSpeed()` / `emaStep()` — pot scaling + smoothing (same pattern as `pwm`'s `Pwm.h`)
+  - `potToSpeed()` — pot scaling (smoothing and the rail deadzone come from `lib/PotInput`)
   - `stepIntervalMicros(stepsPerSec)` — target speed → microseconds between pulses
     (`DirectPulse` path only; `Library` path passes speed straight to `AccelStepper`)
   - Knows nothing about the buttons — `main.cpp` reads them and passes plain `speed`/`clockwise`
     values in, keeping this header purely about pot→speed math.
-- **`include/Button.h`** — a debounced push-button edge detector (unit-tested), same pattern as
-  `led-dimmer-ws2812`'s `Button` class. Generic, not stepper-specific — split into its own header
-  rather than living in `Stepper.h`, since debouncing a button and mapping a pot to a speed are
-  unrelated concerns.
+- **`lib/Debounce`** — `debounce::Button`, the debounced push-button edge detector. Kept out of
+  `Stepper.h`, since debouncing a button and mapping a pot to a speed are unrelated concerns.
 - **`src/main.cpp`** — pins, two `Button` instances (run/stop, direction) toggling `running`/
   `clockwise` state on each fresh press, both strategies as encapsulated functions, the loop (read
   pot → speed, zeroed if stopped → whichever strategy is selected). `DEBUG_TRACE_ENABLED` (off by

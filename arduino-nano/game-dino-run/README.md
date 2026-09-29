@@ -31,8 +31,8 @@ objects (the OLED panel, the 7-segment display, the interrupt) and rendering liv
   detection. Randomness is injected as a parameter rather than called internally, so recycling is
   deterministic and testable; `main.cpp` supplies real `random(...)` values.
 - **`Score.h`** — score-from-elapsed-time math and the 100-point milestone-beep threshold.
-- **`Buzzer.h`** — tone/frequency selection and beep-pattern sequencing (jump, milestone, hit),
-  polled every loop with no blocking `delay()` — same pattern as `toy-microwave`'s `Buzzer.h`. See
+- **`Buzzer.h`** — the game's sounds (jump, milestone, hit) as `{frequency, duration}` step
+  tables, played by `lib/ToneSequence` and polled every loop with no blocking `delay()`. See
   "Audit" below for why this replaced the original's approach.
 - **`Sprites.h`** — the raw OLED bitmap data, kept separate so neither game logic nor `main.cpp`
   is dominated by hundreds of lines of pixel bytes.

@@ -17,11 +17,11 @@ preserved in git history.)
 
 - **`include/LEDStripDimmer.h`** — all hardware-free logic, so it unit-tests off-device:
   - `Levels` — per-channel level (0..255)
-  - `adcToLevel()` / `emaStep()` — dimmer scaling + smoothing
+  - `adcToLevel()` — dimmer scaling (smoothing and the rail deadzone come from `lib/PotInput`)
   - `Palette` / `Mode` enums + `nextPalette()` / `nextMode()` — what the two optional switches cycle
   - `pixelColor(palette, mode, level, pixel, stripLen, frame)` — the single render primitive
     (palette → hue/sat, mode → temporal/spatial gate, level → brightness)
-  - `Button` — debounced rising-edge detect for the switches
+  - The switches use `debounce::Button` from `lib/Debounce` for debounced rising-edge detect
 - **`src/main.cpp`** — Arduino glue + the loop: read dimmers + switches → `pixelColor` per pixel →
   FastLED. A `frame` counter drives the animations; switch pins use `INPUT_PULLUP`.
 

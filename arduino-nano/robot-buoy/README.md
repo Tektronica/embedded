@@ -158,7 +158,7 @@ pio test -e native      # off-device unit tests
 - **`src/main.cpp`** — pins, the `stepper::Driver`/`radio::Link` instances, and the dive-cycle
   loop; the only place that combines the generic drivers with this project's specific meaning for
   them (fill = dive, drain = surface, what to transmit at Surface). `DEBUG_TRACE_ENABLED` (off by
-  default, same pattern as the `pwm` project) logs each phase transition over Serial — useful in
+  default, same pattern as the `pwm-pot-demo` project) logs each phase transition over Serial — useful in
   the Wokwi simulator, where the radio can't be simulated and the motor's spin direction is
   otherwise the only observable sign of which phase is active. `Serial.begin()` itself is gated
   behind the flag too, so the unused UART costs nothing when it's off.

@@ -16,7 +16,8 @@ firmware models the *mechanism*, not any application — an example use is in `d
 - **No dynamic allocation** in the hot path — avoid `new`, `String`, `std::vector`,
   `std::function`, RTTI. Static allocation only.
 - **Two files.** `include/LEDStripDimmer.h` holds all hardware-free logic (`Levels`,
-  `adcToLevel`/`emaStep`, `levelColor`) so it unit-tests off-device; `src/main.cpp` is the Arduino
+  `adcToLevel`, `levelColor`) so it unit-tests off-device, and pot smoothing/deadzone come from the
+  shared `lib/PotInput`; `src/main.cpp` is the Arduino
   glue (pins/power, FastLED) and the **read dimmer inputs → render LED strip outputs** loop. Keep
   the pure-vs-hardware split — it's what makes the tests possible.
 - **Generic vocabulary, not application vocabulary:** dimmer (input), LED strip (output), channel,

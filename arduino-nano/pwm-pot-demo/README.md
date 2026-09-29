@@ -1,8 +1,10 @@
-# arduino-nano/pwm
+# arduino-nano/pwm-pot-demo
 
 > Arduino Nano firmware: a potentiometer-controlled PWM output. The pot sets duty cycle (0–100%).
 
-This project lives at `arduino-nano/pwm/` in the `embedded` monorepo.
+This project lives at `arduino-nano/pwm-pot-demo/` in the `embedded` monorepo. It's an example
+app for two shared libraries: `lib/PotInput` (pot smoothing, deadzone, percent) and `lib/PwmDuty`
+(duty → `analogWrite()` / Timer1 values).
 
 ## What it does
 
@@ -51,20 +53,19 @@ don't expect it to behave correctly in the Wokwi simulator.
 
 ## Design
 
-- **`include/Pwm.h`** — hardware-free logic (unit-tested via `pio test -e native`), shared by both
-  PWM strategies:
-  - `dutyFromAdc()` / `emaStep()` — pot scaling + smoothing
-  - `gammaCorrect(percent)` — square-law correction for real-LED/eye perceptual nonlinearity (a
-    linear duty sweep looks maxed out well before 100% on real hardware). Defined and tested but
-    **not called by default** — Wokwi's simulated LED rendering already applies its own brightness
-    curve, so stacking this on top over-suppressed the bottom half of the pot's range. Wire it back
-    in (`pwm::gammaCorrect(pwm::dutyFromAdc(...))` in the loop) if driving a real LED.
+- **`lib/PotInput`** — `emaStep()`, `Deadzone`, `toPercent()`: raw pot reading → steady 0..100.
+- **`lib/PwmDuty`** — hardware-free duty math, shared by both PWM strategies:
   - `dutyToPwm8(dutyPercent)` — duty% → `analogWrite()` value, 0..255 (default path)
   - `computeTimerConfig(cpuHz, targetHz)` / `dutyToOcr(dutyPercent, top)` — frequency → Timer1
     prescaler + TOP, and duty% → `OCR1A` compare value (DirectTimer reference path)
+  - `gammaCorrect(percent)` — square-law correction for real-LED/eye perceptual nonlinearity.
+    **Not called by default** — Wokwi's simulated LED rendering already applies its own brightness
+    curve, so stacking this on top over-suppressed the bottom half of the pot's range. Wrap the
+    duty with it (`pwmduty::gammaCorrect(potinput::toPercent(...))`) if driving a real LED.
 - **`src/main.cpp`** — pins, both PWM strategies as encapsulated functions, the loop (read pot →
-  duty → whichever strategy is selected). `DEBUG_TRACE_ENABLED` (off by default) prints a
-  Teleplot-format trace (`raw`/`duty`) for debugging pot→PWM correspondence.
+  duty → whichever strategy is selected), and the Timer1 register writes. `DEBUG_TRACE_ENABLED`
+  (off by default) prints a Teleplot-format trace (`raw`/`duty`) for debugging pot→PWM
+  correspondence.
 
 Kept deliberately small — single-responsibility functions (ADC→duty, frequency→registers,
 duty→register) and no class hierarchies or interfaces.
@@ -79,12 +80,14 @@ export PATH="$HOME/.platformio/penv/bin:$PATH"
 ```
 
 ```bash
-cd arduino-nano/pwm
+cd arduino-nano/pwm-pot-demo
 pio run                 # build
 pio run -t upload       # build + flash the Nano
-pio test -e native      # off-device unit tests
 pio device monitor      # serial monitor
 ```
+
+Unit tests live with the libraries: `pio test -d lib/PotInput` and `pio test -d lib/PwmDuty` from
+the repo root.
 
 ## Wiring
 

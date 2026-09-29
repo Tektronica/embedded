@@ -13,28 +13,20 @@ fresh, debounced key press is printed to Serial and briefly lights an LED.
 This is the standalone counterpart to `arduino-nano/toy-microwave`'s identical keypad-reading
 technique — that project consumes it for one specific application (a cook-timer's digit entry);
 this project is where the technique itself lives and gets exercised on its own, the same
-relationship `pwm`/`stepper` have to the projects that actually use PWM/stepper control for
+relationship `pwm-pot-demo`/`stepper` have to the projects that actually use PWM/stepper control for
 something.
 
 ## Design
 
-- **`include/KeyMatrix.h`** — hardware-free (unit-tested via `pio test -e native`): given a raw
-  key index, debounces it (N consistent scans before committing, same pattern as
-  `led-dimmer-ws2812`'s `Button` class) and looks up the settled key's character from the
-  standard membrane layout.
-- **`include/MatrixScanner.h`** — the generic row/column GPIO scan technique: drive each row low
-  in turn, read back which column (if any) is pulled low. Knows nothing about debouncing or key
-  characters — pure physical scanning, reusing `KeyMatrix.h`'s `ROWS`/`COLS`/`NO_KEY` constants
-  so the two stay in sync. Hardware-coupled (`digitalWrite`/`digitalRead`), so unlike
-  `KeyMatrix.h` this doesn't unit-test off-device — same shape as `stepper`'s `Stepper.h` and
-  `robot-buoy`'s `Radio.h`: a generic hardware driver in its own header, separate from the
-  hardware-free logic it feeds.
-- **`src/main.cpp`** — pins, the LED pulse, and the loop that connects
-  `matrixscanner::Scanner::scan()`'s raw index to `keymatrix::Scanner::scan()`'s debounced
-  character.
+This project is the example app for two shared libraries:
 
-Kept deliberately small — two single-responsibility classes (raw scanning, debounce+lookup) and
-one thin `main.cpp` tying them together, no deeper hierarchy.
+- **`lib/KeyMatrix`** — `keymatrix::MatrixScanner`, the row/column GPIO scan: drive each row low
+  in turn, read back which column (if any) is pulled low, return a raw index or `NO_KEY`. Takes
+  its row/column counts from the app. Hardware-coupled, so it doesn't unit-test off-device.
+- **`lib/Debounce`** — `debounce::Debouncer<uint8_t>`, which commits a raw index only after the
+  same reading repeats for 3 scans in a row.
+- **`src/main.cpp`** — pins, the 4x4 `LAYOUT`, the LED pulse, and the loop: scan → debounce →
+  look up the settled index in `LAYOUT`.
 
 ## Quick start
 
@@ -49,9 +41,10 @@ export PATH="$HOME/.platformio/penv/bin:$PATH"
 cd arduino-nano/keypad
 pio run                 # build
 pio run -t upload       # build + flash the Nano
-pio test -e native      # off-device unit tests
 pio device monitor      # serial monitor (9600 baud) -- shows each key pressed
 ```
+
+Unit tests live with the libraries: `pio test -d lib/Debounce` from the repo root.
 
 ## Wiring
 
@@ -69,4 +62,5 @@ click the keypad's keys — each press prints to the Serial monitor and blinks t
 
 ## Status
 
-Built and tested (6/6 native unit tests); not yet verified against real hardware.
+Builds against `lib/KeyMatrix` and `lib/Debounce` (tested in `lib/Debounce`); not yet verified
+against real hardware.

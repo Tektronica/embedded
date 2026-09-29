@@ -24,24 +24,18 @@ project's purpose.
 
 ## Design
 
-- **`include/ET6226MCodec.h`** — hardware-free (unit-tested via `pio test -e native`):
-  `encodeDigit()` (digit 0-9 → segment byte), `encodeChar()`/`encodeText()` (ASCII character/
-  string → segment byte(s), covering space, 0-9, and A-Z — case-insensitive, since a real
-  seven-segment display has exactly one physical shape per letter; input is normalized to
-  uppercase before a single canonical lookup, so `"DONE"`/`"done"`/`"DoNe"` all render identically.
-  O is the one letter with no distinct alternative shape, so it intentionally renders the same as
-  digit 0. Values derived by bit-reversing a commonly-circulated 7-segment font that uses the
-  opposite bit order, then cross-checked against this file's own digit table),
-  `encodeDisplayControl()`
-  (brightness + on/off → the Display Control Command's data byte), and `decodeKeyCode()` (raw key
-  code → which grid/segment scan line produced it, reversing the datasheet's Key Code Command
-  table). `encodeText()` doesn't
-  wrap or scroll text longer than the destination buffer — it just stops — since nothing
-  currently needs that; a caller wanting a specific alignment (e.g. right-aligned) controls it
-  with literal leading/trailing spaces in the string.
-- **`include/ET6226M.h`** — the `ET6226M` driver class: hardware-coupled (bit-banged CLK/DAT), not
-  unit-tested. A from-scratch driver, not a third-party library wrapper — none exists for this
-  chip. The two-wire framing (start/stop conditions, byte+ACK) is shaped like TM1637's, but the
+This project is the example app for `lib/ET6226M`, with digits drawn by `lib/SevenSeg`.
+
+- **`lib/ET6226M` → `ET6226MCodec.h`** — hardware-free (unit-tested via `pio test -d lib/ET6226M`):
+  `encodeDisplayControl()` (brightness + on/off → the Display Control Command's data byte) and
+  `decodeKeyCode()` (raw key code → which grid/segment scan line produced it, reversing the
+  datasheet's Key Code Command table).
+- **`lib/SevenSeg`** — the shared 7-segment font (`encodeDigit()`, `encodeChar()`,
+  `encodeText()`). The ET6226M takes raw segment bytes, so the font is its own library rather than
+  part of the chip codec.
+- **`lib/ET6226M` → `ET6226M.h`** — the `ET6226M` driver class: hardware-coupled (bit-banged
+  CLK/DAT), not unit-tested. A from-scratch driver, not a third-party library wrapper — none
+  exists for this chip. The two-wire framing (start/stop conditions, byte+ACK) is shaped like TM1637's, but the
   bit order (MSB-first here, LSB-first on TM1637) and command set are different, so
   `TM1637Display` couldn't be reused. Its API stays centered on the chip's own model (grids 1-4,
   raw segment bytes, raw key codes, brightness/on-off) rather than on anything about what's
@@ -116,8 +110,10 @@ cd arduino-nano/display-keyscan-et6226m
 pio run                 # build
 pio run -t upload       # build + flash the Nano
 pio device monitor      # serial monitor
-pio test -e native      # off-device unit tests
 ```
+
+Unit tests live with the libraries: `pio test -d lib/ET6226M` and `pio test -d lib/SevenSeg` from
+the repo root.
 
 ## Simulate (Wokwi)
 

@@ -53,7 +53,7 @@ pio device monitor      # serial monitor
 arduino-nano/led-dimmer-ws2812/
 ├── platformio.ini       # env:arduino-nano (build/flash) + env:native (host unit tests)
 ├── include/
-│   └── LEDStripDimmer.h  # hardware-free logic: Levels, dimmer math, Palette/Mode, pixelColor, Button (unit-tested)
+│   └── LEDStripDimmer.h  # hardware-free logic: Levels, dimmer math, Palette/Mode, pixelColor (unit-tested)
 ├── src/
 │   └── main.cpp         # Arduino glue: pins, FastLED, loop = read dimmer inputs → render LED strip outputs
 ├── test/

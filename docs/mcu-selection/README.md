@@ -46,7 +46,7 @@ in this guide.
 - Programs in place via a 6-pin ISP header (MOSI, MISO, SCK, RESET, VCC, GND). Burn a bootloader
   once over ISP, then upload over 3-wire serial (RX, TX, DTR) to an external USB-to-serial adapter.
   A Nano/Uno module is the same thing with that adapter built onto the board.
-- Used in this repo: `arduino-nano/pwm`, `arduino-nano/led-dimmer-4ch`. Both run under 5% flash,
+- Used in this repo: `arduino-nano/pwm-pot-demo`, `arduino-nano/led-dimmer-4ch`. Both run under 5% flash,
   under 2% RAM.
 - Single-unit price (Digikey): $2.66-$3.03. The ATmega328PB — pin-compatible, adds a second
   USART/SPI/I2C — is cheaper: $1.63-$1.70.
@@ -261,7 +261,7 @@ and its rougher tooling (no PlatformIO support found) are acceptable.
 
 | MCU / Family | Native USB? | Bare-chip hand assembly | PlatformIO support | In-circuit programming | Best for | Watch out for |
 |---|---|---|---|---|---|---|
-| ATmega328P / 328PB (Nano/Uno) | No | Yes: DIP-28 or TQFP-32 | Official (`atmelavr`) | 6-pin ISP, then a serial bootloader | Simple I/O, PWM, ADC | 2KB of RAM; shared-timer PWM frequency limits (see `arduino-nano/pwm`) |
+| ATmega328P / 328PB (Nano/Uno) | No | Yes: DIP-28 or TQFP-32 | Official (`atmelavr`) | 6-pin ISP, then a serial bootloader | Simple I/O, PWM, ADC | 2KB of RAM; shared-timer PWM frequency limits (see `arduino-nano/pwm-pot-demo`) |
 | ATtiny (412, 1614, etc.) | No | Yes: SOIC-8/SOIC-14 | Official platform plus a third-party core, such as megaTinyCore | Single-pin UPDI | Small, single-purpose jobs; no crystal needed | Fewer pins and peripherals; extra board-package setup |
 | ATmega32U4 | Yes | Yes: TQFP-44 (skip the QFN-44 variant) | Official (`atmelavr`, board = leonardo/micro) | USB directly, after one ISP-burned bootloader | Bare-chip native USB on a familiar AVR/Arduino toolchain | Pricier than 328P/328PB ($5.26-$5.40); bootloader eats more flash; reset/enumeration quirks |
 | ATtiny85 (V-USB, software) | Yes (software, low-speed only) | Yes: SOIC-8/PDIP-8 | Official platform plus ATTinyCore; V-USB is a separate library | Same ISP/bootloader path as other AVR | Absolute cheapest USB-capable chip with Digikey/Mouser stock ($1.50) | HID-only in practice; CDC/serial is unreliable; only 2 free pins after USB |
