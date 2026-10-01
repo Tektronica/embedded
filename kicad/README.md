@@ -35,3 +35,13 @@ This writes a `sym-lib-table` next to the `.kicad_pro`. Commit it.
 2. In the schematic, right-click the symbol > Change Symbol, pick `embedded:<name>`, keep existing
    fields. Tools > Change Symbols does every instance at once.
 3. Run ERC. Zero library warnings means the link resolves.
+
+## Parts
+
+`parts.csv` lists every part on every board with its chosen MPN and supplier part numbers.
+`PARTS_POLICY.md` is the rule set that picks each one: hard filters, a ranked manufacturer
+family per category, and a fixed tie-break, so the same inputs always give the same part.
+
+The parts list is shared across boards, like the symbol library: one row per part, with a
+quantity column per board, so a part used on both boards is picked once and ordered together.
+A board's own BOM export stays in its KiCad project folder.
