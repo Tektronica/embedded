@@ -45,3 +45,21 @@ family per category, and a fixed tie-break, so the same inputs always give the s
 The parts list is shared across boards, like the symbol library: one row per part, with a
 quantity column per board, so a part used on both boards is picked once and ordered together.
 A board's own BOM export stays in its KiCad project folder.
+
+## PCB standard
+
+Target fab is JLCPCB, 2 layers. Every board uses these sizes, in mil, so a track's width tells
+you what it carries.
+
+| Item | Size | Use |
+|---|---|---|
+| Signal track | 10 mil | Logic, PWM, analog inputs |
+| Power track | 20 mil | Regulated rails, LED and switch nodes, GND stubs |
+| Input track | 60 mil | Unregulated input power |
+| Clearance | 8 mil | Default net class |
+| Via | 24 mil pad, 12 mil drill | Every via |
+| Zone | 20 mil clearance, 10 mil minimum width | Every pour |
+
+Each project carries a `Default` net class (signal) and a `Power` net class matched by net name
+pattern, so new tracks come out at the right width. Place on a 25 mil grid. Check these against
+JLCPCB's current capabilities page before ordering.
