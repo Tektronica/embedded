@@ -22,11 +22,11 @@ common ~490 Hz frequency with zero timer register configuration.
 
 ## Folders
 
-- **`KiCad/`** — schematic + PCB (KiCad 7+). The 5V buck block (`U5`, `C5`-`C8`, `D5`, `L5`) is
-  the same layout as `toy-microwave-et6226m`'s, mirrored to the front side.
-- **`datasheets/`** — reference PDFs for the key ICs (PT4115 LED driver, connector). The LM2596
-  PDFs are from the board's earlier buck regulator. The AP63205's lives in
-  `toy-microwave-et6226m/docs/buck-converter-5v/`.
+- **`hw/`** — the board's design package, laid out per `kicad/README.md`: KiCad project in
+  `hw/kicad/`, datasheets in `hw/datasheets/`, and generated `bom/`, `fab/`, and `review/`
+  outputs. The 5V buck block (`U5`, `C5`-`C8`, `D5`, `L5`) is the same layout as
+  `toy-microwave-et6226m`'s, mirrored to the front side. The LM2596 datasheets are from the board's
+  earlier buck regulator. The AP63205's lives in `toy-microwave-et6226m/hw/datasheets/`.
 - **`fw/`** — firmware, a self-contained PlatformIO project. Includes a Wokwi diagram substituting
   plain LED+resistor pairs for the PT4115 modules, to verify the 4-channel PWM/pot correspondence
   without real hardware.

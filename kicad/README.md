@@ -1,6 +1,8 @@
 # kicad
 
-Shared KiCad symbol library for every project in this repo: `embedded.kicad_sym`.
+Shared KiCad layer for every board in this repo: the symbol library `embedded.kicad_sym`, the part
+selection policy, the release tools, and the review template. Each board's own design package lives
+in `<board>/<project>/hw/`.
 
 Symbols edited inside KiCad's bundled libraries (under the app install) are overwritten by the
 next KiCad update. Custom or corrected symbols live here instead, versioned with the repo.
@@ -19,7 +21,7 @@ Preferences > Manage Symbol Libraries > Project Specific Libraries, add a row:
 | Library Path | `${KIPRJMOD}/<up>/kicad/embedded.kicad_sym` |
 
 `${KIPRJMOD}` is the folder holding the `.kicad_pro`. `<up>` is one `..` per folder between it and
-the repo root. For `<board>/<project>/KiCad/<name>/`, that is `../../../..`.
+the repo root. For `<board>/<project>/hw/kicad/`, that is `../../../..`.
 
 This writes a `sym-lib-table` next to the `.kicad_pro`. Commit it.
 
@@ -38,13 +40,47 @@ This writes a `sym-lib-table` next to the `.kicad_pro`. Commit it.
 
 ## Parts
 
-`parts.csv` lists every part on every board with its chosen MPN and supplier part numbers.
-`PARTS_POLICY.md` is the rule set that picks each one: hard filters, a ranked manufacturer
-family per category, and a fixed tie-break, so the same inputs always give the same part.
+`parts.csv` records each selected part once, with its rule, MPN, supplier part numbers, status, and
+the search notes behind the pick. `PARTS_POLICY.md` is the rule set that picks each one: hard
+filters, a ranked manufacturer family per category, and a fixed tie-break, so the same inputs always
+give the same part.
 
-The parts list is shared across boards, like the symbol library: one row per part, with a
-quantity column per board, so a part used on both boards is picked once and ordered together.
-A board's own BOM export stays in its KiCad project folder.
+The pick is written into the schematic as symbol fields: `MPN`, `Manufacturer`, `Digi-Key`,
+`Mouser`, and `LCSC` where one exists. Quantities and reference designators come from the
+schematic only, so each board's BOM exports with identical columns and no second source to drift.
+
+`tools/combine_boms.py order-bom.csv` merges every board's `hw/bom/*-bom.csv` into one order
+list grouped by MPN, with a per-board breakdown.
+
+## Board design package
+
+Every board uses the same layout:
+
+```
+<board>/<project>/
+  fw/                    PlatformIO firmware
+  hw/
+    kicad/               <name>.kicad_pro, .kicad_sch, .kicad_pcb, sym-lib-table
+    datasheets/          PDFs for the parts on this board
+    mech/                enclosure drawings, exported STEP
+    bom/<name>-bom.csv   Reference, Qty, Value, Footprint, MPN, Manufacturer, Digi-Key, Mouser, LCSC
+    fab/                 JLCPCB upload: gerbers/ (Gerbers, PTH and NPTH drill, IPC-D-356 netlist) and <name>-<rev>-gerbers.zip
+    review/              schematic and layout PDFs, KiCad netlist, 3D renders, ERC and DRC reports, REVIEW.md
+```
+
+`tools/release.sh <project>/hw` regenerates `bom/`, `fab/`, `review/`, and the STEP file from the
+KiCad project. The revision comes from the schematic title block (`rev` field) and is stamped into
+every output name. `--assembly` also writes a JLCPCB CPL and assembly BOM into `fab/`, for when
+JLCPCB places parts.
+
+Gerbers follow JLCPCB's KiCad guide: copper, mask, silkscreen, and Edge.Cuts layers, Protel
+extensions, X2 with netlist attributes, and Excellon drill in mm with separate PTH and NPTH files,
+zipped into one archive for the uploader. The IPC-D-356 netlist rides in the same zip for the fab
+house's bare-board electrical test.
+
+A revision is released when `review/REVIEW.md` is complete. Its checklist is copied from
+`templates/REVIEW.md`. Commit the outputs together with the signed-off checklist, then tag the
+commit `<name>-<rev>`.
 
 ## PCB standard
 

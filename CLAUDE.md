@@ -7,7 +7,8 @@ A personal monorepo of Arduino/embedded firmware projects, one PlatformIO projec
 - `[board]/[kebab-case-project]/` — board = chip/platform (`arduino-nano`, `attiny`, `esp32`, ...),
   project in kebab-case (e.g. `arduino-nano/led-dimmer-ws2812/`).
 - Each project folder is self-contained except for shared libraries: its own `platformio.ini`,
-  `include/`/`src/`/`test/`, `docs/`, `README.md`, and `CLAUDE.md`.
+  `include/`/`src/`/`test/`, `docs/`, `README.md`, and `CLAUDE.md`. A project with a custom board
+  puts its firmware in `fw/` and its design package in `hw/`, laid out per `kicad/README.md`.
 - Logic lives once in `lib/<Name>/` (header-only, hardware-free, its own `library.json` and
   `test/`) when two or more projects use it, or when a project exists to demonstrate it. Projects
   pull it in with `lib_deps = symlink://<path>/lib/<Name>` in every env that includes it. A

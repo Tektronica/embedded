@@ -12,7 +12,7 @@ as a reference once this project moved to the ET6226M.
 
 | Qty | Role (generic) | Part chosen | Notes |
 |---|---|---|---|
-| 1 | 4-digit 7-segment display | Kingbright CC56-12SURKWA, common cathode | Per `KiCad/microwave`'s schematic (`U2`). Driven entirely through the ET6226M -- no separate display driver chip. Must be common cathode: the ET6226M's SG pins source current and its GR pins sink it. Pin-for-pin with the CA56-12 footprint. |
+| 1 | 4-digit 7-segment display | Kingbright CC56-12SURKWA, common cathode | Per `hw/kicad`'s schematic (`U2`). Driven entirely through the ET6226M -- no separate display driver chip. Must be common cathode: the ET6226M's SG pins source current and its GR pins sink it. Pin-for-pin with the CA56-12 footprint. |
 | 1 | Display + keypad-scan driver | UMW ET6226M (SOP-16) | Per the schematic (`U5`). Two-wire CLK/DAT to the MCU; drives the display's 4 digits and scans the 16-key matrix, sharing its GR/SG lines with the display per the schematic's `SEG_x/ROWn` and `DIG_CAn/COLn` nets. Runs in `EightSegment` mode, since `DP/KP` is wired directly to the display's shared DP line, not into the key matrix. |
 | 16 | Keyswitches | Cherry MX-style (`MX1`-`MX16` in the schematic) | Diode-per-key matrix (`D1`-`D16`), `SG1-4` as rows / `GR1-4` as columns -- the same 4x4 layout and key legends (`1-9,0,*,#,A-D`) as `toy-microwave-tm1637`'s membrane keypad, just wired through the ET6226M instead of directly to the MCU. |
 | 1 | Buzzer (done/alert tone, button feedback, running hum) | 12085 buzzer, 12×8.5mm, 42Ω, 3–12V | Sold in a 20-pack. Passive, electromagnetic (the 42Ω is its coil) — driven via `tone()`/PWM; also layers a quiet low-frequency tone during Running, alongside the fan and motor, for the ambient hum. |
@@ -26,7 +26,7 @@ reach `J2`, with no driver on this board. Don't connect a 12V load to `J2` direc
 
 ## Firmware
 
-PlatformIO project (`platformio.ini`, `include/`, `src/`, `test/`) built on the shared libraries in `lib/`, fully wired up:
+PlatformIO project in `fw/` (`platformio.ini`, `include/`, `src/`, `test/`) built on the shared libraries in `lib/`, fully wired up:
 
 - **`lib/SevenSeg`** — the shared 7-segment font (`encodeDigit()`, `encodeText()`, used to render "End"), `secondsToDigits()` for the MM:SS / HH:MM digit pairs, and `blinkOn()`, used to blank the display while ClockSet.
 - **`Buzzer.h`** — this app's sounds (key press, done: 4 beeps, error, and the continuous Running hum) as `{frequency, duration}` step tables played by `lib/ToneSequence`. `toneStateFor()`/`isFinished()` are thin wrappers, and `isFinished()` waits for a pattern's whole sequence, not just its current on/off phase.
@@ -59,7 +59,7 @@ PlatformIO project (`platformio.ini`, `include/`, `src/`, `test/`) built on the 
 
 `C`/`D` are left open for future features (e.g. a light toggle or a child-lock) rather than
 assigned speculatively now. `main.cpp`'s `translateKey()` maps each key legend onto its confirmed
-`(grid, segment)` scan position (`KiCad/microwave`'s schematic: `SG1-4`=rows, `GR1-4`=columns) --
+`(grid, segment)` scan position (`hw/kicad`'s schematic: `SG1-4`=rows, `GR1-4`=columns) --
 this LAYOUT table is the only place a different physical keycap arrangement would need updating;
 the electrical wiring stays the same regardless of which legend is assigned where.
 
@@ -68,9 +68,17 @@ uses the same DP-bit-on-one-grid trick `toy-microwave-tm1637` used with TM1637, 
 the schematic rather than guessed — the Kingbright display's shared DP line is wired straight to
 the ET6226M's `DP/KP` pin (`EightSegment` mode).
 
-Pin assignments, per `KiCad/microwave`: ET6226M `CLK`/`DAT` on D8/D9, buzzer D10, motor D11, fan
+Pin assignments, per `hw/kicad`: ET6226M `CLK`/`DAT` on D8/D9, buzzer D10, motor D11, fan
 D12, light D13. The old TM1637 approach's 8 matrix row/column pins are gone entirely — the keypad
 is scanned by the ET6226M, not the MCU.
+
+## Folders
+
+- **`fw/`** — firmware, a self-contained PlatformIO project (details under Firmware above).
+- **`hw/`** — the board's design package, laid out per `kicad/README.md`: KiCad project in
+  `hw/kicad/`, datasheets in `hw/datasheets/`, the Onshape enclosure template in
+  `hw/mech/enclosure-template.dxf`, and generated `bom/`, `fab/`, and `review/` outputs.
+- **`docs/`** — design notes: the buck converter change and the ET6226M wiring diagram.
 
 ## Quick start
 
@@ -82,7 +90,7 @@ export PATH="$HOME/.platformio/penv/bin:$PATH"
 ```
 
 ```bash
-cd arduino-nano/toy-microwave-et6226m
+cd arduino-nano/toy-microwave-et6226m/fw
 pio run                 # build
 pio run -t upload       # build + flash the Nano
 pio device monitor      # serial monitor
@@ -95,6 +103,6 @@ Not available — the ET6226M isn't a part Wokwi supports.
 
 ## Status
 
-Schematic exists (`KiCad/microwave`): ET6226M-driven display and 16-key diode matrix, Arduino
+Schematic exists (`hw/kicad`): ET6226M-driven display and 16-key diode matrix, Arduino
 Nano module. Firmware logic is implemented and tested (31 unit tests across `Buzzer.h` and `Microwave.h`,
 plus each shared library's own tests) against that schematic, but not yet run on real hardware.
