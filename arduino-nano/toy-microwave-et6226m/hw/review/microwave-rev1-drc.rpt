@@ -1,0 +1,210 @@
+** Drc report for microwave.kicad_pcb **
+** Created on 2026-10-11T15:14:47 **
+** Report includes: Errors, Warnings **
+
+** Found 48 DRC violations **
+[npth_inside_courtyard]: NPTH inside courtyard
+    Local override; error
+    @(40.0050 mm, 130.1750 mm): NPTH pad of MX9
+    @(38.1000 mm, 130.9688 mm): Footprint D9
+[npth_inside_courtyard]: NPTH inside courtyard
+    Local override; error
+    @(59.0550 mm, 130.1750 mm): NPTH pad of MX10
+    @(57.1500 mm, 130.9688 mm): Footprint D10
+[npth_inside_courtyard]: NPTH inside courtyard
+    Local override; error
+    @(78.1050 mm, 92.0750 mm): NPTH pad of MX3
+    @(76.2000 mm, 92.8688 mm): Footprint D3
+[npth_inside_courtyard]: NPTH inside courtyard
+    Local override; error
+    @(97.1550 mm, 92.0750 mm): NPTH pad of MX4
+    @(95.2500 mm, 92.8688 mm): Footprint D4
+[npth_inside_courtyard]: NPTH inside courtyard
+    Local override; error
+    @(40.0050 mm, 92.0750 mm): NPTH pad of MX1
+    @(38.1000 mm, 92.8688 mm): Footprint D1
+[npth_inside_courtyard]: NPTH inside courtyard
+    Local override; error
+    @(78.1050 mm, 111.1250 mm): NPTH pad of MX7
+    @(76.2000 mm, 111.9188 mm): Footprint D7
+[npth_inside_courtyard]: NPTH inside courtyard
+    Local override; error
+    @(40.0050 mm, 149.2250 mm): NPTH pad of MX13
+    @(38.1000 mm, 150.0188 mm): Footprint D13
+[npth_inside_courtyard]: NPTH inside courtyard
+    Local override; error
+    @(97.1550 mm, 111.1250 mm): NPTH pad of MX8
+    @(95.2500 mm, 111.9188 mm): Footprint D8
+[npth_inside_courtyard]: NPTH inside courtyard
+    Local override; error
+    @(40.0050 mm, 111.1250 mm): NPTH pad of MX5
+    @(38.1000 mm, 111.9188 mm): Footprint D5
+[npth_inside_courtyard]: NPTH inside courtyard
+    Local override; error
+    @(59.0550 mm, 149.2250 mm): NPTH pad of MX14
+    @(57.1500 mm, 150.0188 mm): Footprint D14
+[npth_inside_courtyard]: NPTH inside courtyard
+    Local override; error
+    @(97.1550 mm, 130.1750 mm): NPTH pad of MX12
+    @(95.2500 mm, 130.9688 mm): Footprint D12
+[npth_inside_courtyard]: NPTH inside courtyard
+    Local override; error
+    @(59.0550 mm, 92.0750 mm): NPTH pad of MX2
+    @(57.1500 mm, 92.8688 mm): Footprint D2
+[npth_inside_courtyard]: NPTH inside courtyard
+    Local override; error
+    @(97.1550 mm, 149.2250 mm): NPTH pad of MX16
+    @(95.2500 mm, 149.9563 mm): Footprint D16
+[npth_inside_courtyard]: NPTH inside courtyard
+    Local override; error
+    @(59.0550 mm, 111.1250 mm): NPTH pad of MX6
+    @(57.1500 mm, 111.9188 mm): Footprint D6
+[npth_inside_courtyard]: NPTH inside courtyard
+    Local override; error
+    @(78.1050 mm, 130.1750 mm): NPTH pad of MX11
+    @(76.2000 mm, 130.9688 mm): Footprint D11
+[npth_inside_courtyard]: NPTH inside courtyard
+    Local override; error
+    @(78.1050 mm, 149.2250 mm): NPTH pad of MX15
+    @(76.2000 mm, 150.0188 mm): Footprint D15
+[silk_over_copper]: Silkscreen clipped by solder mask
+    Local override; warning
+    @(97.2500 mm, 92.8688 mm): Reference field of D4
+    @(97.1550 mm, 92.0750 mm): NPTH pad of MX4
+[silk_over_copper]: Silkscreen clipped by solder mask
+    Local override; warning
+    @(96.2500 mm, 95.2288 mm): Segment of D4 on B.Silkscreen
+    @(97.1550 mm, 92.0750 mm): NPTH pad of MX4
+[silk_over_copper]: Silkscreen clipped by solder mask
+    Local override; warning
+    @(78.2000 mm, 111.9188 mm): Reference field of D7
+    @(78.1050 mm, 111.1250 mm): NPTH pad of MX7
+[silk_over_copper]: Silkscreen clipped by solder mask
+    Local override; warning
+    @(97.2500 mm, 111.9188 mm): Reference field of D8
+    @(97.1550 mm, 111.1250 mm): NPTH pad of MX8
+[silk_over_copper]: Silkscreen clipped by solder mask
+    Local override; warning
+    @(77.2000 mm, 114.2788 mm): Segment of D7 on B.Silkscreen
+    @(78.1050 mm, 111.1250 mm): NPTH pad of MX7
+[silk_over_copper]: Silkscreen clipped by solder mask
+    Local override; warning
+    @(96.2500 mm, 114.2788 mm): Segment of D8 on B.Silkscreen
+    @(97.1550 mm, 111.1250 mm): NPTH pad of MX8
+[silk_over_copper]: Silkscreen clipped by solder mask
+    Local override; warning
+    @(78.2000 mm, 130.9688 mm): Reference field of D11
+    @(78.1050 mm, 130.1750 mm): NPTH pad of MX11
+[silk_over_copper]: Silkscreen clipped by solder mask
+    Local override; warning
+    @(77.2000 mm, 133.3288 mm): Segment of D11 on B.Silkscreen
+    @(78.1050 mm, 130.1750 mm): NPTH pad of MX11
+[silk_over_copper]: Silkscreen clipped by solder mask
+    Local override; warning
+    @(97.2500 mm, 149.9563 mm): Reference field of D16
+    @(97.1550 mm, 149.2250 mm): NPTH pad of MX16
+[silk_over_copper]: Silkscreen clipped by solder mask
+    Local override; warning
+    @(97.2500 mm, 130.9688 mm): Reference field of D12
+    @(97.1550 mm, 130.1750 mm): NPTH pad of MX12
+[silk_over_copper]: Silkscreen clipped by solder mask
+    Local override; warning
+    @(96.2500 mm, 133.3288 mm): Segment of D12 on B.Silkscreen
+    @(97.1550 mm, 130.1750 mm): NPTH pad of MX12
+[silk_over_copper]: Silkscreen clipped by solder mask
+    Local override; warning
+    @(96.2500 mm, 152.3162 mm): Segment of D16 on B.Silkscreen
+    @(97.1550 mm, 149.2250 mm): NPTH pad of MX16
+[silk_over_copper]: Silkscreen clipped by solder mask
+    Local override; warning
+    @(78.2000 mm, 150.0188 mm): Reference field of D15
+    @(78.1050 mm, 149.2250 mm): NPTH pad of MX15
+[silk_over_copper]: Silkscreen clipped by solder mask
+    Local override; warning
+    @(40.1000 mm, 130.9688 mm): Reference field of D9
+    @(40.0050 mm, 130.1750 mm): NPTH pad of MX9
+[silk_over_copper]: Silkscreen clipped by solder mask
+    Local override; warning
+    @(39.1000 mm, 133.3288 mm): Segment of D9 on B.Silkscreen
+    @(40.0050 mm, 130.1750 mm): NPTH pad of MX9
+[silk_over_copper]: Silkscreen clipped by solder mask
+    Local override; warning
+    @(40.1000 mm, 150.0188 mm): Reference field of D13
+    @(40.0050 mm, 149.2250 mm): NPTH pad of MX13
+[silk_over_copper]: Silkscreen clipped by solder mask
+    Local override; warning
+    @(59.1500 mm, 150.0188 mm): Reference field of D14
+    @(59.0550 mm, 149.2250 mm): NPTH pad of MX14
+[silk_over_copper]: Silkscreen clipped by solder mask
+    Local override; warning
+    @(59.1500 mm, 130.9688 mm): Reference field of D10
+    @(59.0550 mm, 130.1750 mm): NPTH pad of MX10
+[silk_over_copper]: Silkscreen clipped by solder mask
+    Local override; warning
+    @(58.1500 mm, 133.3288 mm): Segment of D10 on B.Silkscreen
+    @(59.0550 mm, 130.1750 mm): NPTH pad of MX10
+[silk_over_copper]: Silkscreen clipped by solder mask
+    Local override; warning
+    @(40.1000 mm, 111.9188 mm): Reference field of D5
+    @(40.0050 mm, 111.1250 mm): NPTH pad of MX5
+[silk_over_copper]: Silkscreen clipped by solder mask
+    Local override; warning
+    @(39.1000 mm, 114.2788 mm): Segment of D5 on B.Silkscreen
+    @(40.0050 mm, 111.1250 mm): NPTH pad of MX5
+[silk_over_copper]: Silkscreen clipped by solder mask
+    Local override; warning
+    @(59.1500 mm, 111.9188 mm): Reference field of D6
+    @(59.0550 mm, 111.1250 mm): NPTH pad of MX6
+[silk_over_copper]: Silkscreen clipped by solder mask
+    Local override; warning
+    @(58.1500 mm, 114.2788 mm): Segment of D6 on B.Silkscreen
+    @(59.0550 mm, 111.1250 mm): NPTH pad of MX6
+[silk_over_copper]: Silkscreen clipped by solder mask
+    Local override; warning
+    @(39.1000 mm, 152.3787 mm): Segment of D13 on B.Silkscreen
+    @(40.0050 mm, 149.2250 mm): NPTH pad of MX13
+[silk_over_copper]: Silkscreen clipped by solder mask
+    Local override; warning
+    @(58.1500 mm, 152.3787 mm): Segment of D14 on B.Silkscreen
+    @(59.0550 mm, 149.2250 mm): NPTH pad of MX14
+[silk_over_copper]: Silkscreen clipped by solder mask
+    Local override; warning
+    @(77.2000 mm, 152.3787 mm): Segment of D15 on B.Silkscreen
+    @(78.1050 mm, 149.2250 mm): NPTH pad of MX15
+[silk_over_copper]: Silkscreen clipped by solder mask
+    Local override; warning
+    @(59.1500 mm, 92.8688 mm): Reference field of D2
+    @(59.0550 mm, 92.0750 mm): NPTH pad of MX2
+[silk_over_copper]: Silkscreen clipped by solder mask
+    Local override; warning
+    @(58.1500 mm, 95.2288 mm): Segment of D2 on B.Silkscreen
+    @(59.0550 mm, 92.0750 mm): NPTH pad of MX2
+[silk_over_copper]: Silkscreen clipped by solder mask
+    Local override; warning
+    @(40.1000 mm, 92.8688 mm): Reference field of D1
+    @(40.0050 mm, 92.0750 mm): NPTH pad of MX1
+[silk_over_copper]: Silkscreen clipped by solder mask
+    Local override; warning
+    @(39.1000 mm, 95.2288 mm): Segment of D1 on B.Silkscreen
+    @(40.0050 mm, 92.0750 mm): NPTH pad of MX1
+[silk_over_copper]: Silkscreen clipped by solder mask
+    Local override; warning
+    @(78.2000 mm, 92.8688 mm): Reference field of D3
+    @(78.1050 mm, 92.0750 mm): NPTH pad of MX3
+[silk_over_copper]: Silkscreen clipped by solder mask
+    Local override; warning
+    @(77.2000 mm, 95.2288 mm): Segment of D3 on B.Silkscreen
+    @(78.1050 mm, 92.0750 mm): NPTH pad of MX3
+
+** Found 0 unconnected pads **
+
+** Found 0 Footprint errors **
+
+** Ignored checks **
+    - Footprint has no courtyard defined
+    - Track endpoint not centered on via
+    - Tuning profile track geometries
+    - Footprint doesn't match symbol's footprint filters
+    - Footprint component type doesn't match footprint pads
+
+** End of Report **

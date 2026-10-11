@@ -1,0 +1,24 @@
+MPN,Manufacturer,Digi-Key,Mouser,LCSC,Value,Footprint,Qty,Boards
+1715721,Phoenix Contact,277-1263-ND,651-1715721,,Screw_Terminal_01x02,"TerminalBlock_Phoenix:TerminalBlock_Phoenix_MKDS-1,5-2-5.08_1x02_P5.08mm_Horizontal",1,led-dimmer-4ch x1 (J1)
+1715747,Phoenix Contact,277-1265-ND,651-1715747,,Screw_Terminal_01x04,"TerminalBlock_Phoenix:TerminalBlock_Phoenix_MKDS-1,5-4-5.08_1x04_P5.08mm_Horizontal",6,"led-dimmer-4ch x4 (J2-J5); microwave x2 (J1,J2)"
+1N4148W-7-F,Diodes Inc,1N4148W-FDICT-ND,621-1N4148W-F,,1N4148W,Diode_SMD:D_SOD-123,16,microwave x16 (D1-D16)
+AO3400A,Alpha & Omega,785-1000-1-ND,,,AO3400A,Package_TO_SOT_SMD:SOT-23,1,microwave x1 (Q2)
+AP63205WU-7,Diodes Inc,AP63205WU-7DICT-ND,621-AP63205WU-7,,AP63205WU,Package_TO_SOT_SMD:TSOT-23-6,2,led-dimmer-4ch x1 (U5); microwave x1 (U1)
+C0805C101J1GAC7210,KEMET,399-C0805C101J1GAC7210CT-ND,80-C0805C101J1G7210,,100pF,Capacitor_SMD:C_0805_2012Metric_Pad1.18x1.45mm_HandSolder,2,"microwave x2 (C1,C2)"
+C0805C104M5RACAUTO,KEMET,399-12977-1-ND,80-C0805C104M5RAUTO,,100nF,Capacitor_SMD:C_0805_2012Metric_Pad1.18x1.45mm_HandSolder,6,"led-dimmer-4ch x5 (C6,C9-C12); microwave x1 (C5)"
+C0805C105K3RACAUTO,KEMET,399-6929-1-ND,80-C0805C105K3RAUTO,,1uF,Capacitor_SMD:C_0805_2012Metric_Pad1.18x1.45mm_HandSolder,1,microwave x1 (C3)
+C1210C475K5RACAUTO7210,KEMET,399-C1210C475K5RACAUTO7210CT-ND,80-C1210C475K5RAULR,,4.7uF,Capacitor_SMD:C_1210_3225Metric_Pad1.33x2.70mm_HandSolder,4,led-dimmer-4ch x4 (C1-C4)
+CC56-12SURKWA,Kingbright,754-CC56-12SURKWA-ND,604-CC5612SURKWA,,CC56-12SURKWA,Display_7Segment:CA56-12SURKWA,1,microwave x1 (U2)
+CL32A226MAJNNNE,Samsung,1276-3373-1-ND,187-CL32A226MAJNNNE,,22uF,Capacitor_SMD:C_1210_3225Metric_Pad1.33x2.70mm_HandSolder,4,"led-dimmer-4ch x2 (C7,C8); microwave x2 (C6,C7)"
+ET6226M,UMW,4518-ET6226MCT-ND,,,ET6226M,Package_SO:SOP-16_4.4x10.4mm_P1.27mm,1,microwave x1 (U5)
+KDV08FR360ET,Ohmite,273-KDV08FR360ETCT-ND,588-KDV08FR360ET,,0.360,Resistor_SMD:R_0805_2012Metric_Pad1.20x1.40mm_HandSolder,4,led-dimmer-4ch x4 (R1-R4)
+LQH55DN4R7M03L,Murata,490-LQH55DN4R7M03LCT-ND,81-LQH55DN4R7M03L,,4.7uH,Inductor_SMD:L_Murata_LQH55DN_5.7x5.0mm,2,led-dimmer-4ch x1 (L5); microwave x1 (L1)
+MSS1038-104MLC,Coilcraft,,994-MSS1038-104MLC,,100uH,Inductor_SMD:L_Coilcraft_MSS1038-XXX,4,led-dimmer-4ch x4 (L1-L4)
+PT4115,UMW,4518-PT4115CT-ND,,,PT4115,Package_TO_SOT_SMD:SOT-89-5_Handsoldering,4,led-dimmer-4ch x4 (U1-U4)
+RC0805FR-07100RL,Yageo,311-100CRCT-ND,603-RC0805FR-07100RL,,100,Resistor_SMD:R_0805_2012Metric_Pad1.20x1.40mm_HandSolder,3,"microwave x3 (R5,R6,R9)"
+RC0805FR-0710KL,Yageo,311-10.0KCRCT-ND,603-RC0805FR-0710KL,,10k,Resistor_SMD:R_0805_2012Metric_Pad1.20x1.40mm_HandSolder,4,led-dimmer-4ch x4 (R5-R8)
+RC0805FR-072KL,Yageo,311-2.00KCRCT-ND,603-RC0805FR-072KL,,2k,Resistor_SMD:R_0805_2012Metric_Pad1.20x1.40mm_HandSolder,4,microwave x4 (R1-R4)
+RC0805FR-074K7L,Yageo,311-4.70KCRCT-ND,603-RC0805FR-074K7L,,4.7k,Resistor_SMD:R_0805_2012Metric_Pad1.20x1.40mm_HandSolder,3,"microwave x3 (R7,R8,R10)"
+SS14-E3/61T,Vishay,SS14-E3/61TGICT-ND,625-SS14-E3,,SS14,Diode_SMD:D_SMA,7,"led-dimmer-4ch x5 (D1-D5); microwave x2 (D17,D18)"
+TMK325AB7106MMHPR,Taiyo Yuden,587-TMK325AB7106MMHPRCT-ND,963-TMK325AB7106MMPR,,10uF,Capacitor_SMD:C_1210_3225Metric_Pad1.33x2.70mm_HandSolder,2,led-dimmer-4ch x1 (C5); microwave x1 (C4)
+WT-1205,Soberton Inc.,433-1028-ND,,,Buzzer,Buzzer_Beeper:Buzzer_12x9.5RM7.6,1,microwave x1 (BZ1)
