@@ -19,7 +19,7 @@ namespace
 
   constexpr uint16_t BLINK_PERIOD_MS = 1000;            // colon/display blink cycle while ClockSet/Done
   constexpr uint32_t DONE_REMINDER_INTERVAL_MS = 10000; // re-beep this often if Done goes unacknowledged
-  // The schematic ties DP/KP directly to the display's shared DP line (see KiCad/microwave), so
+  // The schematic ties DP/KP directly to the display's shared DP line (see hw/kicad), so
   // this driver runs in EightSegment mode -- DP is a real, per-grid-multiplexed segment here, not
   // freed for a keyboard-scan role. COLON_DIGIT_INDEX picks which grid's time slot also asserts DP,
   // the same trick the old TM1637 approach used for its colon.
@@ -37,7 +37,7 @@ namespace
   uint32_t doneReminderMs = 0; // last time the Done reminder beeped (or Done began)
 
   // Map a debounced (grid, segment) reading to a microwave::Event. Confirmed against
-  // KiCad/microwave's schematic: the 16-key matrix is SG1-4 (rows) x GR1-4 (columns), one diode per
+  // hw/kicad's schematic: the 16-key matrix is SG1-4 (rows) x GR1-4 (columns), one diode per
   // key, reusing the display's own segment/grid lines (see the netlist's SEG_x/ROWn and
   // DIG_CAn/COLn nets). LAYOUT keeps the old 4x4 keypad's visual arrangement; which legend ends up
   // printed on which physical keycap is a separate decision that doesn't affect this electrical

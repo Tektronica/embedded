@@ -89,7 +89,6 @@
 		)
 		(capping no)
 		(filling no)
-		(zone_defaults)
 		(grid_origin 25.4 25.4)
 		(pcbplotparams
 			(layerselection 0x00000000_00000000_55555555_5755f5ff)
@@ -188,7 +187,7 @@
 				(pins "1" "2")
 			)
 		)
-		(attr through_hole)
+		(attr through_hole exclude_from_bom)
 		(duplicate_pad_numbers_are_jumpers no)
 		(fp_line
 			(start -9.525 -9.525)
@@ -470,7 +469,7 @@
 				(pins "1" "2")
 			)
 		)
-		(attr through_hole)
+		(attr through_hole exclude_from_bom)
 		(duplicate_pad_numbers_are_jumpers no)
 		(fp_line
 			(start -9.525 -9.525)
@@ -752,7 +751,7 @@
 				(pins "1" "2")
 			)
 		)
-		(attr through_hole)
+		(attr through_hole exclude_from_bom)
 		(duplicate_pad_numbers_are_jumpers no)
 		(fp_line
 			(start -9.525 -9.525)
@@ -1034,7 +1033,7 @@
 				(pins "1" "2")
 			)
 		)
-		(attr through_hole)
+		(attr through_hole exclude_from_bom)
 		(duplicate_pad_numbers_are_jumpers no)
 		(fp_line
 			(start -9.525 -9.525)
@@ -1444,7 +1443,7 @@
 				(pins "1" "2")
 			)
 		)
-		(attr through_hole)
+		(attr through_hole exclude_from_bom)
 		(duplicate_pad_numbers_are_jumpers no)
 		(fp_line
 			(start -9.525 -9.525)
@@ -1726,7 +1725,7 @@
 				(pins "1" "2")
 			)
 		)
-		(attr through_hole)
+		(attr through_hole exclude_from_bom)
 		(duplicate_pad_numbers_are_jumpers no)
 		(fp_line
 			(start -9.525 -9.525)
@@ -2008,7 +2007,7 @@
 				(pins "1" "2")
 			)
 		)
-		(attr through_hole)
+		(attr through_hole exclude_from_bom)
 		(duplicate_pad_numbers_are_jumpers no)
 		(fp_line
 			(start -9.525 -9.525)
@@ -2290,7 +2289,7 @@
 				(pins "1" "2")
 			)
 		)
-		(attr through_hole)
+		(attr through_hole exclude_from_bom)
 		(duplicate_pad_numbers_are_jumpers no)
 		(fp_line
 			(start -9.525 -9.525)
@@ -2572,7 +2571,7 @@
 				(pins "1" "2")
 			)
 		)
-		(attr through_hole)
+		(attr through_hole exclude_from_bom)
 		(duplicate_pad_numbers_are_jumpers no)
 		(fp_line
 			(start -9.525 -9.525)
@@ -2854,7 +2853,7 @@
 				(pins "1" "2")
 			)
 		)
-		(attr through_hole)
+		(attr through_hole exclude_from_bom)
 		(duplicate_pad_numbers_are_jumpers no)
 		(fp_line
 			(start -9.525 -9.525)
@@ -3136,7 +3135,7 @@
 				(pins "1" "2")
 			)
 		)
-		(attr through_hole)
+		(attr through_hole exclude_from_bom)
 		(duplicate_pad_numbers_are_jumpers no)
 		(fp_line
 			(start -9.525 -9.525)
@@ -3418,7 +3417,7 @@
 				(pins "1" "2")
 			)
 		)
-		(attr through_hole)
+		(attr through_hole exclude_from_bom)
 		(duplicate_pad_numbers_are_jumpers no)
 		(fp_line
 			(start -9.525 -9.525)
@@ -3828,7 +3827,7 @@
 				(pins "1" "2")
 			)
 		)
-		(attr through_hole)
+		(attr through_hole exclude_from_bom)
 		(duplicate_pad_numbers_are_jumpers no)
 		(fp_line
 			(start -9.525 -9.525)
@@ -4232,6 +4231,54 @@
 				)
 			)
 		)
+		(property "MPN" "CC56-12SURKWA"
+			(at 0 0 0)
+			(layer "F.SilkS")
+			(hide yes)
+			(uuid "4d6cec18-492d-430f-bd4d-263194db9945")
+			(effects
+				(font
+					(size 1.27 1.27)
+					(thickness 0.15)
+				)
+			)
+		)
+		(property "Manufacturer" "Kingbright"
+			(at 0 0 0)
+			(layer "F.SilkS")
+			(hide yes)
+			(uuid "013f1788-5544-4125-a10f-a3eb896a6b38")
+			(effects
+				(font
+					(size 1.27 1.27)
+					(thickness 0.15)
+				)
+			)
+		)
+		(property "Digi-Key" "754-CC56-12SURKWA-ND"
+			(at 0 0 0)
+			(layer "F.SilkS")
+			(hide yes)
+			(uuid "0e832083-d750-4293-8af5-bc4ad9cfd270")
+			(effects
+				(font
+					(size 1.27 1.27)
+					(thickness 0.15)
+				)
+			)
+		)
+		(property "Mouser" "604-CC5612SURKWA"
+			(at 0 0 0)
+			(layer "F.SilkS")
+			(hide yes)
+			(uuid "91fc0283-4143-4c5c-bcf2-7ed5076c7992")
+			(effects
+				(font
+					(size 1.27 1.27)
+					(thickness 0.15)
+				)
+			)
+		)
 		(property ki_fp_filters "*CA56*12SURKWA*")
 		(path "/654df861-1b32-4d75-8891-56f387317808")
 		(sheetname "/")
@@ -4620,7 +4667,7 @@
 				(pins "1" "2")
 			)
 		)
-		(attr through_hole)
+		(attr through_hole exclude_from_bom)
 		(duplicate_pad_numbers_are_jumpers no)
 		(fp_line
 			(start -9.525 -9.525)
@@ -5030,7 +5077,7 @@
 				(pins "1" "2")
 			)
 		)
-		(attr through_hole)
+		(attr through_hole exclude_from_bom)
 		(duplicate_pad_numbers_are_jumpers no)
 		(fp_line
 			(start -9.525 -9.525)
@@ -5312,7 +5359,7 @@
 				(pins "1" "2")
 			)
 		)
-		(attr through_hole)
+		(attr through_hole exclude_from_bom)
 		(duplicate_pad_numbers_are_jumpers no)
 		(fp_line
 			(start -9.525 -9.525)
@@ -5620,6 +5667,54 @@
 				(justify mirror)
 			)
 		)
+		(property "MPN" "1N4148W-7-F"
+			(at 0 0 0)
+			(layer "B.SilkS")
+			(hide yes)
+			(uuid "0163b298-46ae-43be-8ce8-c8946be51f76")
+			(effects
+				(font
+					(size 1.27 1.27)
+					(thickness 0.15)
+				)
+			)
+		)
+		(property "Manufacturer" "Diodes Inc"
+			(at 0 0 0)
+			(layer "B.SilkS")
+			(hide yes)
+			(uuid "155d523f-3e28-4298-aa64-7909b6375f94")
+			(effects
+				(font
+					(size 1.27 1.27)
+					(thickness 0.15)
+				)
+			)
+		)
+		(property "Digi-Key" "1N4148W-FDICT-ND"
+			(at 0 0 0)
+			(layer "B.SilkS")
+			(hide yes)
+			(uuid "1fb6ba45-bd9d-48f1-a7dd-db7dc5c5543d")
+			(effects
+				(font
+					(size 1.27 1.27)
+					(thickness 0.15)
+				)
+			)
+		)
+		(property "Mouser" "621-1N4148W-F"
+			(at 0 0 0)
+			(layer "B.SilkS")
+			(hide yes)
+			(uuid "1493d5cb-cca5-4afb-b246-85b67a45b948")
+			(effects
+				(font
+					(size 1.27 1.27)
+					(thickness 0.15)
+				)
+			)
+		)
 		(property ki_fp_filters "TO-???* *_Diode_* *SingleDiode* D_*")
 		(path "/cffbc00e-c307-48d7-b1f0-1670603c78a9")
 		(sheetname "/")
@@ -5915,6 +6010,54 @@
 				(justify mirror)
 			)
 		)
+		(property "MPN" "SS14-E3/61T"
+			(at 0 0 0)
+			(layer "B.SilkS")
+			(hide yes)
+			(uuid "eeb8f0ff-624e-482c-b82f-47262564a992")
+			(effects
+				(font
+					(size 1.27 1.27)
+					(thickness 0.15)
+				)
+			)
+		)
+		(property "Manufacturer" "Vishay"
+			(at 0 0 0)
+			(layer "B.SilkS")
+			(hide yes)
+			(uuid "8d1ab861-617d-4b1d-961c-1018bacad515")
+			(effects
+				(font
+					(size 1.27 1.27)
+					(thickness 0.15)
+				)
+			)
+		)
+		(property "Digi-Key" "SS14-E3/61TGICT-ND"
+			(at 0 0 0)
+			(layer "B.SilkS")
+			(hide yes)
+			(uuid "2aabb560-fc54-4367-a45a-7fad28771ac4")
+			(effects
+				(font
+					(size 1.27 1.27)
+					(thickness 0.15)
+				)
+			)
+		)
+		(property "Mouser" "625-SS14-E3"
+			(at 0 0 0)
+			(layer "B.SilkS")
+			(hide yes)
+			(uuid "ee6e224c-83ed-4fd1-8f61-c4034bc28b4f")
+			(effects
+				(font
+					(size 1.27 1.27)
+					(thickness 0.15)
+				)
+			)
+		)
 		(property ki_fp_filters "D*SMA*")
 		(path "/69ab3a55-8c32-45dc-bd32-4c8840f193fe")
 		(sheetname "/")
@@ -6200,6 +6343,54 @@
 				(justify mirror)
 			)
 		)
+		(property "MPN" "SS14-E3/61T"
+			(at 0 0 0)
+			(layer "B.SilkS")
+			(hide yes)
+			(uuid "1abf4560-de71-4b50-b0fa-d0baeccd5723")
+			(effects
+				(font
+					(size 1.27 1.27)
+					(thickness 0.15)
+				)
+			)
+		)
+		(property "Manufacturer" "Vishay"
+			(at 0 0 0)
+			(layer "B.SilkS")
+			(hide yes)
+			(uuid "104ed45f-2aaa-45a3-92f4-4bb5b6d9f43b")
+			(effects
+				(font
+					(size 1.27 1.27)
+					(thickness 0.15)
+				)
+			)
+		)
+		(property "Digi-Key" "SS14-E3/61TGICT-ND"
+			(at 0 0 0)
+			(layer "B.SilkS")
+			(hide yes)
+			(uuid "f971a0fd-522a-4f38-8ec6-c1327e555236")
+			(effects
+				(font
+					(size 1.27 1.27)
+					(thickness 0.15)
+				)
+			)
+		)
+		(property "Mouser" "625-SS14-E3"
+			(at 0 0 0)
+			(layer "B.SilkS")
+			(hide yes)
+			(uuid "bdbf7be2-26b1-4997-83e7-50bc0663d3f6")
+			(effects
+				(font
+					(size 1.27 1.27)
+					(thickness 0.15)
+				)
+			)
+		)
 		(property ki_fp_filters "D*SMA*")
 		(path "/b18db893-16db-42b9-a5db-29c50aca02fc")
 		(sheetname "/")
@@ -6483,6 +6674,54 @@
 					(thickness 0.15)
 				)
 				(justify mirror)
+			)
+		)
+		(property "MPN" "LQH55DN4R7M03L"
+			(at 0 0 0)
+			(layer "B.SilkS")
+			(hide yes)
+			(uuid "dfc83af1-bc69-4b78-a3cc-cba6d7a62bfc")
+			(effects
+				(font
+					(size 1.27 1.27)
+					(thickness 0.15)
+				)
+			)
+		)
+		(property "Manufacturer" "Murata"
+			(at 0 0 0)
+			(layer "B.SilkS")
+			(hide yes)
+			(uuid "034110a4-76ad-4946-954a-b4de4e9919b7")
+			(effects
+				(font
+					(size 1.27 1.27)
+					(thickness 0.15)
+				)
+			)
+		)
+		(property "Digi-Key" "490-LQH55DN4R7M03LCT-ND"
+			(at 0 0 0)
+			(layer "B.SilkS")
+			(hide yes)
+			(uuid "8193919e-8b03-4f21-8575-98381a5a62db")
+			(effects
+				(font
+					(size 1.27 1.27)
+					(thickness 0.15)
+				)
+			)
+		)
+		(property "Mouser" "81-LQH55DN4R7M03L"
+			(at 0 0 0)
+			(layer "B.SilkS")
+			(hide yes)
+			(uuid "c137ae41-84e9-4d2a-bd36-42a2981178b7")
+			(effects
+				(font
+					(size 1.27 1.27)
+					(thickness 0.15)
+				)
 			)
 		)
 		(property ki_fp_filters "Choke_* *Coil* Inductor_* L_*")
@@ -6794,6 +7033,54 @@
 				(justify mirror)
 			)
 		)
+		(property "MPN" "RC0805FR-07100RL"
+			(at 0 0 0)
+			(layer "B.SilkS")
+			(hide yes)
+			(uuid "13bb53ad-6726-4a4f-8234-420344de341b")
+			(effects
+				(font
+					(size 1.27 1.27)
+					(thickness 0.15)
+				)
+			)
+		)
+		(property "Manufacturer" "Yageo"
+			(at 0 0 0)
+			(layer "B.SilkS")
+			(hide yes)
+			(uuid "38f08f7e-dd8d-440f-9d12-02fe6aecd5ef")
+			(effects
+				(font
+					(size 1.27 1.27)
+					(thickness 0.15)
+				)
+			)
+		)
+		(property "Digi-Key" "311-100CRCT-ND"
+			(at 0 0 0)
+			(layer "B.SilkS")
+			(hide yes)
+			(uuid "bacae723-376c-4c95-8c54-aea4f72b71e2")
+			(effects
+				(font
+					(size 1.27 1.27)
+					(thickness 0.15)
+				)
+			)
+		)
+		(property "Mouser" "603-RC0805FR-07100RL"
+			(at 0 0 0)
+			(layer "B.SilkS")
+			(hide yes)
+			(uuid "64552158-66a5-47e9-bacd-89897369ae34")
+			(effects
+				(font
+					(size 1.27 1.27)
+					(thickness 0.15)
+				)
+			)
+		)
 		(property ki_fp_filters "R_*")
 		(path "/75d191a8-9f1a-44a2-824e-da24fc26f9de")
 		(sheetname "/")
@@ -6945,6 +7232,54 @@
 				(justify mirror)
 			)
 		)
+		(property "MPN" "C0805C101J1GAC7210"
+			(at 0 0 0)
+			(layer "B.SilkS")
+			(hide yes)
+			(uuid "729248e2-3f4a-4a2b-ab28-29c4165a0383")
+			(effects
+				(font
+					(size 1.27 1.27)
+					(thickness 0.15)
+				)
+			)
+		)
+		(property "Manufacturer" "KEMET"
+			(at 0 0 0)
+			(layer "B.SilkS")
+			(hide yes)
+			(uuid "510a7100-bc4a-426b-9c16-519920f083bb")
+			(effects
+				(font
+					(size 1.27 1.27)
+					(thickness 0.15)
+				)
+			)
+		)
+		(property "Digi-Key" "399-C0805C101J1GAC7210CT-ND"
+			(at 0 0 0)
+			(layer "B.SilkS")
+			(hide yes)
+			(uuid "ff0838dc-ff25-46ca-bedd-58d5633df446")
+			(effects
+				(font
+					(size 1.27 1.27)
+					(thickness 0.15)
+				)
+			)
+		)
+		(property "Mouser" "80-C0805C101J1G7210"
+			(at 0 0 0)
+			(layer "B.SilkS")
+			(hide yes)
+			(uuid "0bb43a5f-6de1-40c5-b963-cb52d0f1fbb7")
+			(effects
+				(font
+					(size 1.27 1.27)
+					(thickness 0.15)
+				)
+			)
+		)
 		(property ki_fp_filters "C_*")
 		(path "/30ca9051-af50-4822-859e-844e82125371")
 		(sheetname "/")
@@ -7094,6 +7429,54 @@
 					(size 1.27 1.27)
 				)
 				(justify mirror)
+			)
+		)
+		(property "MPN" "CL32A226MAJNNNE"
+			(at 0 0 0)
+			(layer "B.SilkS")
+			(hide yes)
+			(uuid "f74e8a83-4d78-4826-8081-babb932d2882")
+			(effects
+				(font
+					(size 1.27 1.27)
+					(thickness 0.15)
+				)
+			)
+		)
+		(property "Manufacturer" "Samsung"
+			(at 0 0 0)
+			(layer "B.SilkS")
+			(hide yes)
+			(uuid "8fdcc784-c503-4cbb-b8d0-5ee3d841393a")
+			(effects
+				(font
+					(size 1.27 1.27)
+					(thickness 0.15)
+				)
+			)
+		)
+		(property "Digi-Key" "1276-3373-1-ND"
+			(at 0 0 0)
+			(layer "B.SilkS")
+			(hide yes)
+			(uuid "9096bc31-972b-42e7-950d-73858ad22a89")
+			(effects
+				(font
+					(size 1.27 1.27)
+					(thickness 0.15)
+				)
+			)
+		)
+		(property "Mouser" "187-CL32A226MAJNNNE"
+			(at 0 0 0)
+			(layer "B.SilkS")
+			(hide yes)
+			(uuid "bfd43b46-8c91-4d4c-8275-6e5f2df528cd")
+			(effects
+				(font
+					(size 1.27 1.27)
+					(thickness 0.15)
+				)
 			)
 		)
 		(property ki_fp_filters "C_*")
@@ -7277,6 +7660,54 @@
 					(thickness 0.15)
 				)
 				(justify mirror)
+			)
+		)
+		(property "MPN" "1N4148W-7-F"
+			(at 0 0 0)
+			(layer "B.SilkS")
+			(hide yes)
+			(uuid "f2ecfc86-26e6-4708-8bc4-b3850cb405cc")
+			(effects
+				(font
+					(size 1.27 1.27)
+					(thickness 0.15)
+				)
+			)
+		)
+		(property "Manufacturer" "Diodes Inc"
+			(at 0 0 0)
+			(layer "B.SilkS")
+			(hide yes)
+			(uuid "86536273-8cc8-4541-842f-fc2cbca8fbce")
+			(effects
+				(font
+					(size 1.27 1.27)
+					(thickness 0.15)
+				)
+			)
+		)
+		(property "Digi-Key" "1N4148W-FDICT-ND"
+			(at 0 0 0)
+			(layer "B.SilkS")
+			(hide yes)
+			(uuid "37488de8-f6e0-41fe-ba33-1d0fbfa37f74")
+			(effects
+				(font
+					(size 1.27 1.27)
+					(thickness 0.15)
+				)
+			)
+		)
+		(property "Mouser" "621-1N4148W-F"
+			(at 0 0 0)
+			(layer "B.SilkS")
+			(hide yes)
+			(uuid "321851ec-5647-4a2d-956c-81f15f91661b")
+			(effects
+				(font
+					(size 1.27 1.27)
+					(thickness 0.15)
+				)
 			)
 		)
 		(property ki_fp_filters "TO-???* *_Diode_* *SingleDiode* D_*")
@@ -7570,6 +8001,54 @@
 				(justify mirror)
 			)
 		)
+		(property "MPN" "RC0805FR-072KL"
+			(at 0 0 0)
+			(layer "B.SilkS")
+			(hide yes)
+			(uuid "7c73afc7-84d0-469a-bc92-e76bc8bfdbbf")
+			(effects
+				(font
+					(size 1.27 1.27)
+					(thickness 0.15)
+				)
+			)
+		)
+		(property "Manufacturer" "Yageo"
+			(at 0 0 0)
+			(layer "B.SilkS")
+			(hide yes)
+			(uuid "6a6b8562-7a03-48f9-a7e0-719fbd081417")
+			(effects
+				(font
+					(size 1.27 1.27)
+					(thickness 0.15)
+				)
+			)
+		)
+		(property "Digi-Key" "311-2.00KCRCT-ND"
+			(at 0 0 0)
+			(layer "B.SilkS")
+			(hide yes)
+			(uuid "c73f89d4-7e3f-4ca4-88a1-613bd861ca6c")
+			(effects
+				(font
+					(size 1.27 1.27)
+					(thickness 0.15)
+				)
+			)
+		)
+		(property "Mouser" "603-RC0805FR-072KL"
+			(at 0 0 0)
+			(layer "B.SilkS")
+			(hide yes)
+			(uuid "53ac7090-7a61-4042-abd8-ef5838aa4048")
+			(effects
+				(font
+					(size 1.27 1.27)
+					(thickness 0.15)
+				)
+			)
+		)
 		(property ki_fp_filters "R_*")
 		(path "/4bf2fe1c-a26e-4a52-831f-847f2c92ef2e")
 		(sheetname "/")
@@ -7751,6 +8230,54 @@
 					(thickness 0.15)
 				)
 				(justify mirror)
+			)
+		)
+		(property "MPN" "1N4148W-7-F"
+			(at 0 0 0)
+			(layer "B.SilkS")
+			(hide yes)
+			(uuid "9d7c22a2-687e-4e0c-ae8e-25e79ce33477")
+			(effects
+				(font
+					(size 1.27 1.27)
+					(thickness 0.15)
+				)
+			)
+		)
+		(property "Manufacturer" "Diodes Inc"
+			(at 0 0 0)
+			(layer "B.SilkS")
+			(hide yes)
+			(uuid "503e3633-a886-4686-bc87-a7db918fd661")
+			(effects
+				(font
+					(size 1.27 1.27)
+					(thickness 0.15)
+				)
+			)
+		)
+		(property "Digi-Key" "1N4148W-FDICT-ND"
+			(at 0 0 0)
+			(layer "B.SilkS")
+			(hide yes)
+			(uuid "ad28dcf6-d60a-47c7-b585-866bb185e3e0")
+			(effects
+				(font
+					(size 1.27 1.27)
+					(thickness 0.15)
+				)
+			)
+		)
+		(property "Mouser" "621-1N4148W-F"
+			(at 0 0 0)
+			(layer "B.SilkS")
+			(hide yes)
+			(uuid "b20d8663-5240-451a-a7ec-d2eb65d0bc04")
+			(effects
+				(font
+					(size 1.27 1.27)
+					(thickness 0.15)
+				)
 			)
 		)
 		(property ki_fp_filters "TO-???* *_Diode_* *SingleDiode* D_*")
@@ -8044,6 +8571,54 @@
 				(justify mirror)
 			)
 		)
+		(property "MPN" "RC0805FR-07100RL"
+			(at 0 0 0)
+			(layer "B.SilkS")
+			(hide yes)
+			(uuid "9817b7a2-7e4b-4a5e-8203-4cfa61a1271f")
+			(effects
+				(font
+					(size 1.27 1.27)
+					(thickness 0.15)
+				)
+			)
+		)
+		(property "Manufacturer" "Yageo"
+			(at 0 0 0)
+			(layer "B.SilkS")
+			(hide yes)
+			(uuid "e6c238f3-4ca7-40ca-bdaa-c00d427b6142")
+			(effects
+				(font
+					(size 1.27 1.27)
+					(thickness 0.15)
+				)
+			)
+		)
+		(property "Digi-Key" "311-100CRCT-ND"
+			(at 0 0 0)
+			(layer "B.SilkS")
+			(hide yes)
+			(uuid "eadb6cca-4008-40fe-b311-b80ac2b18d36")
+			(effects
+				(font
+					(size 1.27 1.27)
+					(thickness 0.15)
+				)
+			)
+		)
+		(property "Mouser" "603-RC0805FR-07100RL"
+			(at 0 0 0)
+			(layer "B.SilkS")
+			(hide yes)
+			(uuid "89a29767-c35a-4eee-a4f6-49f0aea7106d")
+			(effects
+				(font
+					(size 1.27 1.27)
+					(thickness 0.15)
+				)
+			)
+		)
 		(property ki_fp_filters "R_*")
 		(path "/b26288c0-8cf2-4d3d-8895-6d725fd02a1e")
 		(sheetname "/")
@@ -8193,6 +8768,54 @@
 					(size 1.27 1.27)
 				)
 				(justify mirror)
+			)
+		)
+		(property "MPN" "1715747"
+			(at 0 0 0)
+			(layer "B.SilkS")
+			(hide yes)
+			(uuid "1d6d9d7c-920e-4481-97f7-43c5f6bdab7c")
+			(effects
+				(font
+					(size 1.27 1.27)
+					(thickness 0.15)
+				)
+			)
+		)
+		(property "Manufacturer" "Phoenix Contact"
+			(at 0 0 0)
+			(layer "B.SilkS")
+			(hide yes)
+			(uuid "c79d478e-ed7e-402b-9311-1f1890d4879f")
+			(effects
+				(font
+					(size 1.27 1.27)
+					(thickness 0.15)
+				)
+			)
+		)
+		(property "Digi-Key" "277-1265-ND"
+			(at 0 0 0)
+			(layer "B.SilkS")
+			(hide yes)
+			(uuid "82ccceb1-da3e-4857-be0c-7d8cee10a19c")
+			(effects
+				(font
+					(size 1.27 1.27)
+					(thickness 0.15)
+				)
+			)
+		)
+		(property "Mouser" "651-1715747"
+			(at 0 0 0)
+			(layer "B.SilkS")
+			(hide yes)
+			(uuid "564d1d3c-0e32-4329-8343-f4644f23236e")
+			(effects
+				(font
+					(size 1.27 1.27)
+					(thickness 0.15)
+				)
 			)
 		)
 		(property ki_fp_filters "TerminalBlock*:*")
@@ -8670,6 +9293,54 @@
 				(justify mirror)
 			)
 		)
+		(property "MPN" "1N4148W-7-F"
+			(at 0 0 0)
+			(layer "B.SilkS")
+			(hide yes)
+			(uuid "870c260a-3a6a-4aff-acf8-fb097068fff9")
+			(effects
+				(font
+					(size 1.27 1.27)
+					(thickness 0.15)
+				)
+			)
+		)
+		(property "Manufacturer" "Diodes Inc"
+			(at 0 0 0)
+			(layer "B.SilkS")
+			(hide yes)
+			(uuid "8b29841b-960e-4904-ab80-4fbc123128cd")
+			(effects
+				(font
+					(size 1.27 1.27)
+					(thickness 0.15)
+				)
+			)
+		)
+		(property "Digi-Key" "1N4148W-FDICT-ND"
+			(at 0 0 0)
+			(layer "B.SilkS")
+			(hide yes)
+			(uuid "43cd5c1e-7080-4b83-a6f9-5b6e7a1d68d2")
+			(effects
+				(font
+					(size 1.27 1.27)
+					(thickness 0.15)
+				)
+			)
+		)
+		(property "Mouser" "621-1N4148W-F"
+			(at 0 0 0)
+			(layer "B.SilkS")
+			(hide yes)
+			(uuid "6e6c69ed-422b-436d-9165-267760b77a5f")
+			(effects
+				(font
+					(size 1.27 1.27)
+					(thickness 0.15)
+				)
+			)
+		)
 		(property ki_fp_filters "TO-???* *_Diode_* *SingleDiode* D_*")
 		(path "/b2b3f988-78d0-492b-9834-1f3e8724ce67")
 		(sheetname "/")
@@ -8961,6 +9632,54 @@
 				(justify mirror)
 			)
 		)
+		(property "MPN" "TMK325AB7106MMHPR"
+			(at 0 0 0)
+			(layer "B.SilkS")
+			(hide yes)
+			(uuid "540708ea-023e-4c44-af72-edb58e678b0e")
+			(effects
+				(font
+					(size 1.27 1.27)
+					(thickness 0.15)
+				)
+			)
+		)
+		(property "Manufacturer" "Taiyo Yuden"
+			(at 0 0 0)
+			(layer "B.SilkS")
+			(hide yes)
+			(uuid "3ca4da6e-d0cf-4aa4-a2ee-6e0066efd161")
+			(effects
+				(font
+					(size 1.27 1.27)
+					(thickness 0.15)
+				)
+			)
+		)
+		(property "Digi-Key" "587-TMK325AB7106MMHPRCT-ND"
+			(at 0 0 0)
+			(layer "B.SilkS")
+			(hide yes)
+			(uuid "45b180f9-862b-46f5-bc07-688cef3044c1")
+			(effects
+				(font
+					(size 1.27 1.27)
+					(thickness 0.15)
+				)
+			)
+		)
+		(property "Mouser" "963-TMK325AB7106MMPR"
+			(at 0 0 0)
+			(layer "B.SilkS")
+			(hide yes)
+			(uuid "cb0c0807-5ffc-4a80-8871-e0503133ccf5")
+			(effects
+				(font
+					(size 1.27 1.27)
+					(thickness 0.15)
+				)
+			)
+		)
 		(property ki_fp_filters "C_*")
 		(path "/09ef6c63-3dc5-4e21-8d38-31e5c99240de")
 		(sheetname "/")
@@ -9110,6 +9829,54 @@
 					(size 1.27 1.27)
 				)
 				(justify mirror)
+			)
+		)
+		(property "MPN" "AP63205WU-7"
+			(at 0 0 0)
+			(layer "B.SilkS")
+			(hide yes)
+			(uuid "02c2edfd-9aa9-4853-a509-eff00426e31c")
+			(effects
+				(font
+					(size 1.27 1.27)
+					(thickness 0.15)
+				)
+			)
+		)
+		(property "Manufacturer" "Diodes Inc"
+			(at 0 0 0)
+			(layer "B.SilkS")
+			(hide yes)
+			(uuid "bb4179c1-f52d-419c-8dad-a8fdd3dfd9ac")
+			(effects
+				(font
+					(size 1.27 1.27)
+					(thickness 0.15)
+				)
+			)
+		)
+		(property "Digi-Key" "AP63205WU-7DICT-ND"
+			(at 0 0 0)
+			(layer "B.SilkS")
+			(hide yes)
+			(uuid "7a8aaa3c-d406-496a-b3af-d1b42ee17643")
+			(effects
+				(font
+					(size 1.27 1.27)
+					(thickness 0.15)
+				)
+			)
+		)
+		(property "Mouser" "621-AP63205WU-7"
+			(at 0 0 0)
+			(layer "B.SilkS")
+			(hide yes)
+			(uuid "6d6b5e7f-7914-4ea3-bf96-b9f62343557e")
+			(effects
+				(font
+					(size 1.27 1.27)
+					(thickness 0.15)
+				)
 			)
 		)
 		(property ki_fp_filters "TSOT?23*")
@@ -9499,6 +10266,54 @@
 				(justify mirror)
 			)
 		)
+		(property "MPN" "1N4148W-7-F"
+			(at 0 0 0)
+			(layer "B.SilkS")
+			(hide yes)
+			(uuid "1d4696dd-6887-44ec-a767-47ab1983f760")
+			(effects
+				(font
+					(size 1.27 1.27)
+					(thickness 0.15)
+				)
+			)
+		)
+		(property "Manufacturer" "Diodes Inc"
+			(at 0 0 0)
+			(layer "B.SilkS")
+			(hide yes)
+			(uuid "0bd386f6-4727-41d5-a121-4409d83386b2")
+			(effects
+				(font
+					(size 1.27 1.27)
+					(thickness 0.15)
+				)
+			)
+		)
+		(property "Digi-Key" "1N4148W-FDICT-ND"
+			(at 0 0 0)
+			(layer "B.SilkS")
+			(hide yes)
+			(uuid "8bacdee2-2ca4-4afd-a551-05bbe093a5b9")
+			(effects
+				(font
+					(size 1.27 1.27)
+					(thickness 0.15)
+				)
+			)
+		)
+		(property "Mouser" "621-1N4148W-F"
+			(at 0 0 0)
+			(layer "B.SilkS")
+			(hide yes)
+			(uuid "c8438632-5a53-498d-8de6-fd7463500543")
+			(effects
+				(font
+					(size 1.27 1.27)
+					(thickness 0.15)
+				)
+			)
+		)
 		(property ki_fp_filters "TO-???* *_Diode_* *SingleDiode* D_*")
 		(path "/32515739-e5f6-43ff-802b-e7781baff9a7")
 		(sheetname "/")
@@ -9820,6 +10635,54 @@
 					(thickness 0.15)
 				)
 				(justify mirror)
+			)
+		)
+		(property "MPN" "1N4148W-7-F"
+			(at 0 0 0)
+			(layer "B.SilkS")
+			(hide yes)
+			(uuid "9ed755c8-2fbc-498b-8020-6a1366a03c5e")
+			(effects
+				(font
+					(size 1.27 1.27)
+					(thickness 0.15)
+				)
+			)
+		)
+		(property "Manufacturer" "Diodes Inc"
+			(at 0 0 0)
+			(layer "B.SilkS")
+			(hide yes)
+			(uuid "126be3d9-cab9-49ae-b941-34d4f50e4ea6")
+			(effects
+				(font
+					(size 1.27 1.27)
+					(thickness 0.15)
+				)
+			)
+		)
+		(property "Digi-Key" "1N4148W-FDICT-ND"
+			(at 0 0 0)
+			(layer "B.SilkS")
+			(hide yes)
+			(uuid "455caacc-e6ca-44f1-b5eb-d8ba48cded35")
+			(effects
+				(font
+					(size 1.27 1.27)
+					(thickness 0.15)
+				)
+			)
+		)
+		(property "Mouser" "621-1N4148W-F"
+			(at 0 0 0)
+			(layer "B.SilkS")
+			(hide yes)
+			(uuid "cc061b1a-771b-4356-aca1-c8365f7b7e0e")
+			(effects
+				(font
+					(size 1.27 1.27)
+					(thickness 0.15)
+				)
 			)
 		)
 		(property ki_fp_filters "TO-???* *_Diode_* *SingleDiode* D_*")
@@ -10145,6 +11008,54 @@
 				(justify mirror)
 			)
 		)
+		(property "MPN" "1N4148W-7-F"
+			(at 0 0 0)
+			(layer "B.SilkS")
+			(hide yes)
+			(uuid "d79221ce-c090-4dcf-850d-c5ec7c5949bd")
+			(effects
+				(font
+					(size 1.27 1.27)
+					(thickness 0.15)
+				)
+			)
+		)
+		(property "Manufacturer" "Diodes Inc"
+			(at 0 0 0)
+			(layer "B.SilkS")
+			(hide yes)
+			(uuid "1da658a8-1d7b-4c2d-926d-4d6eedbe5c38")
+			(effects
+				(font
+					(size 1.27 1.27)
+					(thickness 0.15)
+				)
+			)
+		)
+		(property "Digi-Key" "1N4148W-FDICT-ND"
+			(at 0 0 0)
+			(layer "B.SilkS")
+			(hide yes)
+			(uuid "b6610f25-f0de-42ba-80d2-fb1d78db6144")
+			(effects
+				(font
+					(size 1.27 1.27)
+					(thickness 0.15)
+				)
+			)
+		)
+		(property "Mouser" "621-1N4148W-F"
+			(at 0 0 0)
+			(layer "B.SilkS")
+			(hide yes)
+			(uuid "511826c0-68c4-43f4-bb8b-818188662f49")
+			(effects
+				(font
+					(size 1.27 1.27)
+					(thickness 0.15)
+				)
+			)
+		)
 		(property ki_fp_filters "TO-???* *_Diode_* *SingleDiode* D_*")
 		(path "/23e1e2a9-5b94-496e-9415-cff7cc632347")
 		(sheetname "/")
@@ -10436,6 +11347,54 @@
 				(justify mirror)
 			)
 		)
+		(property "MPN" "C0805C101J1GAC7210"
+			(at 0 0 0)
+			(layer "B.SilkS")
+			(hide yes)
+			(uuid "dfa62af1-2e01-49e9-918c-e2571dbb336d")
+			(effects
+				(font
+					(size 1.27 1.27)
+					(thickness 0.15)
+				)
+			)
+		)
+		(property "Manufacturer" "KEMET"
+			(at 0 0 0)
+			(layer "B.SilkS")
+			(hide yes)
+			(uuid "1c644bcb-7bab-4712-beac-0d81667b2453")
+			(effects
+				(font
+					(size 1.27 1.27)
+					(thickness 0.15)
+				)
+			)
+		)
+		(property "Digi-Key" "399-C0805C101J1GAC7210CT-ND"
+			(at 0 0 0)
+			(layer "B.SilkS")
+			(hide yes)
+			(uuid "e538c3e2-11e6-4b92-ad08-423ba5c3e39f")
+			(effects
+				(font
+					(size 1.27 1.27)
+					(thickness 0.15)
+				)
+			)
+		)
+		(property "Mouser" "80-C0805C101J1G7210"
+			(at 0 0 0)
+			(layer "B.SilkS")
+			(hide yes)
+			(uuid "874d83ca-44b4-4567-9269-655427881aa8")
+			(effects
+				(font
+					(size 1.27 1.27)
+					(thickness 0.15)
+				)
+			)
+		)
 		(property ki_fp_filters "C_*")
 		(path "/1137f485-9a2d-42c6-bbc3-e7fa6a492942")
 		(sheetname "/")
@@ -10617,6 +11576,54 @@
 					(thickness 0.15)
 				)
 				(justify mirror)
+			)
+		)
+		(property "MPN" "1N4148W-7-F"
+			(at 0 0 0)
+			(layer "B.SilkS")
+			(hide yes)
+			(uuid "612632aa-e74c-4b1c-b3b8-98c3e8a48555")
+			(effects
+				(font
+					(size 1.27 1.27)
+					(thickness 0.15)
+				)
+			)
+		)
+		(property "Manufacturer" "Diodes Inc"
+			(at 0 0 0)
+			(layer "B.SilkS")
+			(hide yes)
+			(uuid "6e2209c7-a0e5-4b96-8232-7b78ce0c3d5f")
+			(effects
+				(font
+					(size 1.27 1.27)
+					(thickness 0.15)
+				)
+			)
+		)
+		(property "Digi-Key" "1N4148W-FDICT-ND"
+			(at 0 0 0)
+			(layer "B.SilkS")
+			(hide yes)
+			(uuid "f62faeac-d9be-4543-8be7-df7f4f7e7a0e")
+			(effects
+				(font
+					(size 1.27 1.27)
+					(thickness 0.15)
+				)
+			)
+		)
+		(property "Mouser" "621-1N4148W-F"
+			(at 0 0 0)
+			(layer "B.SilkS")
+			(hide yes)
+			(uuid "c9ae8f4a-8e40-477a-9c13-7f7b597eb400")
+			(effects
+				(font
+					(size 1.27 1.27)
+					(thickness 0.15)
+				)
 			)
 		)
 		(property ki_fp_filters "TO-???* *_Diode_* *SingleDiode* D_*")
@@ -10910,6 +11917,54 @@
 				(justify mirror)
 			)
 		)
+		(property "MPN" "RC0805FR-07100RL"
+			(at 0 0 0)
+			(layer "B.SilkS")
+			(hide yes)
+			(uuid "9f951232-987e-45c2-ab8a-fb2448437122")
+			(effects
+				(font
+					(size 1.27 1.27)
+					(thickness 0.15)
+				)
+			)
+		)
+		(property "Manufacturer" "Yageo"
+			(at 0 0 0)
+			(layer "B.SilkS")
+			(hide yes)
+			(uuid "9f495c14-708a-4ef6-a62a-88d339c62a57")
+			(effects
+				(font
+					(size 1.27 1.27)
+					(thickness 0.15)
+				)
+			)
+		)
+		(property "Digi-Key" "311-100CRCT-ND"
+			(at 0 0 0)
+			(layer "B.SilkS")
+			(hide yes)
+			(uuid "5afe2fbe-8a42-4fe8-b11f-a4404428d0ed")
+			(effects
+				(font
+					(size 1.27 1.27)
+					(thickness 0.15)
+				)
+			)
+		)
+		(property "Mouser" "603-RC0805FR-07100RL"
+			(at 0 0 0)
+			(layer "B.SilkS")
+			(hide yes)
+			(uuid "9ebeb151-a74a-424f-8f5e-22daca4b2d36")
+			(effects
+				(font
+					(size 1.27 1.27)
+					(thickness 0.15)
+				)
+			)
+		)
 		(property ki_fp_filters "R_*")
 		(path "/f8d4c1f3-0997-4513-973f-e0a66ecd6abf")
 		(sheetname "/")
@@ -11091,6 +12146,54 @@
 					(thickness 0.15)
 				)
 				(justify mirror)
+			)
+		)
+		(property "MPN" "1N4148W-7-F"
+			(at 0 0 0)
+			(layer "B.SilkS")
+			(hide yes)
+			(uuid "2bed0a94-3589-4ecf-9d14-58f1c333aa4f")
+			(effects
+				(font
+					(size 1.27 1.27)
+					(thickness 0.15)
+				)
+			)
+		)
+		(property "Manufacturer" "Diodes Inc"
+			(at 0 0 0)
+			(layer "B.SilkS")
+			(hide yes)
+			(uuid "5ee67a1a-9ba9-497e-afe7-42d888d4f920")
+			(effects
+				(font
+					(size 1.27 1.27)
+					(thickness 0.15)
+				)
+			)
+		)
+		(property "Digi-Key" "1N4148W-FDICT-ND"
+			(at 0 0 0)
+			(layer "B.SilkS")
+			(hide yes)
+			(uuid "1f66c231-6459-42ec-a872-dffc70ff210e")
+			(effects
+				(font
+					(size 1.27 1.27)
+					(thickness 0.15)
+				)
+			)
+		)
+		(property "Mouser" "621-1N4148W-F"
+			(at 0 0 0)
+			(layer "B.SilkS")
+			(hide yes)
+			(uuid "8f1fad69-7c4a-4e82-b9f3-b19df887822a")
+			(effects
+				(font
+					(size 1.27 1.27)
+					(thickness 0.15)
+				)
 			)
 		)
 		(property ki_fp_filters "TO-???* *_Diode_* *SingleDiode* D_*")
@@ -11384,6 +12487,54 @@
 				(justify mirror)
 			)
 		)
+		(property "MPN" "RC0805FR-074K7L"
+			(at 0 0 0)
+			(layer "B.SilkS")
+			(hide yes)
+			(uuid "71e7f33d-3e82-4f4b-851f-0339ad86ea5f")
+			(effects
+				(font
+					(size 1.27 1.27)
+					(thickness 0.15)
+				)
+			)
+		)
+		(property "Manufacturer" "Yageo"
+			(at 0 0 0)
+			(layer "B.SilkS")
+			(hide yes)
+			(uuid "d884894a-a251-4360-9aef-1d07da77d40b")
+			(effects
+				(font
+					(size 1.27 1.27)
+					(thickness 0.15)
+				)
+			)
+		)
+		(property "Digi-Key" "311-4.70KCRCT-ND"
+			(at 0 0 0)
+			(layer "B.SilkS")
+			(hide yes)
+			(uuid "afe707e6-d437-4b27-b780-14d2a9197536")
+			(effects
+				(font
+					(size 1.27 1.27)
+					(thickness 0.15)
+				)
+			)
+		)
+		(property "Mouser" "603-RC0805FR-074K7L"
+			(at 0 0 0)
+			(layer "B.SilkS")
+			(hide yes)
+			(uuid "565f139f-99de-447b-8495-90fa39dbae68")
+			(effects
+				(font
+					(size 1.27 1.27)
+					(thickness 0.15)
+				)
+			)
+		)
 		(property ki_fp_filters "R_*")
 		(path "/0d3ea0aa-ce31-4b72-b6aa-5bb2266556d4")
 		(sheetname "/")
@@ -11565,6 +12716,54 @@
 					(thickness 0.15)
 				)
 				(justify mirror)
+			)
+		)
+		(property "MPN" "1N4148W-7-F"
+			(at 0 0 0)
+			(layer "B.SilkS")
+			(hide yes)
+			(uuid "64c1c7cd-3bdc-45d4-bbff-b21508e50a94")
+			(effects
+				(font
+					(size 1.27 1.27)
+					(thickness 0.15)
+				)
+			)
+		)
+		(property "Manufacturer" "Diodes Inc"
+			(at 0 0 0)
+			(layer "B.SilkS")
+			(hide yes)
+			(uuid "8f9f0a99-0f87-4491-8c8d-34358ff3cc42")
+			(effects
+				(font
+					(size 1.27 1.27)
+					(thickness 0.15)
+				)
+			)
+		)
+		(property "Digi-Key" "1N4148W-FDICT-ND"
+			(at 0 0 0)
+			(layer "B.SilkS")
+			(hide yes)
+			(uuid "ef30c261-ea53-4a24-81a4-dd4f5c6bf678")
+			(effects
+				(font
+					(size 1.27 1.27)
+					(thickness 0.15)
+				)
+			)
+		)
+		(property "Mouser" "621-1N4148W-F"
+			(at 0 0 0)
+			(layer "B.SilkS")
+			(hide yes)
+			(uuid "41cc6da3-6d87-495a-bc85-0ef4591e20b9")
+			(effects
+				(font
+					(size 1.27 1.27)
+					(thickness 0.15)
+				)
 			)
 		)
 		(property ki_fp_filters "TO-???* *_Diode_* *SingleDiode* D_*")
@@ -11858,6 +13057,54 @@
 				(justify mirror)
 			)
 		)
+		(property "MPN" "C0805C105K3RACAUTO"
+			(at 0 0 0)
+			(layer "B.SilkS")
+			(hide yes)
+			(uuid "4e8a7d79-4369-46e9-86b9-5d4e8ed8ae3d")
+			(effects
+				(font
+					(size 1.27 1.27)
+					(thickness 0.15)
+				)
+			)
+		)
+		(property "Manufacturer" "KEMET"
+			(at 0 0 0)
+			(layer "B.SilkS")
+			(hide yes)
+			(uuid "bc113487-7ecb-46c6-904c-66e0974beaa5")
+			(effects
+				(font
+					(size 1.27 1.27)
+					(thickness 0.15)
+				)
+			)
+		)
+		(property "Digi-Key" "399-6929-1-ND"
+			(at 0 0 0)
+			(layer "B.SilkS")
+			(hide yes)
+			(uuid "f944f0a9-08ac-4f47-85b7-0ec958a59d55")
+			(effects
+				(font
+					(size 1.27 1.27)
+					(thickness 0.15)
+				)
+			)
+		)
+		(property "Mouser" "80-C0805C105K3RAUTO"
+			(at 0 0 0)
+			(layer "B.SilkS")
+			(hide yes)
+			(uuid "86c41781-6d39-4ad9-a1a2-c93d5d47ff85")
+			(effects
+				(font
+					(size 1.27 1.27)
+					(thickness 0.15)
+				)
+			)
+		)
 		(property ki_fp_filters "C_*")
 		(path "/bf7f83a1-67bb-41c3-a268-1fef108e99fc")
 		(sheetname "/")
@@ -12039,6 +13286,54 @@
 					(thickness 0.15)
 				)
 				(justify mirror)
+			)
+		)
+		(property "MPN" "1N4148W-7-F"
+			(at 0 0 0)
+			(layer "B.SilkS")
+			(hide yes)
+			(uuid "f45fd8ef-2e74-4a3a-8fa5-195b10a89b75")
+			(effects
+				(font
+					(size 1.27 1.27)
+					(thickness 0.15)
+				)
+			)
+		)
+		(property "Manufacturer" "Diodes Inc"
+			(at 0 0 0)
+			(layer "B.SilkS")
+			(hide yes)
+			(uuid "90f08570-c654-4acf-99bc-5beeff9d39d9")
+			(effects
+				(font
+					(size 1.27 1.27)
+					(thickness 0.15)
+				)
+			)
+		)
+		(property "Digi-Key" "1N4148W-FDICT-ND"
+			(at 0 0 0)
+			(layer "B.SilkS")
+			(hide yes)
+			(uuid "15f32fdd-d30c-4f7e-bac9-eff3f412551a")
+			(effects
+				(font
+					(size 1.27 1.27)
+					(thickness 0.15)
+				)
+			)
+		)
+		(property "Mouser" "621-1N4148W-F"
+			(at 0 0 0)
+			(layer "B.SilkS")
+			(hide yes)
+			(uuid "788d69b5-3abc-41c5-bd8e-436c443db758")
+			(effects
+				(font
+					(size 1.27 1.27)
+					(thickness 0.15)
+				)
 			)
 		)
 		(property ki_fp_filters "TO-???* *_Diode_* *SingleDiode* D_*")
@@ -12330,6 +13625,42 @@
 					(size 1.27 1.27)
 				)
 				(justify mirror)
+			)
+		)
+		(property "MPN" "AO3400A"
+			(at 0 0 0)
+			(layer "B.SilkS")
+			(hide yes)
+			(uuid "be06171c-c662-4010-91d1-882f90e4dd0d")
+			(effects
+				(font
+					(size 1.27 1.27)
+					(thickness 0.15)
+				)
+			)
+		)
+		(property "Manufacturer" "Alpha & Omega"
+			(at 0 0 0)
+			(layer "B.SilkS")
+			(hide yes)
+			(uuid "0051c86f-9528-496b-a038-96c6f3115ff5")
+			(effects
+				(font
+					(size 1.27 1.27)
+					(thickness 0.15)
+				)
+			)
+		)
+		(property "Digi-Key" "785-1000-1-ND"
+			(at 0 0 0)
+			(layer "B.SilkS")
+			(hide yes)
+			(uuid "a35b892f-ecc7-4f12-b6d2-1bfdccdf43d6")
+			(effects
+				(font
+					(size 1.27 1.27)
+					(thickness 0.15)
+				)
 			)
 		)
 		(property ki_fp_filters "SOT?23*")
@@ -12705,6 +14036,54 @@
 					(size 1.27 1.27)
 				)
 				(justify mirror)
+			)
+		)
+		(property "MPN" "1715747"
+			(at 0 0 0)
+			(layer "B.SilkS")
+			(hide yes)
+			(uuid "676f96fe-9681-479b-ad07-99d26af7983a")
+			(effects
+				(font
+					(size 1.27 1.27)
+					(thickness 0.15)
+				)
+			)
+		)
+		(property "Manufacturer" "Phoenix Contact"
+			(at 0 0 0)
+			(layer "B.SilkS")
+			(hide yes)
+			(uuid "cfcc7289-e48f-4a12-86f7-7e8bdcfcfccd")
+			(effects
+				(font
+					(size 1.27 1.27)
+					(thickness 0.15)
+				)
+			)
+		)
+		(property "Digi-Key" "277-1265-ND"
+			(at 0 0 0)
+			(layer "B.SilkS")
+			(hide yes)
+			(uuid "b44162a2-1c2d-4ca3-8977-1c80440efed5")
+			(effects
+				(font
+					(size 1.27 1.27)
+					(thickness 0.15)
+				)
+			)
+		)
+		(property "Mouser" "651-1715747"
+			(at 0 0 0)
+			(layer "B.SilkS")
+			(hide yes)
+			(uuid "7b9ce31a-23e9-40b2-a3f2-6f7e760481af")
+			(effects
+				(font
+					(size 1.27 1.27)
+					(thickness 0.15)
+				)
 			)
 		)
 		(property ki_fp_filters "TerminalBlock*:*")
@@ -13182,6 +14561,54 @@
 				(justify mirror)
 			)
 		)
+		(property "MPN" "1N4148W-7-F"
+			(at 0 0 0)
+			(layer "B.SilkS")
+			(hide yes)
+			(uuid "ed5d8893-70cc-4d38-a2a9-a66450b97f0c")
+			(effects
+				(font
+					(size 1.27 1.27)
+					(thickness 0.15)
+				)
+			)
+		)
+		(property "Manufacturer" "Diodes Inc"
+			(at 0 0 0)
+			(layer "B.SilkS")
+			(hide yes)
+			(uuid "c2d291c4-2cd8-4291-82b1-d946eb23a792")
+			(effects
+				(font
+					(size 1.27 1.27)
+					(thickness 0.15)
+				)
+			)
+		)
+		(property "Digi-Key" "1N4148W-FDICT-ND"
+			(at 0 0 0)
+			(layer "B.SilkS")
+			(hide yes)
+			(uuid "0ab677e9-263b-487e-8564-772d70f52612")
+			(effects
+				(font
+					(size 1.27 1.27)
+					(thickness 0.15)
+				)
+			)
+		)
+		(property "Mouser" "621-1N4148W-F"
+			(at 0 0 0)
+			(layer "B.SilkS")
+			(hide yes)
+			(uuid "6f30406c-8800-452e-8511-b45be5bc4807")
+			(effects
+				(font
+					(size 1.27 1.27)
+					(thickness 0.15)
+				)
+			)
+		)
 		(property ki_fp_filters "TO-???* *_Diode_* *SingleDiode* D_*")
 		(path "/a1ce775b-6539-44d2-9808-9630a69547ef")
 		(sheetname "/")
@@ -13473,6 +14900,54 @@
 				(justify mirror)
 			)
 		)
+		(property "MPN" "RC0805FR-074K7L"
+			(at 0 0 0)
+			(layer "B.SilkS")
+			(hide yes)
+			(uuid "f8f75ae7-0e38-4bde-a857-e9c3ced836fd")
+			(effects
+				(font
+					(size 1.27 1.27)
+					(thickness 0.15)
+				)
+			)
+		)
+		(property "Manufacturer" "Yageo"
+			(at 0 0 0)
+			(layer "B.SilkS")
+			(hide yes)
+			(uuid "c78c8ba0-d307-47a4-b86b-2e46c667062a")
+			(effects
+				(font
+					(size 1.27 1.27)
+					(thickness 0.15)
+				)
+			)
+		)
+		(property "Digi-Key" "311-4.70KCRCT-ND"
+			(at 0 0 0)
+			(layer "B.SilkS")
+			(hide yes)
+			(uuid "e5bc7cb3-5463-442e-851b-18dc73236b62")
+			(effects
+				(font
+					(size 1.27 1.27)
+					(thickness 0.15)
+				)
+			)
+		)
+		(property "Mouser" "603-RC0805FR-074K7L"
+			(at 0 0 0)
+			(layer "B.SilkS")
+			(hide yes)
+			(uuid "c20af5ba-7480-47e3-a3a0-0ab12f5ae709")
+			(effects
+				(font
+					(size 1.27 1.27)
+					(thickness 0.15)
+				)
+			)
+		)
 		(property ki_fp_filters "R_*")
 		(path "/64354188-78e5-4ad8-b3b5-c379dcde39de")
 		(sheetname "/")
@@ -13626,6 +15101,42 @@
 					(thickness 0.15)
 				)
 				(justify mirror)
+			)
+		)
+		(property "MPN" "WT-1205"
+			(at 0 0 0)
+			(layer "B.SilkS")
+			(hide yes)
+			(uuid "9848ef6c-76cb-4dba-ab6a-5569d8b449b6")
+			(effects
+				(font
+					(size 1.27 1.27)
+					(thickness 0.15)
+				)
+			)
+		)
+		(property "Manufacturer" "Soberton Inc."
+			(at 0 0 0)
+			(layer "B.SilkS")
+			(hide yes)
+			(uuid "06dc3809-1989-4fbb-8db6-9d47a1ee05d3")
+			(effects
+				(font
+					(size 1.27 1.27)
+					(thickness 0.15)
+				)
+			)
+		)
+		(property "Digi-Key" "433-1028-ND"
+			(at 0 0 0)
+			(layer "B.SilkS")
+			(hide yes)
+			(uuid "361ae823-8b2d-4e15-9110-cf988e4d33e1")
+			(effects
+				(font
+					(size 1.27 1.27)
+					(thickness 0.15)
+				)
 			)
 		)
 		(property ki_fp_filters "*Buzzer*")
@@ -13809,6 +15320,54 @@
 				(justify mirror)
 			)
 		)
+		(property "MPN" "RC0805FR-072KL"
+			(at 0 0 0)
+			(layer "B.SilkS")
+			(hide yes)
+			(uuid "c9225ea1-c4d1-4ba6-bde5-d2fa5ef0675b")
+			(effects
+				(font
+					(size 1.27 1.27)
+					(thickness 0.15)
+				)
+			)
+		)
+		(property "Manufacturer" "Yageo"
+			(at 0 0 0)
+			(layer "B.SilkS")
+			(hide yes)
+			(uuid "8f29579f-02f5-47e3-b98d-b49daa468a72")
+			(effects
+				(font
+					(size 1.27 1.27)
+					(thickness 0.15)
+				)
+			)
+		)
+		(property "Digi-Key" "311-2.00KCRCT-ND"
+			(at 0 0 0)
+			(layer "B.SilkS")
+			(hide yes)
+			(uuid "698e7bc3-83a2-45ff-b1c7-672a7e126dca")
+			(effects
+				(font
+					(size 1.27 1.27)
+					(thickness 0.15)
+				)
+			)
+		)
+		(property "Mouser" "603-RC0805FR-072KL"
+			(at 0 0 0)
+			(layer "B.SilkS")
+			(hide yes)
+			(uuid "cc8c31d7-ac90-4395-b89a-9354b8f4b39e")
+			(effects
+				(font
+					(size 1.27 1.27)
+					(thickness 0.15)
+				)
+			)
+		)
 		(property ki_fp_filters "R_*")
 		(path "/400d2a2f-b551-4f18-ab3b-8da28720c213")
 		(sheetname "/")
@@ -13960,6 +15519,54 @@
 				(justify mirror)
 			)
 		)
+		(property "MPN" "RC0805FR-074K7L"
+			(at 0 0 0)
+			(layer "B.SilkS")
+			(hide yes)
+			(uuid "537cc083-d566-41bf-9ab2-46166f57cd39")
+			(effects
+				(font
+					(size 1.27 1.27)
+					(thickness 0.15)
+				)
+			)
+		)
+		(property "Manufacturer" "Yageo"
+			(at 0 0 0)
+			(layer "B.SilkS")
+			(hide yes)
+			(uuid "82820b25-ea33-4166-bc58-0a352242f7ad")
+			(effects
+				(font
+					(size 1.27 1.27)
+					(thickness 0.15)
+				)
+			)
+		)
+		(property "Digi-Key" "311-4.70KCRCT-ND"
+			(at 0 0 0)
+			(layer "B.SilkS")
+			(hide yes)
+			(uuid "8da0cc19-267e-483a-afb3-230d9d5fc832")
+			(effects
+				(font
+					(size 1.27 1.27)
+					(thickness 0.15)
+				)
+			)
+		)
+		(property "Mouser" "603-RC0805FR-074K7L"
+			(at 0 0 0)
+			(layer "B.SilkS")
+			(hide yes)
+			(uuid "3deb16d8-ed97-47e9-9371-be8f4160b952")
+			(effects
+				(font
+					(size 1.27 1.27)
+					(thickness 0.15)
+				)
+			)
+		)
 		(property ki_fp_filters "R_*")
 		(path "/29fea8b1-7205-4529-9393-7ecf8ec8709b")
 		(sheetname "/")
@@ -14109,6 +15716,54 @@
 					(size 1.27 1.27)
 				)
 				(justify mirror)
+			)
+		)
+		(property "MPN" "CL32A226MAJNNNE"
+			(at 0 0 0)
+			(layer "B.SilkS")
+			(hide yes)
+			(uuid "7cd5fad3-bd8a-4bcc-b932-3090aa63fbe4")
+			(effects
+				(font
+					(size 1.27 1.27)
+					(thickness 0.15)
+				)
+			)
+		)
+		(property "Manufacturer" "Samsung"
+			(at 0 0 0)
+			(layer "B.SilkS")
+			(hide yes)
+			(uuid "a8dae641-69af-49a1-b080-8fb112e0a22c")
+			(effects
+				(font
+					(size 1.27 1.27)
+					(thickness 0.15)
+				)
+			)
+		)
+		(property "Digi-Key" "1276-3373-1-ND"
+			(at 0 0 0)
+			(layer "B.SilkS")
+			(hide yes)
+			(uuid "758824ee-f042-4cf9-80d1-ee12752fde80")
+			(effects
+				(font
+					(size 1.27 1.27)
+					(thickness 0.15)
+				)
+			)
+		)
+		(property "Mouser" "187-CL32A226MAJNNNE"
+			(at 0 0 0)
+			(layer "B.SilkS")
+			(hide yes)
+			(uuid "cae31a5b-7f17-4653-90c8-32e226f02153")
+			(effects
+				(font
+					(size 1.27 1.27)
+					(thickness 0.15)
+				)
 			)
 		)
 		(property ki_fp_filters "C_*")
@@ -14279,7 +15934,7 @@
 				)
 			)
 		)
-		(attr through_hole)
+		(attr through_hole exclude_from_bom)
 		(duplicate_pad_numbers_are_jumpers no)
 		(fp_line
 			(start 11.56 -42.04)
@@ -15045,6 +16700,54 @@
 				(justify mirror)
 			)
 		)
+		(property "MPN" "1N4148W-7-F"
+			(at 0 0 0)
+			(layer "B.SilkS")
+			(hide yes)
+			(uuid "3faf42c5-ddb2-4522-870e-01aab009830e")
+			(effects
+				(font
+					(size 1.27 1.27)
+					(thickness 0.15)
+				)
+			)
+		)
+		(property "Manufacturer" "Diodes Inc"
+			(at 0 0 0)
+			(layer "B.SilkS")
+			(hide yes)
+			(uuid "a53e914a-bbab-4c7b-bd40-70fdc4081d48")
+			(effects
+				(font
+					(size 1.27 1.27)
+					(thickness 0.15)
+				)
+			)
+		)
+		(property "Digi-Key" "1N4148W-FDICT-ND"
+			(at 0 0 0)
+			(layer "B.SilkS")
+			(hide yes)
+			(uuid "f8083950-3052-40a4-a336-42ba46692095")
+			(effects
+				(font
+					(size 1.27 1.27)
+					(thickness 0.15)
+				)
+			)
+		)
+		(property "Mouser" "621-1N4148W-F"
+			(at 0 0 0)
+			(layer "B.SilkS")
+			(hide yes)
+			(uuid "ca9349db-8d94-49b1-94bd-b15bb31c4df9")
+			(effects
+				(font
+					(size 1.27 1.27)
+					(thickness 0.15)
+				)
+			)
+		)
 		(property ki_fp_filters "TO-???* *_Diode_* *SingleDiode* D_*")
 		(path "/ff8d4e0e-4d40-4600-a488-de7ca85f0c8f")
 		(sheetname "/")
@@ -15336,6 +17039,54 @@
 				(justify mirror)
 			)
 		)
+		(property "MPN" "C0805C104M5RACAUTO"
+			(at 0 0 0)
+			(layer "B.SilkS")
+			(hide yes)
+			(uuid "7d36e97c-f577-4e59-ab9c-08cba9d51009")
+			(effects
+				(font
+					(size 1.27 1.27)
+					(thickness 0.15)
+				)
+			)
+		)
+		(property "Manufacturer" "KEMET"
+			(at 0 0 0)
+			(layer "B.SilkS")
+			(hide yes)
+			(uuid "86e8e852-5bf6-4884-86f7-a0581c29e4d8")
+			(effects
+				(font
+					(size 1.27 1.27)
+					(thickness 0.15)
+				)
+			)
+		)
+		(property "Digi-Key" "399-12977-1-ND"
+			(at 0 0 0)
+			(layer "B.SilkS")
+			(hide yes)
+			(uuid "6d049fda-bbbb-41c1-8306-a645f7680f67")
+			(effects
+				(font
+					(size 1.27 1.27)
+					(thickness 0.15)
+				)
+			)
+		)
+		(property "Mouser" "80-C0805C104M5RAUTO"
+			(at 0 0 0)
+			(layer "B.SilkS")
+			(hide yes)
+			(uuid "627f51e0-dfe6-45a2-8f00-9abb6567142a")
+			(effects
+				(font
+					(size 1.27 1.27)
+					(thickness 0.15)
+				)
+			)
+		)
 		(property ki_fp_filters "C_*")
 		(path "/3d2cf444-5faf-44a2-91d4-8e51edfab62d")
 		(sheetname "/")
@@ -15487,6 +17238,54 @@
 				(justify mirror)
 			)
 		)
+		(property "MPN" "RC0805FR-072KL"
+			(at 0 0 0)
+			(layer "B.SilkS")
+			(hide yes)
+			(uuid "b91eced8-96d3-457b-8665-da9d9763050f")
+			(effects
+				(font
+					(size 1.27 1.27)
+					(thickness 0.15)
+				)
+			)
+		)
+		(property "Manufacturer" "Yageo"
+			(at 0 0 0)
+			(layer "B.SilkS")
+			(hide yes)
+			(uuid "c419445e-303b-4976-9805-7cfccbf8e778")
+			(effects
+				(font
+					(size 1.27 1.27)
+					(thickness 0.15)
+				)
+			)
+		)
+		(property "Digi-Key" "311-2.00KCRCT-ND"
+			(at 0 0 0)
+			(layer "B.SilkS")
+			(hide yes)
+			(uuid "0ee6c9f5-1d8a-40c9-b3dd-f79a9dda2b62")
+			(effects
+				(font
+					(size 1.27 1.27)
+					(thickness 0.15)
+				)
+			)
+		)
+		(property "Mouser" "603-RC0805FR-072KL"
+			(at 0 0 0)
+			(layer "B.SilkS")
+			(hide yes)
+			(uuid "040652ab-12e5-4b6b-803e-242cde9fd9f5")
+			(effects
+				(font
+					(size 1.27 1.27)
+					(thickness 0.15)
+				)
+			)
+		)
 		(property ki_fp_filters "R_*")
 		(path "/92c9bfb9-0796-4eb5-9159-352806b9abf1")
 		(sheetname "/")
@@ -15636,6 +17435,42 @@
 					(size 1.27 1.27)
 				)
 				(justify mirror)
+			)
+		)
+		(property "MPN" "ET6226M"
+			(at 0 0 0)
+			(layer "B.SilkS")
+			(hide yes)
+			(uuid "6fed79f1-67de-47f0-854b-38bff0c032fe")
+			(effects
+				(font
+					(size 1.27 1.27)
+					(thickness 0.15)
+				)
+			)
+		)
+		(property "Manufacturer" "UMW"
+			(at 0 0 0)
+			(layer "B.SilkS")
+			(hide yes)
+			(uuid "b6680a17-31a7-46f6-a487-06093a8c26b5")
+			(effects
+				(font
+					(size 1.27 1.27)
+					(thickness 0.15)
+				)
+			)
+		)
+		(property "Digi-Key" "4518-ET6226MCT-ND"
+			(at 0 0 0)
+			(layer "B.SilkS")
+			(hide yes)
+			(uuid "cf8e80bf-aedf-4c32-a5f5-9feef6f7170f")
+			(effects
+				(font
+					(size 1.27 1.27)
+					(thickness 0.15)
+				)
 			)
 		)
 		(path "/6d269dff-4aff-423b-9e7d-516d63c01c4d")
@@ -16094,6 +17929,54 @@
 				(justify mirror)
 			)
 		)
+		(property "MPN" "RC0805FR-072KL"
+			(at 0 0 0)
+			(layer "B.SilkS")
+			(hide yes)
+			(uuid "ddda4179-9e7d-47a2-a086-8852967af7f2")
+			(effects
+				(font
+					(size 1.27 1.27)
+					(thickness 0.15)
+				)
+			)
+		)
+		(property "Manufacturer" "Yageo"
+			(at 0 0 0)
+			(layer "B.SilkS")
+			(hide yes)
+			(uuid "a4af3a76-5613-4fb7-b45b-5456871fc1b2")
+			(effects
+				(font
+					(size 1.27 1.27)
+					(thickness 0.15)
+				)
+			)
+		)
+		(property "Digi-Key" "311-2.00KCRCT-ND"
+			(at 0 0 0)
+			(layer "B.SilkS")
+			(hide yes)
+			(uuid "499905f7-0803-4f71-8d22-bf1f70c64429")
+			(effects
+				(font
+					(size 1.27 1.27)
+					(thickness 0.15)
+				)
+			)
+		)
+		(property "Mouser" "603-RC0805FR-072KL"
+			(at 0 0 0)
+			(layer "B.SilkS")
+			(hide yes)
+			(uuid "2227a697-653e-473b-82cc-aa9480876a25")
+			(effects
+				(font
+					(size 1.27 1.27)
+					(thickness 0.15)
+				)
+			)
+		)
 		(property ki_fp_filters "R_*")
 		(path "/72cff49f-3360-4a4b-949f-e952400d31e6")
 		(sheetname "/")
@@ -16275,6 +18158,54 @@
 					(thickness 0.15)
 				)
 				(justify mirror)
+			)
+		)
+		(property "MPN" "1N4148W-7-F"
+			(at 0 0 0)
+			(layer "B.SilkS")
+			(hide yes)
+			(uuid "8579dbe4-dc50-4480-9995-f08741d76a48")
+			(effects
+				(font
+					(size 1.27 1.27)
+					(thickness 0.15)
+				)
+			)
+		)
+		(property "Manufacturer" "Diodes Inc"
+			(at 0 0 0)
+			(layer "B.SilkS")
+			(hide yes)
+			(uuid "a5f90f46-1145-492c-b191-8d5a9828d771")
+			(effects
+				(font
+					(size 1.27 1.27)
+					(thickness 0.15)
+				)
+			)
+		)
+		(property "Digi-Key" "1N4148W-FDICT-ND"
+			(at 0 0 0)
+			(layer "B.SilkS")
+			(hide yes)
+			(uuid "7eaa31b4-63ad-41ce-9633-978c484a50c0")
+			(effects
+				(font
+					(size 1.27 1.27)
+					(thickness 0.15)
+				)
+			)
+		)
+		(property "Mouser" "621-1N4148W-F"
+			(at 0 0 0)
+			(layer "B.SilkS")
+			(hide yes)
+			(uuid "96631406-b84f-45b3-88bc-737d7e9d5654")
+			(effects
+				(font
+					(size 1.27 1.27)
+					(thickness 0.15)
+				)
 			)
 		)
 		(property ki_fp_filters "TO-???* *_Diode_* *SingleDiode* D_*")
@@ -16600,6 +18531,54 @@
 				(justify mirror)
 			)
 		)
+		(property "MPN" "1N4148W-7-F"
+			(at 0 0 0)
+			(layer "B.SilkS")
+			(hide yes)
+			(uuid "016d8160-33e0-47a3-8ff0-83469e357b8e")
+			(effects
+				(font
+					(size 1.27 1.27)
+					(thickness 0.15)
+				)
+			)
+		)
+		(property "Manufacturer" "Diodes Inc"
+			(at 0 0 0)
+			(layer "B.SilkS")
+			(hide yes)
+			(uuid "c9430283-039a-45f6-b035-022bf3a052e5")
+			(effects
+				(font
+					(size 1.27 1.27)
+					(thickness 0.15)
+				)
+			)
+		)
+		(property "Digi-Key" "1N4148W-FDICT-ND"
+			(at 0 0 0)
+			(layer "B.SilkS")
+			(hide yes)
+			(uuid "0e170c35-f221-4b16-8ceb-1c04fa736206")
+			(effects
+				(font
+					(size 1.27 1.27)
+					(thickness 0.15)
+				)
+			)
+		)
+		(property "Mouser" "621-1N4148W-F"
+			(at 0 0 0)
+			(layer "B.SilkS")
+			(hide yes)
+			(uuid "cdf4bd2c-4507-40a5-8a9e-92522205a374")
+			(effects
+				(font
+					(size 1.27 1.27)
+					(thickness 0.15)
+				)
+			)
+		)
 		(property ki_fp_filters "TO-???* *_Diode_* *SingleDiode* D_*")
 		(path "/07beddbb-5d07-470f-ac91-7b63acb57b81")
 		(sheetname "/")
@@ -16921,6 +18900,54 @@
 					(thickness 0.15)
 				)
 				(justify mirror)
+			)
+		)
+		(property "MPN" "1N4148W-7-F"
+			(at 0 0 0)
+			(layer "B.SilkS")
+			(hide yes)
+			(uuid "2b094da9-0733-4194-9b5f-6c3a6534744e")
+			(effects
+				(font
+					(size 1.27 1.27)
+					(thickness 0.15)
+				)
+			)
+		)
+		(property "Manufacturer" "Diodes Inc"
+			(at 0 0 0)
+			(layer "B.SilkS")
+			(hide yes)
+			(uuid "62095113-83d1-4d70-9316-83422e3c73ac")
+			(effects
+				(font
+					(size 1.27 1.27)
+					(thickness 0.15)
+				)
+			)
+		)
+		(property "Digi-Key" "1N4148W-FDICT-ND"
+			(at 0 0 0)
+			(layer "B.SilkS")
+			(hide yes)
+			(uuid "62a1e8ba-a883-4c8c-8f6e-1e9236ffc472")
+			(effects
+				(font
+					(size 1.27 1.27)
+					(thickness 0.15)
+				)
+			)
+		)
+		(property "Mouser" "621-1N4148W-F"
+			(at 0 0 0)
+			(layer "B.SilkS")
+			(hide yes)
+			(uuid "535c52c7-157d-4055-b745-9fcb89aca3de")
+			(effects
+				(font
+					(size 1.27 1.27)
+					(thickness 0.15)
+				)
 			)
 		)
 		(property ki_fp_filters "TO-???* *_Diode_* *SingleDiode* D_*")
@@ -19509,7 +21536,7 @@
 			(extension_offset 0.5)
 			(keep_text_aligned yes)
 		)
-		(gr_text "6500"
+		(gr_text "165.1"
 			(at 21.71 107.95 90)
 			(layer "Dwgs.User")
 			(uuid "0732b292-579f-4f00-a89a-d94143b6dc93")
@@ -19547,7 +21574,7 @@
 			(extension_offset 0.5)
 			(keep_text_aligned yes)
 		)
-		(gr_text "3000"
+		(gr_text "76.2"
 			(at 63.5 21.71 0)
 			(layer "Dwgs.User")
 			(uuid "d18d5926-8668-472f-aeef-ae6bcb68e105")
