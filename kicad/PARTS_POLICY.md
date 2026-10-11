@@ -28,7 +28,7 @@ one before.
 
 1. Stocked at both Digi-Key and Mouser.
 2. No tariff flagged by the distributor for the shipping destination. Preferred, not required.
-3. Lower unit price at the planned quantity.
+3. Lower unit price at the planned quantity (the Qty column of the combined order list).
 4. Tighter tolerance or higher rating, at the same price.
 5. Lowest MPN alphabetically. This exists only so the same inputs always give the same pick.
 
@@ -52,7 +52,7 @@ Search one row at a time with the distributor's parametric filters set to the ro
 | `EXACT` | Specific IC, transistor, display | The symbol's exact part | The one maker | The datasheet's orderable part number, including tape/reel suffix |
 | `LCSC` | Part not carried by Digi-Key or Mouser | As `EXACT` | The one maker | Ordered from LCSC; record the LCSC part number |
 | `OWNED` | Part already in stock at home | Matches the footprint | Whatever you have | Record what you have; buy only to top up |
-| `OFFBOARD` | Module, switch, or anything not soldered from this BOM | n/a | n/a | Marked Exclude from BOM in KiCad; listed here for completeness |
+| `OFFBOARD` | Module, switch, or anything not soldered from this BOM | n/a | n/a | Marked Exclude from BOM in KiCad, so it stays out of every board BOM; listed here for completeness |
 
 Resistors are categorized by function, not value: the function picks the technology, and the
 technology picks the families. Thick film drifts more (±100-200 ppm/°C) and has more excess noise
