@@ -1,5 +1,5 @@
 ** Drc report for microwave.kicad_pcb **
-** Created on 2026-10-11T15:14:47 **
+** Created on 2026-10-12T13:39:11 **
 ** Report includes: Errors, Warnings **
 
 ** Found 48 DRC violations **
@@ -69,8 +69,24 @@
     @(76.2000 mm, 150.0188 mm): Footprint D15
 [silk_over_copper]: Silkscreen clipped by solder mask
     Local override; warning
+    @(59.1500 mm, 92.8688 mm): Reference field of D2
+    @(59.0550 mm, 92.0750 mm): NPTH pad of MX2
+[silk_over_copper]: Silkscreen clipped by solder mask
+    Local override; warning
+    @(58.1500 mm, 95.2288 mm): Segment of D2 on B.Silkscreen
+    @(59.0550 mm, 92.0750 mm): NPTH pad of MX2
+[silk_over_copper]: Silkscreen clipped by solder mask
+    Local override; warning
     @(97.2500 mm, 92.8688 mm): Reference field of D4
     @(97.1550 mm, 92.0750 mm): NPTH pad of MX4
+[silk_over_copper]: Silkscreen clipped by solder mask
+    Local override; warning
+    @(78.2000 mm, 92.8688 mm): Reference field of D3
+    @(78.1050 mm, 92.0750 mm): NPTH pad of MX3
+[silk_over_copper]: Silkscreen clipped by solder mask
+    Local override; warning
+    @(77.2000 mm, 95.2288 mm): Segment of D3 on B.Silkscreen
+    @(78.1050 mm, 92.0750 mm): NPTH pad of MX3
 [silk_over_copper]: Silkscreen clipped by solder mask
     Local override; warning
     @(96.2500 mm, 95.2288 mm): Segment of D4 on B.Silkscreen
@@ -105,6 +121,10 @@
     @(97.1550 mm, 149.2250 mm): NPTH pad of MX16
 [silk_over_copper]: Silkscreen clipped by solder mask
     Local override; warning
+    @(96.2500 mm, 152.3162 mm): Segment of D16 on B.Silkscreen
+    @(97.1550 mm, 149.2250 mm): NPTH pad of MX16
+[silk_over_copper]: Silkscreen clipped by solder mask
+    Local override; warning
     @(97.2500 mm, 130.9688 mm): Reference field of D12
     @(97.1550 mm, 130.1750 mm): NPTH pad of MX12
 [silk_over_copper]: Silkscreen clipped by solder mask
@@ -113,11 +133,27 @@
     @(97.1550 mm, 130.1750 mm): NPTH pad of MX12
 [silk_over_copper]: Silkscreen clipped by solder mask
     Local override; warning
-    @(96.2500 mm, 152.3162 mm): Segment of D16 on B.Silkscreen
-    @(97.1550 mm, 149.2250 mm): NPTH pad of MX16
+    @(40.1000 mm, 150.0188 mm): Reference field of D13
+    @(40.0050 mm, 149.2250 mm): NPTH pad of MX13
+[silk_over_copper]: Silkscreen clipped by solder mask
+    Local override; warning
+    @(39.1000 mm, 152.3787 mm): Segment of D13 on B.Silkscreen
+    @(40.0050 mm, 149.2250 mm): NPTH pad of MX13
+[silk_over_copper]: Silkscreen clipped by solder mask
+    Local override; warning
+    @(59.1500 mm, 150.0188 mm): Reference field of D14
+    @(59.0550 mm, 149.2250 mm): NPTH pad of MX14
+[silk_over_copper]: Silkscreen clipped by solder mask
+    Local override; warning
+    @(58.1500 mm, 152.3787 mm): Segment of D14 on B.Silkscreen
+    @(59.0550 mm, 149.2250 mm): NPTH pad of MX14
 [silk_over_copper]: Silkscreen clipped by solder mask
     Local override; warning
     @(78.2000 mm, 150.0188 mm): Reference field of D15
+    @(78.1050 mm, 149.2250 mm): NPTH pad of MX15
+[silk_over_copper]: Silkscreen clipped by solder mask
+    Local override; warning
+    @(77.2000 mm, 152.3787 mm): Segment of D15 on B.Silkscreen
     @(78.1050 mm, 149.2250 mm): NPTH pad of MX15
 [silk_over_copper]: Silkscreen clipped by solder mask
     Local override; warning
@@ -127,14 +163,6 @@
     Local override; warning
     @(39.1000 mm, 133.3288 mm): Segment of D9 on B.Silkscreen
     @(40.0050 mm, 130.1750 mm): NPTH pad of MX9
-[silk_over_copper]: Silkscreen clipped by solder mask
-    Local override; warning
-    @(40.1000 mm, 150.0188 mm): Reference field of D13
-    @(40.0050 mm, 149.2250 mm): NPTH pad of MX13
-[silk_over_copper]: Silkscreen clipped by solder mask
-    Local override; warning
-    @(59.1500 mm, 150.0188 mm): Reference field of D14
-    @(59.0550 mm, 149.2250 mm): NPTH pad of MX14
 [silk_over_copper]: Silkscreen clipped by solder mask
     Local override; warning
     @(59.1500 mm, 130.9688 mm): Reference field of D10
@@ -161,40 +189,12 @@
     @(59.0550 mm, 111.1250 mm): NPTH pad of MX6
 [silk_over_copper]: Silkscreen clipped by solder mask
     Local override; warning
-    @(39.1000 mm, 152.3787 mm): Segment of D13 on B.Silkscreen
-    @(40.0050 mm, 149.2250 mm): NPTH pad of MX13
-[silk_over_copper]: Silkscreen clipped by solder mask
-    Local override; warning
-    @(58.1500 mm, 152.3787 mm): Segment of D14 on B.Silkscreen
-    @(59.0550 mm, 149.2250 mm): NPTH pad of MX14
-[silk_over_copper]: Silkscreen clipped by solder mask
-    Local override; warning
-    @(77.2000 mm, 152.3787 mm): Segment of D15 on B.Silkscreen
-    @(78.1050 mm, 149.2250 mm): NPTH pad of MX15
-[silk_over_copper]: Silkscreen clipped by solder mask
-    Local override; warning
-    @(59.1500 mm, 92.8688 mm): Reference field of D2
-    @(59.0550 mm, 92.0750 mm): NPTH pad of MX2
-[silk_over_copper]: Silkscreen clipped by solder mask
-    Local override; warning
-    @(58.1500 mm, 95.2288 mm): Segment of D2 on B.Silkscreen
-    @(59.0550 mm, 92.0750 mm): NPTH pad of MX2
-[silk_over_copper]: Silkscreen clipped by solder mask
-    Local override; warning
     @(40.1000 mm, 92.8688 mm): Reference field of D1
     @(40.0050 mm, 92.0750 mm): NPTH pad of MX1
 [silk_over_copper]: Silkscreen clipped by solder mask
     Local override; warning
     @(39.1000 mm, 95.2288 mm): Segment of D1 on B.Silkscreen
     @(40.0050 mm, 92.0750 mm): NPTH pad of MX1
-[silk_over_copper]: Silkscreen clipped by solder mask
-    Local override; warning
-    @(78.2000 mm, 92.8688 mm): Reference field of D3
-    @(78.1050 mm, 92.0750 mm): NPTH pad of MX3
-[silk_over_copper]: Silkscreen clipped by solder mask
-    Local override; warning
-    @(77.2000 mm, 95.2288 mm): Segment of D3 on B.Silkscreen
-    @(78.1050 mm, 92.0750 mm): NPTH pad of MX3
 
 ** Found 0 unconnected pads **
 

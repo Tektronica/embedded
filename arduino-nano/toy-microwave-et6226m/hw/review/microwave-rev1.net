@@ -2,7 +2,7 @@
 	(version "E")
 	(design
 		(source "/Users/ryanbryson/Documents/projects/fluke/_embedded/embedded/arduino-nano/toy-microwave-et6226m/hw/kicad/microwave.kicad_sch")
-		(date "2026-10-11T15:14:48")
+		(date "2026-10-12T13:39:12")
 		(tool "Eeschema 10.0.4")
 		(sheet
 			(number "1")
@@ -4575,6 +4575,240 @@
 			)
 		)
 		(comp
+			(ref "R11")
+			(value "10k")
+			(footprint "Resistor_SMD:R_0805_2012Metric_Pad1.20x1.40mm_HandSolder")
+			(description "Resistor, US symbol")
+			(fields
+				(field
+					(name "MPN") "RC0805FR-0710KL")
+				(field
+					(name "Manufacturer") "Yageo")
+				(field
+					(name "Digi-Key") "311-10.0KCRCT-ND")
+				(field
+					(name "Mouser") "603-RC0805FR-0710KL")
+				(field
+					(name "Footprint") "Resistor_SMD:R_0805_2012Metric_Pad1.20x1.40mm_HandSolder")
+				(field
+					(name "Datasheet")
+				)
+				(field
+					(name "Description") "Resistor, US symbol")
+			)
+			(libsource
+				(lib "Device")
+				(part "R_US")
+				(description "Resistor, US symbol")
+			)
+			(property
+				(name "MPN")
+				(value "RC0805FR-0710KL")
+			)
+			(property
+				(name "Manufacturer")
+				(value "Yageo")
+			)
+			(property
+				(name "Digi-Key")
+				(value "311-10.0KCRCT-ND")
+			)
+			(property
+				(name "Mouser")
+				(value "603-RC0805FR-0710KL")
+			)
+			(property
+				(name "Sheetname")
+				(value "Root")
+			)
+			(property
+				(name "Sheetfile")
+				(value "microwave.kicad_sch")
+			)
+			(property
+				(name "ki_keywords")
+				(value "R res resistor")
+			)
+			(property
+				(name "ki_fp_filters")
+				(value "R_*")
+			)
+			(sheetpath
+				(names "/")
+				(tstamps "/")
+			)
+			(tstamps "00478ed6-1c95-48f8-ab14-61590a14714f")
+			(units
+				(unit
+					(name "A")
+					(pins
+						(pin
+							(num "1")
+						)
+						(pin
+							(num "2")
+						)
+					)
+				)
+			)
+		)
+		(comp
+			(ref "R12")
+			(value "10k")
+			(footprint "Resistor_SMD:R_0805_2012Metric_Pad1.20x1.40mm_HandSolder")
+			(description "Resistor, US symbol")
+			(fields
+				(field
+					(name "MPN") "RC0805FR-0710KL")
+				(field
+					(name "Manufacturer") "Yageo")
+				(field
+					(name "Digi-Key") "311-10.0KCRCT-ND")
+				(field
+					(name "Mouser") "603-RC0805FR-0710KL")
+				(field
+					(name "Footprint") "Resistor_SMD:R_0805_2012Metric_Pad1.20x1.40mm_HandSolder")
+				(field
+					(name "Datasheet")
+				)
+				(field
+					(name "Description") "Resistor, US symbol")
+			)
+			(libsource
+				(lib "Device")
+				(part "R_US")
+				(description "Resistor, US symbol")
+			)
+			(property
+				(name "MPN")
+				(value "RC0805FR-0710KL")
+			)
+			(property
+				(name "Manufacturer")
+				(value "Yageo")
+			)
+			(property
+				(name "Digi-Key")
+				(value "311-10.0KCRCT-ND")
+			)
+			(property
+				(name "Mouser")
+				(value "603-RC0805FR-0710KL")
+			)
+			(property
+				(name "Sheetname")
+				(value "Root")
+			)
+			(property
+				(name "Sheetfile")
+				(value "microwave.kicad_sch")
+			)
+			(property
+				(name "ki_keywords")
+				(value "R res resistor")
+			)
+			(property
+				(name "ki_fp_filters")
+				(value "R_*")
+			)
+			(sheetpath
+				(names "/")
+				(tstamps "/")
+			)
+			(tstamps "ec2abbd7-7838-4bdd-86af-1723b485d60e")
+			(units
+				(unit
+					(name "A")
+					(pins
+						(pin
+							(num "1")
+						)
+						(pin
+							(num "2")
+						)
+					)
+				)
+			)
+		)
+		(comp
+			(ref "R13")
+			(value "10k")
+			(footprint "Resistor_SMD:R_0805_2012Metric_Pad1.20x1.40mm_HandSolder")
+			(description "Resistor, US symbol")
+			(fields
+				(field
+					(name "MPN") "RC0805FR-0710KL")
+				(field
+					(name "Manufacturer") "Yageo")
+				(field
+					(name "Digi-Key") "311-10.0KCRCT-ND")
+				(field
+					(name "Mouser") "603-RC0805FR-0710KL")
+				(field
+					(name "Footprint") "Resistor_SMD:R_0805_2012Metric_Pad1.20x1.40mm_HandSolder")
+				(field
+					(name "Datasheet")
+				)
+				(field
+					(name "Description") "Resistor, US symbol")
+			)
+			(libsource
+				(lib "Device")
+				(part "R_US")
+				(description "Resistor, US symbol")
+			)
+			(property
+				(name "MPN")
+				(value "RC0805FR-0710KL")
+			)
+			(property
+				(name "Manufacturer")
+				(value "Yageo")
+			)
+			(property
+				(name "Digi-Key")
+				(value "311-10.0KCRCT-ND")
+			)
+			(property
+				(name "Mouser")
+				(value "603-RC0805FR-0710KL")
+			)
+			(property
+				(name "Sheetname")
+				(value "Root")
+			)
+			(property
+				(name "Sheetfile")
+				(value "microwave.kicad_sch")
+			)
+			(property
+				(name "ki_keywords")
+				(value "R res resistor")
+			)
+			(property
+				(name "ki_fp_filters")
+				(value "R_*")
+			)
+			(sheetpath
+				(names "/")
+				(tstamps "/")
+			)
+			(tstamps "83c724d7-56e7-46df-9a0e-c5e0648e4e96")
+			(units
+				(unit
+					(name "A")
+					(pins
+						(pin
+							(num "1")
+						)
+						(pin
+							(num "2")
+						)
+					)
+				)
+			)
+		)
+		(comp
 			(ref "U1")
 			(value "AP63205WU")
 			(footprint "Package_TO_SOT_SMD:TSOT-23-6")
@@ -5802,8 +6036,8 @@
 			(class "Power")
 			(node
 				(ref "A1")
-				(pin "13")
-				(pinfunction "D10_13")
+				(pin "9")
+				(pinfunction "D6_9")
 				(pintype "bidirectional")
 			)
 			(node
@@ -5824,8 +6058,13 @@
 			)
 			(node
 				(ref "J2")
+				(pin "3")
+				(pinfunction "Pin_3_3")
+				(pintype "passive")
+			)
+			(node
+				(ref "R13")
 				(pin "2")
-				(pinfunction "Pin_2_2")
 				(pintype "passive")
 			)
 		)
@@ -5835,36 +6074,24 @@
 			(class "Default")
 			(node
 				(ref "A1")
-				(pin "16")
-				(pinfunction "D13_16")
+				(pin "13")
+				(pinfunction "D10_13")
 				(pintype "bidirectional")
 			)
 			(node
 				(ref "J2")
-				(pin "3")
-				(pinfunction "Pin_3_3")
+				(pin "1")
+				(pinfunction "Pin_1_1")
+				(pintype "passive")
+			)
+			(node
+				(ref "R11")
+				(pin "2")
 				(pintype "passive")
 			)
 		)
 		(net
 			(code "7")
-			(name "CTRL_MISC")
-			(class "Default")
-			(node
-				(ref "A1")
-				(pin "9")
-				(pinfunction "D6_9")
-				(pintype "bidirectional")
-			)
-			(node
-				(ref "J2")
-				(pin "4")
-				(pinfunction "Pin_4_4")
-				(pintype "passive")
-			)
-		)
-		(net
-			(code "8")
 			(name "CTRL_MOTOR")
 			(class "Default")
 			(node
@@ -5875,13 +6102,18 @@
 			)
 			(node
 				(ref "J2")
-				(pin "1")
-				(pinfunction "Pin_1_1")
+				(pin "2")
+				(pinfunction "Pin_2_2")
+				(pintype "passive")
+			)
+			(node
+				(ref "R12")
+				(pin "2")
 				(pintype "passive")
 			)
 		)
 		(net
-			(code "9")
+			(code "8")
 			(name "DAT")
 			(class "Default")
 			(node
@@ -5902,7 +6134,7 @@
 			)
 		)
 		(net
-			(code "10")
+			(code "9")
 			(name "DIG_CA1{slash}COL0")
 			(class "Default")
 			(node
@@ -5924,7 +6156,7 @@
 			)
 		)
 		(net
-			(code "11")
+			(code "10")
 			(name "DIG_CA2{slash}COL1")
 			(class "Default")
 			(node
@@ -5946,7 +6178,7 @@
 			)
 		)
 		(net
-			(code "12")
+			(code "11")
 			(name "DIG_CA3{slash}COL2")
 			(class "Default")
 			(node
@@ -5968,7 +6200,7 @@
 			)
 		)
 		(net
-			(code "13")
+			(code "12")
 			(name "DIG_CA4{slash}COL3")
 			(class "Default")
 			(node
@@ -5990,7 +6222,7 @@
 			)
 		)
 		(net
-			(code "14")
+			(code "13")
 			(name "GND")
 			(class "Power")
 			(node
@@ -6072,6 +6304,12 @@
 				(pintype "passive")
 			)
 			(node
+				(ref "J2")
+				(pin "4")
+				(pinfunction "Pin_4_4")
+				(pintype "passive")
+			)
+			(node
 				(ref "Q2")
 				(pin "2")
 				(pinfunction "S_2")
@@ -6079,6 +6317,21 @@
 			)
 			(node
 				(ref "R10")
+				(pin "1")
+				(pintype "passive")
+			)
+			(node
+				(ref "R11")
+				(pin "1")
+				(pintype "passive")
+			)
+			(node
+				(ref "R12")
+				(pin "1")
+				(pintype "passive")
+			)
+			(node
+				(ref "R13")
 				(pin "1")
 				(pintype "passive")
 			)
@@ -6096,7 +6349,7 @@
 			)
 		)
 		(net
-			(code "15")
+			(code "14")
 			(name "Net-(BZ1--)")
 			(class "Power")
 			(node
@@ -6119,7 +6372,7 @@
 			)
 		)
 		(net
-			(code "16")
+			(code "15")
 			(name "Net-(D1-A)")
 			(class "Default")
 			(node
@@ -6136,7 +6389,7 @@
 			)
 		)
 		(net
-			(code "17")
+			(code "16")
 			(name "Net-(D2-A)")
 			(class "Default")
 			(node
@@ -6153,7 +6406,7 @@
 			)
 		)
 		(net
-			(code "18")
+			(code "17")
 			(name "Net-(D3-A)")
 			(class "Default")
 			(node
@@ -6170,7 +6423,7 @@
 			)
 		)
 		(net
-			(code "19")
+			(code "18")
 			(name "Net-(D4-A)")
 			(class "Default")
 			(node
@@ -6187,7 +6440,7 @@
 			)
 		)
 		(net
-			(code "20")
+			(code "19")
 			(name "Net-(D5-A)")
 			(class "Default")
 			(node
@@ -6204,7 +6457,7 @@
 			)
 		)
 		(net
-			(code "21")
+			(code "20")
 			(name "Net-(D6-A)")
 			(class "Default")
 			(node
@@ -6221,7 +6474,7 @@
 			)
 		)
 		(net
-			(code "22")
+			(code "21")
 			(name "Net-(D7-A)")
 			(class "Default")
 			(node
@@ -6238,7 +6491,7 @@
 			)
 		)
 		(net
-			(code "23")
+			(code "22")
 			(name "Net-(D8-A)")
 			(class "Default")
 			(node
@@ -6255,7 +6508,7 @@
 			)
 		)
 		(net
-			(code "24")
+			(code "23")
 			(name "Net-(D9-A)")
 			(class "Default")
 			(node
@@ -6272,7 +6525,7 @@
 			)
 		)
 		(net
-			(code "25")
+			(code "24")
 			(name "Net-(D10-A)")
 			(class "Default")
 			(node
@@ -6289,7 +6542,7 @@
 			)
 		)
 		(net
-			(code "26")
+			(code "25")
 			(name "Net-(D11-A)")
 			(class "Default")
 			(node
@@ -6306,7 +6559,7 @@
 			)
 		)
 		(net
-			(code "27")
+			(code "26")
 			(name "Net-(D12-A)")
 			(class "Default")
 			(node
@@ -6323,7 +6576,7 @@
 			)
 		)
 		(net
-			(code "28")
+			(code "27")
 			(name "Net-(D13-A)")
 			(class "Default")
 			(node
@@ -6340,7 +6593,7 @@
 			)
 		)
 		(net
-			(code "29")
+			(code "28")
 			(name "Net-(D14-A)")
 			(class "Default")
 			(node
@@ -6357,7 +6610,7 @@
 			)
 		)
 		(net
-			(code "30")
+			(code "29")
 			(name "Net-(D15-A)")
 			(class "Default")
 			(node
@@ -6374,7 +6627,7 @@
 			)
 		)
 		(net
-			(code "31")
+			(code "30")
 			(name "Net-(D16-A)")
 			(class "Default")
 			(node
@@ -6391,7 +6644,7 @@
 			)
 		)
 		(net
-			(code "32")
+			(code "31")
 			(name "Net-(MX1-Pad1)")
 			(class "Default")
 			(node
@@ -6425,7 +6678,7 @@
 			)
 		)
 		(net
-			(code "33")
+			(code "32")
 			(name "Net-(MX10-Pad1)")
 			(class "Default")
 			(node
@@ -6459,7 +6712,7 @@
 			)
 		)
 		(net
-			(code "34")
+			(code "33")
 			(name "Net-(MX11-Pad1)")
 			(class "Default")
 			(node
@@ -6493,7 +6746,7 @@
 			)
 		)
 		(net
-			(code "35")
+			(code "34")
 			(name "Net-(MX12-Pad1)")
 			(class "Default")
 			(node
@@ -6527,7 +6780,7 @@
 			)
 		)
 		(net
-			(code "36")
+			(code "35")
 			(name "Net-(Q2-G)")
 			(class "Default")
 			(node
@@ -6548,7 +6801,7 @@
 			)
 		)
 		(net
-			(code "37")
+			(code "36")
 			(name "Net-(U1-BST)")
 			(class "Default")
 			(node
@@ -6564,7 +6817,7 @@
 			)
 		)
 		(net
-			(code "38")
+			(code "37")
 			(name "Net-(U1-SW)")
 			(class "Power")
 			(node
@@ -6586,7 +6839,7 @@
 			)
 		)
 		(net
-			(code "39")
+			(code "38")
 			(name "Net-(U5-CLK)")
 			(class "Default")
 			(node
@@ -6607,7 +6860,7 @@
 			)
 		)
 		(net
-			(code "40")
+			(code "39")
 			(name "Net-(U5-DAT)")
 			(class "Default")
 			(node
@@ -6628,7 +6881,7 @@
 			)
 		)
 		(net
-			(code "41")
+			(code "40")
 			(name "SEG_A{slash}ROW0")
 			(class "Default")
 			(node
@@ -6669,7 +6922,7 @@
 			)
 		)
 		(net
-			(code "42")
+			(code "41")
 			(name "SEG_B{slash}ROW1")
 			(class "Default")
 			(node
@@ -6710,7 +6963,7 @@
 			)
 		)
 		(net
-			(code "43")
+			(code "42")
 			(name "SEG_C{slash}ROW2")
 			(class "Default")
 			(node
@@ -6751,7 +7004,7 @@
 			)
 		)
 		(net
-			(code "44")
+			(code "43")
 			(name "SEG_DP")
 			(class "Default")
 			(node
@@ -6768,7 +7021,7 @@
 			)
 		)
 		(net
-			(code "45")
+			(code "44")
 			(name "SEG_D{slash}ROW3")
 			(class "Default")
 			(node
@@ -6809,7 +7062,7 @@
 			)
 		)
 		(net
-			(code "46")
+			(code "45")
 			(name "SEG_E")
 			(class "Default")
 			(node
@@ -6826,7 +7079,7 @@
 			)
 		)
 		(net
-			(code "47")
+			(code "46")
 			(name "SEG_F")
 			(class "Default")
 			(node
@@ -6843,7 +7096,7 @@
 			)
 		)
 		(net
-			(code "48")
+			(code "47")
 			(name "SEG_G")
 			(class "Default")
 			(node
@@ -6860,7 +7113,7 @@
 			)
 		)
 		(net
-			(code "49")
+			(code "48")
 			(name "VOUT_5V")
 			(class "Power")
 			(node
@@ -6893,7 +7146,7 @@
 			)
 		)
 		(net
-			(code "50")
+			(code "49")
 			(name "unconnected-(A1-3V3-Pad17)")
 			(class "Default")
 			(node
@@ -6904,7 +7157,7 @@
 			)
 		)
 		(net
-			(code "51")
+			(code "50")
 			(name "unconnected-(A1-A0-Pad19)")
 			(class "Default")
 			(node
@@ -6915,7 +7168,7 @@
 			)
 		)
 		(net
-			(code "52")
+			(code "51")
 			(name "unconnected-(A1-A1-Pad20)")
 			(class "Default")
 			(node
@@ -6926,7 +7179,7 @@
 			)
 		)
 		(net
-			(code "53")
+			(code "52")
 			(name "unconnected-(A1-A2-Pad21)")
 			(class "Default")
 			(node
@@ -6937,7 +7190,7 @@
 			)
 		)
 		(net
-			(code "54")
+			(code "53")
 			(name "unconnected-(A1-A3-Pad22)")
 			(class "Default")
 			(node
@@ -6948,7 +7201,7 @@
 			)
 		)
 		(net
-			(code "55")
+			(code "54")
 			(name "unconnected-(A1-A4-Pad23)")
 			(class "Default")
 			(node
@@ -6959,7 +7212,7 @@
 			)
 		)
 		(net
-			(code "56")
+			(code "55")
 			(name "unconnected-(A1-A5-Pad24)")
 			(class "Default")
 			(node
@@ -6970,7 +7223,7 @@
 			)
 		)
 		(net
-			(code "57")
+			(code "56")
 			(name "unconnected-(A1-A6-Pad25)")
 			(class "Default")
 			(node
@@ -6981,7 +7234,7 @@
 			)
 		)
 		(net
-			(code "58")
+			(code "57")
 			(name "unconnected-(A1-A7-Pad26)")
 			(class "Default")
 			(node
@@ -6992,7 +7245,7 @@
 			)
 		)
 		(net
-			(code "59")
+			(code "58")
 			(name "unconnected-(A1-AREF-Pad18)")
 			(class "Default")
 			(node
@@ -7003,7 +7256,7 @@
 			)
 		)
 		(net
-			(code "60")
+			(code "59")
 			(name "unconnected-(A1-D0{slash}RX-Pad2)")
 			(class "Default")
 			(node
@@ -7014,7 +7267,7 @@
 			)
 		)
 		(net
-			(code "61")
+			(code "60")
 			(name "unconnected-(A1-D1{slash}TX-Pad1)")
 			(class "Default")
 			(node
@@ -7025,7 +7278,7 @@
 			)
 		)
 		(net
-			(code "62")
+			(code "61")
 			(name "unconnected-(A1-D2-Pad5)")
 			(class "Default")
 			(node
@@ -7036,7 +7289,7 @@
 			)
 		)
 		(net
-			(code "63")
+			(code "62")
 			(name "unconnected-(A1-D3-Pad6)")
 			(class "Default")
 			(node
@@ -7047,7 +7300,7 @@
 			)
 		)
 		(net
-			(code "64")
+			(code "63")
 			(name "unconnected-(A1-D4-Pad7)")
 			(class "Default")
 			(node
@@ -7058,7 +7311,7 @@
 			)
 		)
 		(net
-			(code "65")
+			(code "64")
 			(name "unconnected-(A1-D5-Pad8)")
 			(class "Default")
 			(node
@@ -7069,13 +7322,24 @@
 			)
 		)
 		(net
-			(code "66")
+			(code "65")
 			(name "unconnected-(A1-D7-Pad10)")
 			(class "Default")
 			(node
 				(ref "A1")
 				(pin "10")
 				(pinfunction "D7_10")
+				(pintype "bidirectional+no_connect")
+			)
+		)
+		(net
+			(code "66")
+			(name "unconnected-(A1-D13-Pad16)")
+			(class "Default")
+			(node
+				(ref "A1")
+				(pin "16")
+				(pinfunction "D13_16")
 				(pintype "bidirectional+no_connect")
 			)
 		)

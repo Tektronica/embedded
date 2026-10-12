@@ -21,8 +21,10 @@ as a reference once this project moved to the ET6226M.
 | 1 | Cooling fan (running hum) | Generic 12V DC brushless fan, 40×40×10mm, sleeve bearing, ~0.08A | A commodity spec, not a specific listing — any 12V 40mm fan matches. Matches the 12V rail already used by the motor/light rather than introducing a separate 5V domain. Needs a transistor/MOSFET driver, same as the motor — not a direct GPIO connection. |
 | 1 | Interior/status light | 80mm white COB LED ring ("angel eye" halo ring) | Sold in a 2-pack. 12V/24V rated — confirm current draw and how it's switched (relay/MOSFET vs. direct GPIO) before wiring. |
 
-Motor, fan, and light are reserved, not wired. `CTRL_MOTOR`/`CTRL_FAN`/`CTRL_LIGHT` (D11-D13) only
-reach `J2`, with no driver on this board. Don't connect a 12V load to `J2` directly.
+Motor, fan, and light are reserved, not wired. `CTRL_MOTOR`/`CTRL_FAN`/`CTRL_LIGHT` (D11, D12, D10) only
+reach `J2` (pin 1 LIGHT, 2 MOTOR, 3 FAN, 4 GND), each with a 10 kΩ pull-down (`R11`-`R13`) so it reads low through
+reset. They're logic-level signals for off-board peripheral boards, which own their own driver and
+power. Don't connect a 12V load to `J2` directly.
 
 ## Firmware
 
@@ -55,10 +57,10 @@ PlatformIO project in `fw/` (`platformio.ini`, `include/`, `src/`, `test/`) buil
 | `*` | Cancel (back to Idle, discarding whatever was being entered, or ending a running countdown) |
 | `A` | Clock — from Idle, begin setting the time-of-day clock |
 | `B` | Timer — from Idle, begin entering a plain kitchen timer (counts down and beeps; doesn't turn on the motor/fan/light) |
-| `C`, `D` | Reserved, unused for now |
+| `C` | +30 s — from Idle, start a 30-second cook; while Running, add 30 s to the cook or timer countdown (caps at 99:59) |
+| `D` | Mute — toggle all buzzer sound in any state; resets to sound on at power-up |
 
-`C`/`D` are left open for future features (e.g. a light toggle or a child-lock) rather than
-assigned speculatively now. `main.cpp`'s `translateKey()` maps each key legend onto its confirmed
+`main.cpp`'s `translateKey()` maps each key legend onto its confirmed
 `(grid, segment)` scan position (`hw/kicad`'s schematic: `SG1-4`=rows, `GR1-4`=columns) --
 this LAYOUT table is the only place a different physical keycap arrangement would need updating;
 the electrical wiring stays the same regardless of which legend is assigned where.
@@ -68,8 +70,8 @@ uses the same DP-bit-on-one-grid trick `toy-microwave-tm1637` used with TM1637, 
 the schematic rather than guessed — the Kingbright display's shared DP line is wired straight to
 the ET6226M's `DP/KP` pin (`EightSegment` mode).
 
-Pin assignments, per `hw/kicad`: ET6226M `CLK`/`DAT` on D8/D9, buzzer D10, motor D11, fan
-D12, light D13. The old TM1637 approach's 8 matrix row/column pins are gone entirely — the keypad
+Pin assignments, per `hw/kicad`: ET6226M `CLK`/`DAT` on D8/D9, buzzer D6, motor D11, fan
+D12, light D10 (not D13, whose onboard LED the bootloader blinks at reset). The old TM1637 approach's 8 matrix row/column pins are gone entirely — the keypad
 is scanned by the ET6226M, not the MCU.
 
 ## Folders
@@ -104,5 +106,5 @@ Not available — the ET6226M isn't a part Wokwi supports.
 ## Status
 
 Schematic exists (`hw/kicad`): ET6226M-driven display and 16-key diode matrix, Arduino
-Nano module. Firmware logic is implemented and tested (31 unit tests across `Buzzer.h` and `Microwave.h`,
+Nano module. Firmware logic is implemented and tested (38 unit tests across `Buzzer.h` and `Microwave.h`,
 plus each shared library's own tests) against that schematic, but not yet run on real hardware.
