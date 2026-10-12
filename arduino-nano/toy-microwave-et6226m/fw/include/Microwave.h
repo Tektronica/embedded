@@ -21,7 +21,10 @@
 namespace microwave {
 
 enum class State : uint8_t { Idle, Setting, Running, Done, ClockSet };
-enum class EventType : uint8_t { Digit, Start, Cancel, Clock, Timer, Tick };
+enum class EventType : uint8_t { Digit, Start, Cancel, Clock, Timer, Tick, AddThirty, Mute };
+
+constexpr uint16_t EXPRESS_SECONDS = 30;
+constexpr uint16_t MAX_COUNTDOWN_SECONDS = 99 * 60 + 59;  // the 4-digit MM:SS ceiling
 
 // What an active Setting/Running/Done countdown is for -- orthogonal to State, since the digit
 // entry, Start/Cancel handling, and countdown-to-Done logic are identical either way. Only the
@@ -60,6 +63,10 @@ class Controller {
   // shouldn't turn any of that hardware on.
   bool isCooking() const { return state_ == State::Running && function_ == Function::CookTime; }
 
+  // Sound on/off, toggled by EventType::Mute in any state. Orthogonal to State: muting changes
+  // what main.cpp plays, never the control flow. Resets to unmuted at power-up.
+  bool isMuted() const { return muted_; }
+
   // The value to show, where value/60 and value%60 are the two displayed digit pairs: the
   // current time-of-day while Idle (12-hour display, converted from the delegated Clock's
   // internal 24-hour value -- see wallclock::to12Hour), the in-progress entry while
@@ -87,6 +94,10 @@ class Controller {
     if (event.type == EventType::Tick && state_ != State::ClockSet) {
       clock_.tick();
     }
+    if (event.type == EventType::Mute) {
+      muted_ = !muted_;
+      return;
+    }
 
     switch (state_) {
       case State::Idle:
@@ -101,6 +112,10 @@ class Controller {
         } else if (event.type == EventType::Clock) {
           enteredClockDigits_ = 0;
           state_ = State::ClockSet;
+        } else if (event.type == EventType::AddThirty) {
+          function_ = Function::CookTime;
+          timer_.start(EXPRESS_SECONDS);
+          state_ = State::Running;
         }
         break;
 
@@ -122,6 +137,9 @@ class Controller {
         if (event.type == EventType::Tick) {
           timer_.tick();
           if (!timer_.isRunning()) state_ = State::Done;
+        } else if (event.type == EventType::AddThirty) {
+          uint16_t extended = timer_.remaining() + EXPRESS_SECONDS;
+          timer_.start(extended > MAX_COUNTDOWN_SECONDS ? MAX_COUNTDOWN_SECONDS : extended);
         } else if (event.type == EventType::Cancel) {
           resetCountdown();
         }
@@ -163,6 +181,7 @@ class Controller {
   uint16_t         enteredClockDigits_ = 0;   // raw digit buffer while ClockSet; see wallclock::decodeEnteredMinutes
   wallclock::Clock clock_;                    // delegated time-of-day keeping
   wallclock::Timer timer_;                    // delegated countdown, cook time or kitchen timer
+  bool             muted_ = false;
 };
 
 }  // namespace microwave

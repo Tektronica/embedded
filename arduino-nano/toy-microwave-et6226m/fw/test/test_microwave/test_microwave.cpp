@@ -238,6 +238,88 @@ void test_clock_does_not_advance_while_being_set() {
   TEST_ASSERT_EQUAL_UINT16(12 * 60, c.displayValue());  // 12:00, clock never moved
 }
 
+void test_add_thirty_from_idle_starts_a_thirty_second_cook() {
+  Controller c;
+  c.handle(Event{EventType::AddThirty, 0});
+  TEST_ASSERT_TRUE(c.state() == State::Running);
+  TEST_ASSERT_TRUE(c.isCooking());
+  TEST_ASSERT_EQUAL_UINT16(EXPRESS_SECONDS, c.displayValue());
+}
+
+void test_add_thirty_while_cooking_extends_the_countdown() {
+  Controller c;
+  c.handle(Event{EventType::Digit, 1});
+  c.handle(Event{EventType::Digit, 0});
+  c.handle(Event{EventType::Start, 0});  // Running, 0:10
+  c.handle(Event{EventType::Tick, 0});   // 0:09
+  c.handle(Event{EventType::AddThirty, 0});
+  TEST_ASSERT_TRUE(c.state() == State::Running);
+  TEST_ASSERT_EQUAL_UINT16(39, c.displayValue());
+}
+
+void test_add_thirty_extends_a_kitchen_timer_without_cooking() {
+  Controller c;
+  c.handle(Event{EventType::Timer, 0});
+  c.handle(Event{EventType::Digit, 5});
+  c.handle(Event{EventType::Start, 0});  // Running timer, 0:05
+  c.handle(Event{EventType::AddThirty, 0});
+  TEST_ASSERT_FALSE(c.isCooking());
+  TEST_ASSERT_EQUAL_UINT16(35, c.displayValue());
+}
+
+void test_add_thirty_caps_at_99_59() {
+  Controller c;
+  c.handle(Event{EventType::Digit, 9});
+  c.handle(Event{EventType::Digit, 9});
+  c.handle(Event{EventType::Digit, 4});
+  c.handle(Event{EventType::Digit, 5});
+  c.handle(Event{EventType::Start, 0});  // Running, 99:45
+  c.handle(Event{EventType::AddThirty, 0});
+  TEST_ASSERT_EQUAL_UINT16(MAX_COUNTDOWN_SECONDS, c.displayValue());
+}
+
+void test_add_thirty_is_ignored_outside_idle_and_running() {
+  Controller setting;
+  setting.handle(Event{EventType::Digit, 3});
+  setting.handle(Event{EventType::AddThirty, 0});
+  TEST_ASSERT_TRUE(setting.state() == State::Setting);
+  TEST_ASSERT_EQUAL_UINT16(3, setting.displayValue());
+
+  Controller done;
+  done.handle(Event{EventType::Digit, 1});
+  done.handle(Event{EventType::Start, 0});
+  done.handle(Event{EventType::Tick, 0});  // Done
+  done.handle(Event{EventType::AddThirty, 0});
+  TEST_ASSERT_TRUE(done.state() == State::Done);
+
+  Controller clockSet;
+  clockSet.handle(Event{EventType::Clock, 0});
+  clockSet.handle(Event{EventType::AddThirty, 0});
+  TEST_ASSERT_TRUE(clockSet.state() == State::ClockSet);
+}
+
+void test_starts_unmuted_and_mute_toggles() {
+  Controller c;
+  TEST_ASSERT_FALSE(c.isMuted());
+  c.handle(Event{EventType::Mute, 0});
+  TEST_ASSERT_TRUE(c.isMuted());
+  c.handle(Event{EventType::Mute, 0});
+  TEST_ASSERT_FALSE(c.isMuted());
+}
+
+void test_mute_does_not_change_state_or_countdown() {
+  Controller c;
+  c.handle(Event{EventType::Digit, 5});
+  c.handle(Event{EventType::Start, 0});  // Running, 0:05
+  c.handle(Event{EventType::Mute, 0});
+  TEST_ASSERT_TRUE(c.state() == State::Running);
+  TEST_ASSERT_EQUAL_UINT16(5, c.displayValue());
+
+  for (int i = 0; i < 5; ++i) c.handle(Event{EventType::Tick, 0});  // Done
+  c.handle(Event{EventType::Mute, 0});
+  TEST_ASSERT_TRUE(c.state() == State::Done);  // mute doesn't dismiss Done like other keys do
+}
+
 int main(int, char**) {
   UNITY_BEGIN();
   RUN_TEST(test_starts_idle);
@@ -264,5 +346,12 @@ int main(int, char**) {
   RUN_TEST(test_start_confirms_clock_set_and_returns_to_idle);
   RUN_TEST(test_cancel_discards_clock_set);
   RUN_TEST(test_clock_does_not_advance_while_being_set);
+  RUN_TEST(test_add_thirty_from_idle_starts_a_thirty_second_cook);
+  RUN_TEST(test_add_thirty_while_cooking_extends_the_countdown);
+  RUN_TEST(test_add_thirty_extends_a_kitchen_timer_without_cooking);
+  RUN_TEST(test_add_thirty_caps_at_99_59);
+  RUN_TEST(test_add_thirty_is_ignored_outside_idle_and_running);
+  RUN_TEST(test_starts_unmuted_and_mute_toggles);
+  RUN_TEST(test_mute_does_not_change_state_or_countdown);
   return UNITY_END();
 }

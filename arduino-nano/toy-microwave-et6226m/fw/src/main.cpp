@@ -12,10 +12,10 @@ namespace
   constexpr uint8_t PIN_ET6226M_CLK = 8;
   constexpr uint8_t PIN_ET6226M_DAT = 9;
 
-  constexpr uint8_t PIN_BUZZER = 10;
+  constexpr uint8_t PIN_BUZZER = 6;
   constexpr uint8_t PIN_MOTOR = 11;
   constexpr uint8_t PIN_FAN = 12;
-  constexpr uint8_t PIN_LIGHT = 13;
+  constexpr uint8_t PIN_LIGHT = 10;  // not D13: the bootloader blinks D13's onboard LED at reset
 
   constexpr uint16_t BLINK_PERIOD_MS = 1000;            // colon/display blink cycle while ClockSet/Done
   constexpr uint32_t DONE_REMINDER_INTERVAL_MS = 10000; // re-beep this often if Done goes unacknowledged
@@ -79,6 +79,16 @@ namespace
       event = microwave::Event{microwave::EventType::Timer, 0};
       return true;
     }
+    if (ch == 'C')
+    {
+      event = microwave::Event{microwave::EventType::AddThirty, 0};
+      return true;
+    }
+    if (ch == 'D')
+    {
+      event = microwave::Event{microwave::EventType::Mute, 0};
+      return true;
+    }
     return false;
   }
 
@@ -105,7 +115,7 @@ namespace
     }
 
     buzzer::ToneState toneState = buzzer::toneStateFor(pattern, elapsedMs);
-    if (toneState.on)
+    if (toneState.on && !controller.isMuted())
     {
       tone(PIN_BUZZER, toneState.frequencyHz);
     }
