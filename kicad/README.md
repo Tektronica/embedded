@@ -65,7 +65,8 @@ Every board uses the same layout:
     mech/                enclosure drawings, exported STEP
     bom/<name>-bom.csv   Reference, Qty, Value, Footprint, MPN, Manufacturer, Digi-Key, Mouser, LCSC
     fab/                 JLCPCB upload: gerbers/ (Gerbers, PTH and NPTH drill, IPC-D-356 netlist) and <name>-<rev>-gerbers.zip
-    review/              schematic and layout PDFs, KiCad netlist, 3D renders, ERC and DRC reports, REVIEW.md
+    review/              schematic and layout PDFs, KiCad netlist, 3D renders, ERC and DRC reports,
+                         REVIEW.md and its printable <name>-<rev>-review-checklist.pdf
 ```
 
 `tools/release.sh <project>/hw` regenerates `bom/`, `fab/`, `review/`, and the STEP file from the
@@ -78,8 +79,9 @@ extensions, X2 with netlist attributes, and Excellon drill in mm with separate P
 zipped into one archive for the uploader. The IPC-D-356 netlist rides in the same zip for the fab
 house's bare-board electrical test.
 
-A revision is released when `review/REVIEW.md` is complete. Its checklist is copied from
-`templates/REVIEW.md`. Commit the outputs together with the signed-off checklist, then tag the
+A revision is released when `review/REVIEW.md` is complete. Each board's checklist starts from
+`templates/REVIEW.md` and is filled in with that board's parts, pins, and expected DRC results.
+`release.sh` renders it to `review/<name>-<rev>-review-checklist.pdf` (through Chrome) for printing. Commit the outputs together with the signed-off checklist, then tag the
 commit `<name>-<rev>`.
 
 ## PCB standard

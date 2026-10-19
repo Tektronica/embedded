@@ -4,6 +4,7 @@
 set -euo pipefail
 
 KICAD_CLI="${KICAD_CLI:-/Applications/KiCad/KiCad.app/Contents/MacOS/kicad-cli}"
+CHROME="${CHROME:-/Applications/Google Chrome.app/Contents/MacOS/Google Chrome}"
 
 HW="${1:?usage: release.sh <project>/hw [--assembly]}"
 ASSEMBLY="${2:-}"
@@ -57,6 +58,14 @@ fi
 "$KICAD_CLI" pcb render "$PCB" -o "$HW/review/$BASE-3d-bottom.png" --side bottom --quality high -w 1600 -h 1600 >/dev/null
 "$KICAD_CLI" pcb export step "$PCB" -o "$HW/mech/$NAME.step" --subst-models >/dev/null 2>&1 \
   || echo "   step export skipped (missing 3D models)"
+
+if [ -f "$HW/review/REVIEW.md" ]; then
+  "$(dirname "$0")/print_review.py" "$HW/review/REVIEW.md" "$HW/review/.review.html"
+  "$CHROME" --headless --disable-gpu --no-pdf-header-footer \
+    --print-to-pdf="$HW/review/$BASE-review-checklist.pdf" "file://$HW/review/.review.html" >/dev/null 2>&1 \
+    || echo "   checklist PDF skipped (Chrome not found)"
+  rm -f "$HW/review/.review.html"
+fi
 
 grep -h 'ERC messages\|Found' "$HW/review/$BASE-erc.rpt" "$HW/review/$BASE-drc.rpt" | sed 's/^/   /'
 echo "   outputs: $HW/{bom,fab,review}"
