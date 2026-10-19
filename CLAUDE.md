@@ -1,39 +1,51 @@
-# embedded — Monorepo Context
+# embedded: monorepo context
 
-A personal monorepo of Arduino/embedded firmware projects, one PlatformIO project per board.
+A personal monorepo of embedded projects: firmware, and for some projects a custom PCB.
 
-## Folder / naming scheme
+## Layout
 
-- `[board]/[kebab-case-project]/` — board = chip/platform (`arduino-nano`, `attiny`, `esp32`, ...),
-  project in kebab-case (e.g. `arduino-nano/led-dimmer-ws2812/`).
-- Each project folder is self-contained except for shared libraries: its own `platformio.ini`,
-  `include/`/`src/`/`test/`, `docs/`, `README.md`, and `CLAUDE.md`. A project with a custom board
-  puts its firmware in `fw/` and its design package in `hw/`, laid out per `kicad/README.md`.
-- Logic lives once in `lib/<Name>/` (header-only, hardware-free, its own `library.json` and
-  `test/`) when two or more projects use it, or when a project exists to demonstrate it. Projects
-  pull it in with `lib_deps = symlink://<path>/lib/<Name>` in every env that includes it. A
-  project folder no longer builds when copied out of the repo on its own.
+| Folder | Holds | Grouped by |
+| --- | --- | --- |
+| `projects/<name>/` | Things you build. `fw/` holds firmware, `hw/` holds the PCB design package when the project has a custom board, `docs/` holds design notes. | Product |
+| `examples/<platform>/<name>/` | Single-concept demos, each a self-contained firmware project | Platform (`arduino-nano`, later `raspberry-pi`) |
+| `lib/<platform>/<Name>/` | Shared libraries | Platform (`arduino`, later `python`) |
+| `hw/` | Shared hardware: KiCad symbol library, part catalog and policy, release tools, review template | (shared) |
+| `docs/` | Cross-project notes, such as MCU selection | (shared) |
+
+- Names are kebab-case, except libraries, which are PascalCase.
+- A project on a second platform gets a folder named for its role next to `fw/`. A Raspberry Pi
+  app goes in `projects/<name>/pi/`.
+- A project's `hw/` follows the board design package in `hw/README.md`. Each project owns its own
+  BOM in `hw/bom/`. The shared `hw/parts/parts.csv` is the part catalog, not a BOM.
+- Every project and example has a top-level `README.md` stating what it is, the firmware platform,
+  the tooling, and how to build, flash, and test it.
+
+## Libraries
+
+- Logic lives once in `lib/<platform>/<Name>/` when two or more projects use it, or when a project
+  exists to demonstrate it. Arduino libraries are header-only and hardware-free where possible,
+  each with its own `library.json`, `platformio.ini`, and `test/`.
+- Projects pull a library in with `lib_deps = symlink://../../../lib/arduino/<Name>` in every env
+  that includes it. A project folder no longer builds when copied out of the repo on its own.
 - Libraries don't depend on each other. A library includes only `stdint.h`, or the Arduino core
   for a hardware driver. The app composes libraries by passing plain values between them (a raw
   reading, a percent, a segment byte) and supplies every tunable (pins, thresholds, frequencies,
   channel counts). Two libraries may depend on each other only when they're colocated as one
   package (a driver and its codec) or the exception is written down in both READMEs.
-- A new board or a new project on an existing board is a new top-level folder here, not a new repo.
 
 ## Toolchain
 
-- VSCode + PlatformIO for every project — no Arduino IDE.
-- `pio` commands assume the working directory is the project folder; use `-d <project-dir>` when
-  running from elsewhere (e.g. the repo root).
+- VS Code with PlatformIO for every firmware project. No Arduino IDE.
+- `pio` commands take `-d <project-dir>` when run from the repo root.
+- KiCad 10 for hardware. `hw/tools/release.sh projects/<name>/hw` regenerates a board's outputs.
 
 ## Committing
 
-- Use the **`/commit`** skill (`.claude/commands/commit.md`) — monorepo-aware, works across all
-  projects.
-- **Local commits only**, never push. **No `Co-Authored-By`** / AI attribution. Personal repo — no
+- Use the `/commit` skill (`.claude/commands/commit.md`). It works across every project.
+- Local commits only, never push. No `Co-Authored-By` or other AI attribution. Personal repo, so no
   company copyright headers on source.
 
 ## Docs
 
-Each project keeps its own `README.md`, `CLAUDE.md`, and `docs/` tree. This file covers only what's
-shared across projects — see `<board>/<project>/CLAUDE.md` for project-specific conventions.
+Each project keeps its own `README.md` and `docs/` tree, and a `CLAUDE.md` only for conventions
+that apply to that project alone. This file covers what's shared.

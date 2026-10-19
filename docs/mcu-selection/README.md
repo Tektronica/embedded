@@ -46,7 +46,7 @@ in this guide.
 - Programs in place via a 6-pin ISP header (MOSI, MISO, SCK, RESET, VCC, GND). Burn a bootloader
   once over ISP, then upload over 3-wire serial (RX, TX, DTR) to an external USB-to-serial adapter.
   A Nano/Uno module is the same thing with that adapter built onto the board.
-- Used in this repo: `arduino-nano/pwm-pot-demo`, `arduino-nano/led-dimmer-4ch`. Both run under 5% flash,
+- Used in this repo: `examples/arduino-nano/pwm-pot-demo`, `projects/led-dimmer-4ch`. Both run under 5% flash,
   under 2% RAM.
 - Single-unit price (Digikey): $2.66-$3.03. The ATmega328PB — pin-compatible, adds a second
   USART/SPI/I2C — is cheaper: $1.63-$1.70.

@@ -63,11 +63,11 @@ Only continue if the user explicitly confirms. If they decline, remove those fil
 
 ## Pre-Commit Verification
 
-This is a monorepo of independent PlatformIO projects, one per `<board>/<project>/` folder (e.g.
-`arduino-nano/led-dimmer-ws2812/`), each with its own `platformio.ini`. Before committing:
+This is a monorepo of independent PlatformIO projects: each `projects/<name>/fw/`,
+`examples/<platform>/<name>/`, and `lib/arduino/<Name>/` folder has its own `platformio.ini`. Before committing:
 
 1. Identify the project directory (or directories) the staged/changed files belong to — the
-   `<board>/<project>/` folder containing the `platformio.ini` under which the changed paths fall. If
+   folder containing the `platformio.ini` under which the changed paths fall. If
    the changes touch only files outside any project folder (e.g. root `CLAUDE.md`, this command file),
    skip steps 2–3 — there's nothing to verify.
 2. For each affected project directory, run both checks scoped to it via PlatformIO's

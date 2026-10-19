@@ -1,0 +1,6 @@
+[wokwi]
+version = 1
+# Simulate the firmware PlatformIO already builds for the arduino-nano env. The diagram covers the
+# TM1637 display, keypad, buzzer, and motor/fan/light outputs.
+firmware = ".pio/build/arduino-nano/firmware.hex"
+elf = ".pio/build/arduino-nano/firmware.elf"
