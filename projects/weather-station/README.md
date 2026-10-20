@@ -6,6 +6,7 @@ A Raspberry Pi weather station with a sensor collector, SQLite history, a local 
 
 - [Set up Raspberry Pi](docs/getting-started/setting-up-rpi/README.md)
 - [Install on Raspberry Pi](docs/getting-started/installing-on-rpi/README.md)
+- [Develop on Raspberry Pi](docs/getting-started/developing-on-rpi/README.md)
 - [Set up Python environments](docs/getting-started/setting-up-env/README.md)
 - [Set up the web server](docs/getting-started/setting-up-web-server/README.md)
 - [Upgrade an existing installation](docs/getting-started/upgrading-existing-installation/README.md)
