@@ -27,6 +27,7 @@ fp-info-cache
 # Secrets — never commit (mirrors the /commit secret guard)
 .env
 .env.*
+!.env.example
 secrets.h
 *_secrets.h
 arduino_secrets.h
@@ -50,6 +51,28 @@ Desktop.ini
 .directory
 
 # Build artifacts
+.venv/
+venv/
+env/
+ENV/
+__pycache__/
+*.py[cod]
+*$py.class
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.pyright/
+.tox/
+.nox/
+.hypothesis/
+**/instance/
+.coverage
+.coverage.*
+htmlcov/
+build/
+dist/
+*.egg-info/
+pip-wheel-metadata/
 *.o
 *.elf
 *.hex
