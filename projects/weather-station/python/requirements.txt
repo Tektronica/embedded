@@ -1,0 +1,13 @@
+adafruit-circuitpython-dht
+adafruit-circuitpython-ads1x15
+adafruit-circuitpython-bh1750
+adafruit-circuitpython-bme280
+adafruit-circuitpython-sgp30
+adafruit-circuitpython-veml6075
+Flask>=3,<4
+gpiozero
+pydantic>=2,<3
+python-dotenv
+waitress>=3,<4
+w1thermsensor
+mypy
