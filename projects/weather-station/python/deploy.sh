@@ -22,6 +22,12 @@ main() {
 
   git pull --ff-only
 
+  # A first install turns the digest on. Later deploys keep whatever state it was left in.
+  digest_enabled=yes
+  if [ -f /etc/systemd/system/weather-digest.timer ] && ! systemctl is-enabled --quiet weather-digest.timer; then
+    digest_enabled=no
+  fi
+
   sudo systemctl stop weather-digest.timer weather-web.service weather-sensors.service 2>/dev/null || true
 
   ./init.sh services
@@ -34,7 +40,12 @@ main() {
   sudo systemctl daemon-reload
 
   sudo systemctl enable --now weather-sensors.service
-  sudo systemctl enable --now weather-web.service weather-digest.timer
+  sudo systemctl enable --now weather-web.service
+  if [ "$digest_enabled" = yes ]; then
+    sudo systemctl enable --now weather-digest.timer
+  else
+    echo "Left weather-digest.timer disabled"
+  fi
   systemctl --no-pager status weather-sensors.service weather-web.service weather-digest.timer
 }
 
