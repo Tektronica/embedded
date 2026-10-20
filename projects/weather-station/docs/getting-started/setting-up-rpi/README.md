@@ -17,4 +17,10 @@ python3 -m venv --help
 
 If either check fails, install a supported Python and venv package using the instructions for the installed Raspberry Pi OS release. The sensors use Adafruit Blinka and GPIO libraries; follow the current [Adafruit DHT Raspberry Pi setup guide](https://docs.circuitpython.org/projects/dht/en/latest/) for OS-level GPIO requirements and permissions. Don't run the service with `sudo` merely to work around missing GPIO access.
 
+Install the packages that build `lgpio`. PyPI has no `lgpio` wheel for the Pi, so pip builds it from source:
+
+```bash
+sudo apt install python3-dev python3-venv swig liblgpio-dev
+```
+
 Continue with [Install on Raspberry Pi](../installing-on-rpi/README.md).
