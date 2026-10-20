@@ -1,13 +1,13 @@
 # embedded
 
-Personal embedded projects in one repository: microcontroller firmware, shared libraries, and the
-KiCad design packages for the custom boards.
+Personal embedded projects in one repository: microcontroller firmware, Raspberry Pi Python
+services, shared libraries, and the KiCad design packages for the custom boards.
 
 ## Layout
 
 | Folder                 | Contents                                                                                                       |
 | ---------------------- | -------------------------------------------------------------------------------------------------------------- |
-| `projects/`            | Things built to be used. Each has `fw/` (firmware), and `hw/` (KiCad design package) when it has a custom PCB. |
+| `projects/`            | Things built to be used. Code is in `fw/` (PlatformIO) or `python/`, and `hw/` holds the KiCad package for a custom PCB. |
 | `examples/<platform>/` | Single-concept demos, one self-contained firmware project each                                                 |
 | `lib/<platform>/`      | Shared libraries: `arduino` for firmware, `kicad` for the symbol library                                       |
 | `tools/`               | Hardware release tools: board outputs, BOM merge, printable review checklist                                   |
@@ -44,6 +44,7 @@ KiCad design packages for the custom boards.
 - VS Code with the PlatformIO extension, or the `pio` CLI. No Arduino IDE.
 - KiCad 10 for the custom boards.
 - Wokwi for simulating examples that include a `diagram.json`.
+- Python 3.12 or newer for the Raspberry Pi projects. Each one documents its own setup.
 
 ## Getting started
 

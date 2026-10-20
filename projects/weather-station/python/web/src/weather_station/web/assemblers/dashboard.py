@@ -12,6 +12,7 @@ class SensorSummary:
     sensor_type: str
     label: str
     latest_at: datetime | None
+    is_stale: bool
 
 
 @dataclass(frozen=True)
@@ -31,6 +32,8 @@ class TrendChart:
 
 @dataclass(frozen=True)
 class DashboardView:
+    status: str
+    last_update: datetime | None
     sensors: tuple[SensorSummary, ...]
     selected_sensor: SensorSummary | None
     definition: SensorDefinition | None
@@ -42,14 +45,18 @@ class DashboardView:
 
 
 class DashboardAssembler:
-    def __init__(self, reader: MeasurementReader) -> None:
+    """Builds the dashboard view. Timestamps come out in the server's local time zone."""
+
+    def __init__(self, reader: MeasurementReader, stale_after: timedelta) -> None:
         self._reader = reader
+        self._stale_after = stale_after
 
     def assemble(
         self,
         sensor_id: str | None,
         property_key: str | None,
     ) -> DashboardView:
+        now = datetime.now(timezone.utc)
         latest = self._reader.latest()
         registered_sensors = self._reader.registered_sensors()
         latest_by_sensor = {
@@ -68,7 +75,8 @@ class DashboardAssembler:
                 sensor_id=registered_id,
                 sensor_type=sensor_type,
                 label=get_sensor_definition(sensor_type).label,
-                latest_at=latest_by_sensor[registered_id],
+                latest_at=_local(latest_by_sensor[registered_id]),
+                is_stale=_is_stale(latest_by_sensor[registered_id], now, self._stale_after),
             )
             for registered_id, sensor_type in registered_sensors
         )
@@ -110,7 +118,11 @@ class DashboardAssembler:
             if latest_measurement is not None:
                 current_value = selected_property.display_value(latest_measurement.value)
 
+        reported = [item.latest_at for item in sensors if item.latest_at is not None]
+        last_update = max(reported, default=None)
         return DashboardView(
+            status=_status(sensors, last_update),
+            last_update=last_update,
             sensors=sensors,
             selected_sensor=selected_sensor,
             definition=definition,
@@ -122,13 +134,27 @@ class DashboardAssembler:
         )
 
 
+def _local(moment: datetime | None) -> datetime | None:
+    return moment.astimezone() if moment is not None else None
+
+
+def _is_stale(latest_at: datetime | None, now: datetime, stale_after: timedelta) -> bool:
+    return latest_at is not None and now - latest_at > stale_after
+
+
+def _status(sensors: tuple[SensorSummary, ...], last_update: datetime | None) -> str:
+    if last_update is None:
+        return "no-data"
+    return "stale" if any(item.is_stale for item in sensors) else "live"
+
+
 def _build_chart(
     history: list[StoredMeasurement],
     prop: PropertyDefinition,
 ) -> TrendChart:
     points = tuple(
         ChartPoint(
-            timestamp=item.measurement.observed_at,
+            timestamp=item.measurement.observed_at.astimezone(),
             value=prop.display_value(item.measurement.value),
         )
         for item in history

@@ -37,6 +37,7 @@ alone, so they aren't installed alongside the web server or the notifier.
 - Python 3.12 or newer with `venv`, or `uv`
 - `unittest` for tests and `mypy --strict` for type checks
 - systemd for the three services and the digest timer, with units in `deploy/`
+- Tailwind CSS v4 for the dashboard styles, built once into a committed `static/dashboard.css`. The Pi needs no Node.
 
 ## Getting started
 
@@ -97,6 +98,7 @@ To run a service by hand instead, activate its environment and run `python -m we
 | Variable | Used by | Default |
 | --- | --- | --- |
 | `DATABASE_PATH` | All | `instance/weather.sqlite3`, relative to the working directory |
+| `STALE_AFTER_MINUTES` | web | `45`. A sensor with no reading in this window shows as stale. |
 | `SENSOR_ID` | sensors | `room-am2302` |
 | `GPIO_PIN` | sensors | `4` (BCM) |
 | `INTERVAL_SECONDS` | sensors | `900` |
@@ -121,7 +123,9 @@ adapter returns validated `Measurement` records in SI units with QUDT unit URIs.
 checks each record against the sensor catalog before the writer stores it, and a failed cycle is
 logged without stopping the loop.
 
-The web service reads the same file through the read-only reader:
+The web service reads the same file through the read-only reader. The dashboard uses the
+shadcn/ui neutral palette, refreshes every 5 minutes, shows times in the Pi's local time zone,
+and marks a sensor stale when it has no reading within `STALE_AFTER_MINUTES`.
 
 | Route | Returns |
 | --- | --- |
@@ -157,6 +161,10 @@ Before enabling more adapters, verify each breakout's voltage, I²C address, and
 one ADS1115 instance between the wind vane and soil moisture adapters. GPIO pulse inputs need
 pull-ups, debounce, and outdoor surge protection, and a hardware counter if pulse rates outrun
 Python callbacks.
+
+To change the dashboard styles, edit `web/tailwind/input.css` or the template, then rebuild the CSS
+from `python/web` with `npm install` and `npm run build:css`. Commit the rebuilt
+`static/dashboard.css`.
 
 ## Folders
 

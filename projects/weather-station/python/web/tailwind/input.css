@@ -1,0 +1,16 @@
+@import "tailwindcss";
+@source "../src/weather_station/web/templates";
+
+/* shadcn/ui base palette (neutral), as Tailwind theme tokens */
+@theme {
+  --color-background: oklch(1 0 0);
+  --color-foreground: oklch(0.145 0 0);
+  --color-card: oklch(1 0 0);
+  --color-muted: oklch(0.97 0 0);
+  --color-muted-foreground: oklch(0.556 0 0);
+  --color-border: oklch(0.922 0 0);
+  --color-primary: oklch(0.205 0 0);
+  --color-primary-foreground: oklch(0.985 0 0);
+  --color-destructive: oklch(0.577 0.245 27.325);
+  --radius-lg: 0.625rem;
+}

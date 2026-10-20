@@ -58,6 +58,16 @@ class WebApiTests(unittest.TestCase):
         self.assertIn(b"Temperature and humidity", dashboard.data)
         self.assertIn(b"21.5", dashboard.data)
 
+    def test_sensor_without_recent_readings_is_marked_stale(self) -> None:
+        connection = create_database(self.database_path)
+        insert_reading(connection, 294.65)
+        connection.close()
+
+        dashboard = self.client.get("/")
+
+        self.assertIn(b"Stale", dashboard.data)
+        self.assertIn(b"(stale)", dashboard.data)
+
     def test_empty_dashboard_renders(self) -> None:
         create_database(self.database_path).close()
 

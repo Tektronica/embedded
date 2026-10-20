@@ -1,3 +1,4 @@
+import os
 from datetime import datetime, timedelta, timezone
 from typing import Any, cast
 
@@ -16,13 +17,16 @@ from weather_station.web.errors import register_error_handlers
 def create_app(test_config: dict[str, Any] | None = None) -> Flask:
     load_env()
     app = Flask(__name__)
-    app.config.from_mapping(DATABASE_PATH=database_path())
+    app.config.from_mapping(
+        DATABASE_PATH=database_path(),
+        STALE_AFTER=timedelta(minutes=int(os.getenv("STALE_AFTER_MINUTES", "45"))),
+    )
     if test_config:
         app.config.update(test_config)
 
     reader = SQLiteMeasurementReader(app.config["DATABASE_PATH"])
     app.extensions["measurement_reader"] = reader
-    app.extensions["dashboard_assembler"] = DashboardAssembler(reader)
+    app.extensions["dashboard_assembler"] = DashboardAssembler(reader, app.config["STALE_AFTER"])
     register_error_handlers(app)
 
     @app.get("/")

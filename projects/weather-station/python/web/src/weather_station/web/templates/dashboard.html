@@ -3,154 +3,126 @@
   <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <meta name="theme-color" content="#153f35">
+    <meta http-equiv="refresh" content="300">
     <title>Weather station</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='dashboard.css') }}">
   </head>
-  <body>
-    <header class="topbar">
-      <a class="wordmark" href="{{ url_for('dashboard') }}" aria-label="Weather station home">
-        <span class="mark" aria-hidden="true">W</span>
-        <span>Weather station</span>
-      </a>
-      <div class="topbar-meta">
-        <span class="live-dot" aria-hidden="true"></span>
-        <span>LOCAL HUB</span>
+  <body class="min-h-screen bg-muted text-foreground antialiased">
+    <header class="border-b border-border bg-background">
+      <div class="mx-auto flex max-w-6xl flex-wrap items-center justify-between gap-2 px-4 py-3">
+        <a class="text-sm font-semibold" href="{{ url_for('dashboard') }}">Weather station</a>
+        <div class="flex items-center gap-2 text-xs text-muted-foreground">
+          {% if view.last_update %}
+            <span>Updated {{ view.last_update.strftime('%b %d, %H:%M %Z') }}</span>
+          {% endif %}
+          {% if view.status == "live" %}
+            <span class="rounded-md border border-border px-2 py-0.5 font-medium text-foreground">Live</span>
+          {% elif view.status == "stale" %}
+            <span class="rounded-md bg-destructive px-2 py-0.5 font-medium text-primary-foreground">Stale</span>
+          {% else %}
+            <span class="rounded-md border border-border px-2 py-0.5 font-medium">No data</span>
+          {% endif %}
+        </div>
       </div>
     </header>
 
-    <main class="frame">
-      <aside class="rail" aria-label="Sensors">
-        <div class="rail-heading">
-          <span class="eyebrow">SENSORS</span>
-          <span class="sensor-count">{{ view.sensors|length }}</span>
-        </div>
-        {% if view.sensors %}
-          <nav class="sensor-list">
-            {% for sensor in view.sensors %}
-              <a class="sensor-link{% if view.selected_sensor and view.selected_sensor.sensor_id == sensor.sensor_id %} is-selected{% endif %}"
-                 href="{{ url_for('dashboard', sensor_id=sensor.sensor_id) }}">
-                <span class="sensor-mark" aria-hidden="true">{{ sensor.label[0] }}</span>
-                <span class="sensor-copy">
-                  <strong>{{ sensor.label }}</strong>
-                  <small>{{ sensor.sensor_id }}</small>
-                </span>
-                <span class="sensor-state" aria-label="Latest reading available"></span>
-              </a>
-            {% endfor %}
-          </nav>
+    <main class="mx-auto grid max-w-6xl gap-4 px-4 py-6 md:grid-cols-[14rem_1fr]">
+      <nav class="flex flex-col gap-1" aria-label="Sensors">
+        <p class="px-2 pb-1 text-xs font-medium text-muted-foreground">Sensors ({{ view.sensors|length }})</p>
+        {% for sensor in view.sensors %}
+          {% set selected = view.selected_sensor and view.selected_sensor.sensor_id == sensor.sensor_id %}
+          <a class="flex items-start justify-between gap-2 rounded-md px-2 py-2 text-sm {{ 'bg-background shadow-sm border border-border' if selected else 'hover:bg-background' }}"
+             href="{{ url_for('dashboard', sensor_id=sensor.sensor_id) }}">
+            <span class="min-w-0">
+              <span class="block font-medium break-words">{{ sensor.label }}</span>
+              <span class="block text-xs text-muted-foreground break-all">{{ sensor.sensor_id }}</span>
+            </span>
+            {% if sensor.is_stale %}
+              <span class="shrink-0 text-xs font-medium text-destructive">Stale</span>
+            {% endif %}
+          </a>
         {% else %}
-          <div class="rail-empty">
-            <span class="empty-glyph" aria-hidden="true">· · ·</span>
-            <p>No sensors registered</p>
-          </div>
-        {% endif %}
-        <div class="rail-foot">
-          <span class="status-led" aria-hidden="true"></span>
-          <span>Collector history</span>
-        </div>
-      </aside>
+          <p class="px-2 text-sm text-muted-foreground">No sensors detected</p>
+        {% endfor %}
+      </nav>
 
-      <section class="workspace">
+      <section class="min-w-0">
         {% if view.selected_sensor and view.definition and view.selected_property %}
-          <div class="page-heading">
-            <div>
-              <p class="eyebrow">{{ view.selected_sensor.sensor_id }} <span class="slash">/</span> 30 DAY HISTORY</p>
-              <h1>{{ view.definition.label }}</h1>
-            </div>
-            <div class="last-seen">
-              <span class="eyebrow">LAST READING</span>
-              <strong>
+          <div class="rounded-lg border border-border bg-card p-4 shadow-sm sm:p-6">
+            <div class="flex flex-wrap items-start justify-between gap-2">
+              <div class="min-w-0">
+                <h1 class="text-lg font-semibold">{{ view.definition.label }}</h1>
+                <p class="text-sm text-muted-foreground">{{ view.selected_sensor.sensor_id }}</p>
+              </div>
+              <p class="text-sm {{ 'text-destructive' if view.selected_sensor.is_stale else 'text-muted-foreground' }}">
                 {% if view.selected_sensor.latest_at %}
-                  {{ view.selected_sensor.latest_at.strftime('%b %d, %H:%M UTC') }}
+                  Last reading {{ view.selected_sensor.latest_at.strftime('%b %d, %H:%M %Z') }}{% if view.selected_sensor.is_stale %} (stale){% endif %}
                 {% else %}
                   Waiting for data
                 {% endif %}
-              </strong>
+              </p>
             </div>
-          </div>
 
-          <div class="metric-tabs" role="navigation" aria-label="Measurements">
-            {% for item in view.properties %}
-              <a class="metric-tab{% if item.key == view.selected_property.key %} is-active{% endif %}"
-                 href="{{ url_for('dashboard', sensor_id=view.selected_sensor.sensor_id, property=item.key) }}">
-                {{ item.label }}
-              </a>
-            {% endfor %}
-          </div>
+            <div class="mt-4 inline-flex flex-wrap gap-1 rounded-lg bg-muted p-1" role="navigation" aria-label="Measurements">
+              {% for item in view.properties %}
+                <a class="rounded-md px-3 py-1 text-sm font-medium {{ 'bg-background shadow-sm' if item.key == view.selected_property.key else 'text-muted-foreground hover:text-foreground' }}"
+                   href="{{ url_for('dashboard', sensor_id=view.selected_sensor.sensor_id, property=item.key) }}">{{ item.label }}</a>
+              {% endfor %}
+            </div>
 
-          <section class="reading-summary" aria-label="Current measurement">
-            <div class="value-block">
-              <span class="eyebrow">CURRENT {{ view.selected_property.label|upper }}</span>
-              <div class="current-value">
-                <strong>{{ '%.1f'|format(view.current_value) if view.current_value is not none else '—' }}</strong>
-                <span>{{ view.selected_property.display_unit }}</span>
-              </div>
-            </div>
-            <div class="summary-stat">
-              <span class="eyebrow">30 DAY LOW</span>
-              <strong>{{ '%.1f'|format(view.chart.minimum) if view.chart.minimum is not none else '—' }} <small>{{ view.selected_property.display_unit }}</small></strong>
-            </div>
-            <div class="summary-stat">
-              <span class="eyebrow">30 DAY HIGH</span>
-              <strong>{{ '%.1f'|format(view.chart.maximum) if view.chart.maximum is not none else '—' }} <small>{{ view.selected_property.display_unit }}</small></strong>
-            </div>
-            <div class="summary-stat sample-stat">
-              <span class="eyebrow">SAMPLES</span>
-              <strong>{{ view.chart.points|length }}</strong>
-            </div>
-          </section>
-
-          <section class="chart-panel" aria-label="30 day {{ view.selected_property.label }} trend">
-            <div class="chart-heading">
+            {% set unit = view.selected_property.display_unit %}
+            <dl class="mt-6 grid grid-cols-2 gap-4 sm:grid-cols-4">
               <div>
-                <span class="eyebrow">TREND</span>
-                <h2>{{ view.selected_property.label }} <span>{{ view.selected_property.display_unit }}</span></h2>
+                <dt class="text-xs text-muted-foreground">Current</dt>
+                <dd class="text-2xl font-semibold tabular-nums">{{ '%.1f'|format(view.current_value) if view.current_value is not none else '-' }} <span class="text-sm font-normal text-muted-foreground">{{ unit }}</span></dd>
               </div>
-              <span class="range-label">LAST 30 DAYS</span>
-            </div>
-            {% if view.chart.points %}
-              <div class="chart-wrap">
-                <div class="y-labels" aria-hidden="true">
-                  <span>{{ '%.1f'|format(view.chart.maximum) }}</span>
-                  <span>{{ '%.1f'|format((view.chart.maximum + view.chart.minimum) / 2) }}</span>
-                  <span>{{ '%.1f'|format(view.chart.minimum) }}</span>
+              <div>
+                <dt class="text-xs text-muted-foreground">30 day low</dt>
+                <dd class="text-2xl font-semibold tabular-nums">{{ '%.1f'|format(view.chart.minimum) if view.chart.minimum is not none else '-' }} <span class="text-sm font-normal text-muted-foreground">{{ unit }}</span></dd>
+              </div>
+              <div>
+                <dt class="text-xs text-muted-foreground">30 day high</dt>
+                <dd class="text-2xl font-semibold tabular-nums">{{ '%.1f'|format(view.chart.maximum) if view.chart.maximum is not none else '-' }} <span class="text-sm font-normal text-muted-foreground">{{ unit }}</span></dd>
+              </div>
+              <div>
+                <dt class="text-xs text-muted-foreground">Samples</dt>
+                <dd class="text-2xl font-semibold tabular-nums">{{ view.chart.points|length }}</dd>
+              </div>
+            </dl>
+
+            <div class="mt-6">
+              <p class="mb-2 text-sm font-medium">{{ view.selected_property.label }}, last 30 days</p>
+              {% if view.chart.points %}
+                <div class="grid grid-cols-[auto_1fr] gap-2">
+                  <div class="flex flex-col justify-between py-1 text-right text-xs text-muted-foreground tabular-nums" aria-hidden="true">
+                    <span>{{ '%.1f'|format(view.chart.maximum) }}</span>
+                    <span>{{ '%.1f'|format(view.chart.minimum) }}</span>
+                  </div>
+                  <svg class="h-56 w-full" viewBox="0 0 900 280" preserveAspectRatio="none" role="img"
+                       aria-label="{{ view.chart.points|length }} readings over the last 30 days">
+                    <line x1="48" x2="884" y1="16" y2="16" class="stroke-border" />
+                    <line x1="48" x2="884" y1="248" y2="248" class="stroke-border" />
+                    <polygon points="{{ view.chart.area }}" class="fill-muted" />
+                    <polyline points="{{ view.chart.line }}" fill="none" class="stroke-primary" stroke-width="2" vector-effect="non-scaling-stroke" />
+                    {% if view.chart.points|length == 1 %}
+                      <circle cx="{{ view.chart.line.split(',')[0] }}" cy="{{ view.chart.line.split(',')[1] }}" r="5" class="fill-primary" />
+                    {% endif %}
+                  </svg>
                 </div>
-                <svg class="trend-chart" viewBox="0 0 900 280" preserveAspectRatio="none" role="img" aria-label="{{ view.chart.points|length }} readings over the last 30 days">
-                  <defs>
-                    <linearGradient id="chart-fill" x1="0" x2="0" y1="0" y2="1">
-                      <stop offset="0%" stop-color="#e87542" stop-opacity=".24" />
-                      <stop offset="100%" stop-color="#e87542" stop-opacity="0" />
-                    </linearGradient>
-                  </defs>
-                  <line class="grid-line" x1="48" x2="884" y1="16" y2="16" />
-                  <line class="grid-line" x1="48" x2="884" y1="140" y2="140" />
-                  <line class="grid-line" x1="48" x2="884" y1="248" y2="248" />
-                  <polygon class="chart-area" points="{{ view.chart.area }}" />
-                  <polyline class="chart-line" points="{{ view.chart.line }}" />
-                  {% if view.chart.points|length == 1 %}
-                    <circle class="chart-point" cx="{{ view.chart.line.split(',')[0] }}" cy="{{ view.chart.line.split(',')[1] }}" r="5" />
-                  {% endif %}
-                </svg>
-              </div>
-              <div class="x-labels">
-                <span>{{ view.chart.points[0].timestamp.strftime('%b %d') }}</span>
-                <span>{{ view.chart.points[-1].timestamp.strftime('%b %d, %H:%M') }}</span>
-              </div>
-            {% else %}
-              <div class="chart-empty">
-                <span class="empty-glyph" aria-hidden="true">↗</span>
-                <p>No samples in this period</p>
-              </div>
-            {% endif %}
-          </section>
+                <div class="mt-1 flex justify-between pl-8 text-xs text-muted-foreground">
+                  <span>{{ view.chart.points[0].timestamp.strftime('%b %d') }}</span>
+                  <span>{{ view.chart.points[-1].timestamp.strftime('%b %d, %H:%M') }}</span>
+                </div>
+              {% else %}
+                <p class="rounded-md border border-dashed border-border p-8 text-center text-sm text-muted-foreground">No samples in this period</p>
+              {% endif %}
+            </div>
+          </div>
         {% else %}
-          <section class="welcome-state">
-            <span class="welcome-mark" aria-hidden="true">W</span>
-            <p class="eyebrow">WEATHER STATION</p>
-            <h1>Waiting for a sensor</h1>
-            <p class="welcome-detail">No sensors are registered yet.</p>
-          </section>
+          <div class="rounded-lg border border-border bg-card p-10 text-center shadow-sm">
+            <h1 class="text-lg font-semibold">Waiting for a sensor</h1>
+            <p class="mt-1 text-sm text-muted-foreground">No sensors have reported yet. Check that the sensors service is running.</p>
+          </div>
         {% endif %}
       </section>
     </main>

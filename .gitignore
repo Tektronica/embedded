@@ -64,6 +64,7 @@ __pycache__/
 *.egg-info/
 instance/
 .ruff_cache/
+node_modules/
 .pyright/
 .tox/
 .nox/
