@@ -1,0 +1,16 @@
+[build-system]
+requires = ["setuptools>=69"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "weather-station-shared"
+version = "0.1.0"
+description = "Measurement model, sensor catalog, read contract, and SQLite schema shared by the weather station packages"
+requires-python = ">=3.12"
+dependencies = ["pydantic>=2,<3", "python-dotenv"]
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.setuptools.package-data]
+"weather_station.shared.db" = ["schema.sql"]

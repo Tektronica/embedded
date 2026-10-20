@@ -1,0 +1,13 @@
+[build-system]
+requires = ["setuptools>=69"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "weather-station-notifications"
+version = "0.1.0"
+description = "Periodic weather station digests, sent by email"
+requires-python = ">=3.12"
+dependencies = ["weather-station-shared"]
+
+[tool.setuptools.packages.find]
+where = ["src"]

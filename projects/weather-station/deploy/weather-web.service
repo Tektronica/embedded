@@ -1,0 +1,13 @@
+[Unit]
+Description=Weather station dashboard
+After=network.target weather-sensors.service
+
+[Service]
+User=pi
+WorkingDirectory=/home/pi/embedded/projects/weather-station/python
+ExecStart=/home/pi/embedded/projects/weather-station/python/.venv-web/bin/waitress-serve --call --host=127.0.0.1 --port=5000 weather_station.web.app:create_app
+Restart=on-failure
+RestartSec=10
+
+[Install]
+WantedBy=multi-user.target

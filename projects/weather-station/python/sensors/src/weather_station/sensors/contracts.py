@@ -1,0 +1,19 @@
+from typing import Protocol
+from uuid import UUID
+
+from weather_station.shared.measurements import Measurement
+
+
+class Sensor(Protocol):
+    sensor_id: str
+    sensor_type: str
+
+    def read(self) -> list[Measurement]: ...
+    def close(self) -> None: ...
+
+
+class MeasurementWriter(Protocol):
+    def register_sensor(self, sensor_id: str, sensor_type: str) -> None: ...
+    def sensor_type(self, sensor_id: str) -> str | None: ...
+    def save(self, measurement: Measurement) -> UUID: ...
+    def save_many(self, measurements: list[Measurement]) -> None: ...

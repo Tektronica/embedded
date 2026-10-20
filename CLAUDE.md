@@ -14,8 +14,11 @@ A personal monorepo of embedded projects: firmware, and for some projects a cust
 | `docs/` | Cross-project notes. Each topic is a folder ending in `README.md` (`docs/hw/part-selection/README.md`). | (shared) |
 
 - Names are kebab-case, except libraries, which are PascalCase.
-- A project on a second platform gets a folder named for its role next to `fw/`. A Raspberry Pi
-  app goes in `projects/<name>/pi/`.
+- A project's code folders are named for their toolchain: `fw/` for PlatformIO firmware,
+  `python/` for Python. A project with both keeps them side by side.
+- A Python project splits into installable packages under `python/<package>/` (src layout, own
+  `pyproject.toml`), imported as `<project>.<package>` through a namespace package. Packages share
+  code only through a `shared` package, never by importing each other.
 - A project's `hw/` follows the board design package in `docs/hw/README.md`. Each project owns its
   own BOM in `hw/bom/`. `docs/hw/part-selection/parts.csv` is the part catalog, not a BOM.
 - Every project and example has a top-level `README.md` stating what it is, the firmware platform,

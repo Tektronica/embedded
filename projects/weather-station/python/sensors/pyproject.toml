@@ -1,0 +1,23 @@
+[build-system]
+requires = ["setuptools>=69"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "weather-station-sensors"
+version = "0.1.0"
+description = "Sensor adapters, sampling loop, and the only writer of the weather station database"
+requires-python = ">=3.12"
+dependencies = [
+    "weather-station-shared",
+    "adafruit-circuitpython-dht",
+    "adafruit-circuitpython-ads1x15",
+    "adafruit-circuitpython-bh1750",
+    "adafruit-circuitpython-bme280",
+    "adafruit-circuitpython-sgp30",
+    "adafruit-circuitpython-veml6075",
+    "gpiozero",
+    "w1thermsensor",
+]
+
+[tool.setuptools.packages.find]
+where = ["src"]

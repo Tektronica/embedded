@@ -1,0 +1,16 @@
+[build-system]
+requires = ["setuptools>=69"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "weather-station-web"
+version = "0.1.0"
+description = "Read-only Flask dashboard and JSON API for the weather station"
+requires-python = ">=3.12"
+dependencies = ["weather-station-shared", "Flask>=3,<4", "waitress>=3,<4"]
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.setuptools.package-data]
+"weather_station.web" = ["templates/*.html", "static/*.css"]

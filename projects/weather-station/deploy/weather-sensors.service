@@ -1,0 +1,13 @@
+[Unit]
+Description=Weather station sensor collector
+After=network.target
+
+[Service]
+User=pi
+WorkingDirectory=/home/pi/embedded/projects/weather-station/python
+ExecStart=/home/pi/embedded/projects/weather-station/python/.venv-sensors/bin/python -m weather_station.sensors
+Restart=on-failure
+RestartSec=10
+
+[Install]
+WantedBy=multi-user.target

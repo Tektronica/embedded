@@ -1,0 +1,7 @@
+# Every package in editable mode, plus the type checker. For local development and tests only.
+# On the Pi, install only the packages each service needs (see the project README).
+-e ./shared
+-e ./sensors
+-e ./web
+-e ./notifications
+mypy

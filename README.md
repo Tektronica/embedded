@@ -23,7 +23,7 @@ KiCad design packages for the custom boards.
 | [led-dimmer-ws2812](projects/led-dimmer-ws2812/) | Arduino Nano          | No         | N-channel pot dimmer driving a WS2812 LED strip                                                                     |
 | [robot-buoy](projects/robot-buoy/)               | Arduino Nano          | No         | Vertical-profiling float that dives and surfaces with a syringe ballast                                             |
 | [game-dino-run](projects/game-dino-run/)         | Arduino Nano          | No         | T-Rex-Run-style game on an OLED, with the score on a 7-segment display                                              |
-| [weather-station](projects/weather-station/)     | Raspberry Pi / Python | No         | Sensor monitoring service with optional weather-sensor adapters                                                     |
+| [weather-station](projects/weather-station/)     | Raspberry Pi / Python | No         | Sensor collector, read-only Flask dashboard, and daily email digest, as four separate Python packages               |
 
 ## Examples
 

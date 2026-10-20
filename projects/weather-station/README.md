@@ -1,85 +1,172 @@
 # Weather Station
 
-A Raspberry Pi weather station with a headless sensor collector, SQLite history, a local Flask dashboard, and optional sensor adapters. Each adapter emits the same validated `Measurement` record; sensor type and property catalogs describe allowed relationships and display metadata. The current collector polls an AM2302/DHT22 sensor; the other adapters are not yet enabled by the collector.
+A Raspberry Pi weather station. A sensor collector samples an AM2302/DHT22 every 15 minutes and
+stores each reading in SQLite. A local Flask dashboard shows the latest values and 30 days of
+history, and a daily email summarizes every sensor. Adapters for ten more sensor types exist but
+aren't enabled in the collector yet.
 
 ## Platform
 
-- Raspberry Pi OS
-- Python 3.12+
-- AM2302/DHT22 sensor for the included runner
-- SMTP account with an app password or equivalent credentials
+| Item | Value |
+| --- | --- |
+| Board | Raspberry Pi running Raspberry Pi OS |
+| Language | Python 3.12 or newer |
+| Packages | `shared`, `sensors`, `web`, and `notifications`, all under the `weather_station` namespace |
+| Storage | One SQLite file, written only by `sensors` |
+| Custom PCB | None |
 
-The AM2302 datasheet is in [docs/datasheets](docs/datasheets/AM2302-EN.pdf).
+## Packages
 
-## Setup
+The code is four installable packages. Each runs in its own process with its own dependencies, and
+none of them imports another except `shared`.
 
-Connect the AM2302/DHT22 data pin to Raspberry Pi BCM GPIO 4 (physical pin 7), VCC to 3.3 V, and GND to a ground pin. Add a 4.7 kΩ pull-up between data and 3.3 V if the sensor board does not already include one. Do not connect a 5 V data signal to a Pi GPIO.
+| Package | Import | Job | Runs as | Database access |
+| --- | --- | --- | --- | --- |
+| `python/shared/` | `weather_station.shared` | Measurement model, sensor catalog, read contract, SQLite schema and read-only reader | Library | Defines the schema and the reader |
+| `python/sensors/` | `weather_station.sensors` | Sensor adapters, sampling loop, sensor registration | `weather-sensors.service` | Writer, the only one |
+| `python/web/` | `weather_station.web` | Dashboard and JSON API | `weather-web.service` | Read-only |
+| `python/notifications/` | `weather_station.notifications` | Daily digest email | `weather-digest.timer`, 07:00 | Read-only |
 
-Use Raspberry Pi OS with Python 3.12 or newer. Check `python3 --version` first; install a supported Python version and the venv package using the instructions for your OS release if needed. The account running the collector must have GPIO access; follow the current Adafruit DHT setup guidance for Raspberry Pi OS permissions and GPIO support.
+The SQLite schema in `shared/src/weather_station/shared/db/schema.sql` is the contract between the
+writer and its readers. The reader opens the file in SQLite's read-only mode and refuses to run
+against a schema version it doesn't support. The hardware libraries are dependencies of `sensors`
+alone, so they aren't installed alongside the web server or the notifier.
 
-Run these commands from the repository root:
+## Tooling
+
+- Python 3.12 or newer with `venv`, or `uv`
+- `unittest` for tests and `mypy --strict` for type checks
+- systemd for the three services and the digest timer, with units in `deploy/`
+
+## Getting started
+
+### Development (any machine)
+
+Run from `projects/weather-station/python`:
 
 ```bash
-cd projects/weather-station/python
 python3 -m venv .venv
 source .venv/bin/activate
-python -m pip install -r requirements.txt
+python -m pip install -r requirements-dev.txt
 cp -n .env.example .env
 ```
 
-Set `SMTP_HOST`, `SMTP_PORT`, `SMTP_USER`, `SMTP_PASSWORD`, and `EMAIL_TO` in `.env`. For Gmail, use an app password rather than your account password. `GPIO_PIN` defaults to BCM GPIO 4, `SENSOR_ID` to `room-am2302`, `INTERVAL_SECONDS` to 900, and `DATABASE_PATH` to `instance/weather.sqlite3`. Keep local environment files out of version control.
-
-## Run
-
-The collector and web server are separate processes. Start each from the `python/` directory in its own terminal, with the virtual environment activated.
+Run the tests and the type check:
 
 ```bash
-python -m collector.run
+for d in shared/tests sensors/tests web/tests notifications/tests tests; do python -m unittest discover -s "$d"; done
+mypy shared/src sensors/src web/src notifications/src
 ```
 
-Start the web dashboard in the second terminal:
+The tests stub the sensor hardware and use temporary SQLite files, so they don't need a Pi. The
+root `tests/` folder holds the boundary test that keeps each package importing only itself and
+`shared`.
 
-```bash
-waitress-serve --call --host=127.0.0.1 --port=5000 web.app:create_app
-```
+### On the Pi
 
-Open `http://127.0.0.1:5000`. The dashboard is bound to loopback by default. To access it from a phone on your tailnet, expose the local service with Tailscale Serve and restrict access with your tailnet ACLs. No public listener is required.
+1. Wire the AM2302/DHT22 as listed under Hardware.
+2. Give each service its own environment with only the packages it needs. Run from
+   `projects/weather-station/python`:
 
-The collector logs each saved reading and emails it using the SMTP settings. Press Ctrl+C in its terminal to stop it; the sensor is closed on exit. The dashboard shows the latest stored reading and up to 30 days of history. Sensors register through `POST /api/sensors` with `sensor_id` and `sensor_type`; repeating a registration is safe, while rebinding an ID to another type returns a conflict. `POST /api/readings` accepts the common measurement fields (`observed_at`, `sensor_id`, `property_id`, `value`, `unit`, and optional `quality`/`uncertainty`). The service checks the registered sensor type and canonical QUDT unit before persistence. API failures use a stable JSON envelope with `error.code`, `error.message`, and optional `error.details`.
+   ```bash
+   python3 -m venv .venv-sensors && .venv-sensors/bin/pip install ./shared ./sensors
+   python3 -m venv .venv-web && .venv-web/bin/pip install ./shared ./web
+   python3 -m venv .venv-notifications && .venv-notifications/bin/pip install ./shared ./notifications
+   cp -n .env.example .env
+   ```
 
-## Check
+3. Set the SMTP values in `.env`. For Gmail, use an app password, not the account password.
+4. Copy the units from `deploy/` to `/etc/systemd/system/`. Edit `User` and the paths if the repo
+   isn't at `/home/pi/embedded`.
+5. Start everything:
 
-Run from the `python/` directory with the virtual environment activated:
+   ```bash
+   sudo systemctl daemon-reload
+   sudo systemctl enable --now weather-sensors.service weather-web.service weather-digest.timer
+   ```
 
-```bash
-python -m unittest discover -s tests -v
-mypy --strict domain dal collector services web sensors transports
-```
+6. Open `http://127.0.0.1:5000` on the Pi. To reach it from a phone, expose it with Tailscale Serve
+   and restrict access with tailnet ACLs. No public listener is needed.
 
-The tests mock sensor hardware and exercise the Flask API against temporary SQLite databases, so they do not need a Pi or attached sensors. No systemd unit is included yet.
+To run a service by hand instead, activate its environment and run `python -m weather_station.sensors`,
+`waitress-serve --call --host=127.0.0.1 --port=5000 weather_station.web.app:create_app`, or
+`python -m weather_station.notifications`. Each one reads `.env` from the working directory.
 
-## Sensor Adapters
+## Configuration
 
-Each adapter returns one or more validated `Measurement` records and exposes `close()` for cleanup. `domain/` owns the common record and read-only sensor/property catalogs; `services/` owns registration, validation, and use cases; `collector/` owns polling; `dal/` owns SQLite persistence; and `web/` owns thin Flask routes and assemblers for API/dashboard shapes.
+| Variable | Used by | Default |
+| --- | --- | --- |
+| `DATABASE_PATH` | All | `instance/weather.sqlite3`, relative to the working directory |
+| `SENSOR_ID` | sensors | `room-am2302` |
+| `GPIO_PIN` | sensors | `4` (BCM) |
+| `INTERVAL_SECONDS` | sensors | `900` |
+| `SMTP_HOST`, `SMTP_PORT`, `SMTP_USER`, `SMTP_PASSWORD`, `EMAIL_TO` | notifications | Port `465`, the others required |
 
-- AM2302/DHT22: temperature and humidity; used by the current runner
-- BME280: temperature, humidity, pressure
-- SGP30: TVOC and equivalent CO₂
-- Generic pulse anemometer: wind speed and rolling gust maximum
-- Analog wind vane: ADS1115 input, requires sensor-specific voltage-to-direction calibration
-- Tipping-bucket rain gauge: accumulated rainfall and interval-derived rate
-- VEML6075: UVA, UVB, UV index
-- BH1750: illuminance
-- DS18B20: probe temperature
-- Analog soil moisture: ADS1115 input, requires dry/wet calibration
-- AS3935: lightning sensor readout scaffold
+## Hardware
 
-These adapters are building blocks, not a sensor discovery/registry or a complete scheduler. Before deployment:
+| AM2302/DHT22 pin | Raspberry Pi |
+| --- | --- |
+| Data | BCM GPIO 4, physical pin 7 |
+| VCC | 3.3 V |
+| GND | Ground |
 
-- Verify breakout-board models, voltage compatibility, I²C addresses, and library APIs.
-- Share one ADS1115 instance between the analog wind-vane and soil-moisture adapters.
-- Calibrate the wind-vane voltage mapping, wind-speed factor, and rain `mm_per_tip` for the actual hardware.
-- Provide suitable pull-ups, debounce, and outdoor surge protection for GPIO pulse inputs. Use a hardware counter if pulse rates exceed what Python callbacks can reliably capture.
-- Configure the AS3935 interrupt and event decoding for the exact breakout/library version; its adapter is currently a scaffold.
-- Run SGP30 measurements at the required cadence and handle warm-up/baseline persistence for production use.
-- Enable 1-Wire in Raspberry Pi OS before using a DS18B20.
+Add a 4.7 kΩ pull-up between data and 3.3 V if the sensor board doesn't have one. Never connect a
+5 V data signal to a Pi GPIO. The account running the sensors service needs GPIO access. The
+AM2302 datasheet is in `docs/datasheets/AM2302-EN.pdf`.
+
+## How it works
+
+The sensors service registers its sensor at startup, then reads it every `INTERVAL_SECONDS`. Each
+adapter returns validated `Measurement` records in SI units with QUDT unit URIs. `RecordingService`
+checks each record against the sensor catalog before the writer stores it, and a failed cycle is
+logged without stopping the loop.
+
+The web service reads the same file through the read-only reader:
+
+| Route | Returns |
+| --- | --- |
+| `GET /` | Dashboard: latest values and a 30-day trend chart per property |
+| `GET /api/readings` | Latest reading for every sensor and property |
+| `GET /api/series/<sensor_id>?property=<key>` | 30 days of one property |
+| `GET /api/sensor-types` | The sensor and property catalog |
+
+Errors use one JSON envelope with `error.code`, `error.message`, and optional `error.details`. A
+missing database or an unsupported schema version returns 503.
+
+At 07:00 the digest timer runs the notifications package once. It sends one email listing every
+sensor's latest value and its 24-hour minimum and maximum, converted to display units (°C, %, hPa).
+Delivery goes through a `Notifier` interface, so another channel, such as ntfy, is one more class.
+
+## Sensor adapters
+
+| Adapter | Measures | Notes |
+| --- | --- | --- |
+| AM2302/DHT22 | Temperature, humidity | Used by the collector |
+| BME280 | Temperature, humidity, pressure | |
+| SGP30 | TVOC, equivalent CO₂ | Needs its required sampling cadence, warm-up, and baseline handling |
+| Pulse anemometer | Wind speed, rolling gust | Calibrate the speed factor |
+| Analog wind vane | Wind direction | ADS1115 input. Calibrate the voltage-to-direction map. |
+| Tipping-bucket rain gauge | Accumulated rainfall, rate | Calibrate `mm_per_tip` |
+| VEML6075 | UV index | |
+| BH1750 | Illuminance | |
+| DS18B20 | Probe temperature | Enable 1-Wire in Raspberry Pi OS first |
+| Analog soil moisture | Soil moisture | ADS1115 input. Calibrate dry and wet. |
+| AS3935 | Lightning count, distance | Scaffold only. Configure the interrupt for the exact breakout. |
+
+Before enabling more adapters, verify each breakout's voltage, I²C address, and library API. Share
+one ADS1115 instance between the wind vane and soil moisture adapters. GPIO pulse inputs need
+pull-ups, debounce, and outdoor surge protection, and a hardware counter if pulse rates outrun
+Python callbacks.
+
+## Folders
+
+- `python/`: the four packages, `requirements-dev.txt`, `mypy.ini`, `.env.example`, and the
+  boundary test in `tests/`
+- `deploy/`: systemd units for the sensors and web services and the digest timer
+- `docs/datasheets/`: sensor datasheets
+
+## Status
+
+The collector supports one AM2302, and the dashboard and digest read its readings. All 23 tests
+and the strict type check pass off-device. The other adapters are written but not yet run on
+hardware.

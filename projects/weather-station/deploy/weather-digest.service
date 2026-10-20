@@ -1,0 +1,8 @@
+[Unit]
+Description=Weather station daily digest email
+
+[Service]
+Type=oneshot
+User=pi
+WorkingDirectory=/home/pi/embedded/projects/weather-station/python
+ExecStart=/home/pi/embedded/projects/weather-station/python/.venv-notifications/bin/python -m weather_station.notifications
