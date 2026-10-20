@@ -3,7 +3,7 @@
 Revision: <rev>
 Reviewer: <name>
 Date: <yyyy-mm-dd>
-Outputs reviewed: `review/<board>-<rev>-*` from `hw/tools/release.sh`
+Outputs reviewed: `review/<board>-<rev>-*` from `tools/release.sh`
 
 Mark each item `[x]` when it passes, or leave it open with a note under Findings. A revision is
 released only when every item passes or has a recorded exception.
@@ -22,7 +22,7 @@ released only when every item passes or has a recorded exception.
 
 ## Layout
 
-- [ ] DRC reports 0 errors against the PCB standard in `hw/README.md`, or each exclusion has a written reason
+- [ ] DRC reports 0 errors against the PCB standard in `docs/hw/README.md`, or each exclusion has a written reason
 - [ ] Schematic parity: 0 unconnected pads, 0 footprint errors
 - [ ] Every footprint matches its datasheet land pattern, pin 1, and polarity
 - [ ] Pin 1, polarity, and connector pinout are marked on silkscreen

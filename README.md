@@ -9,9 +9,10 @@ KiCad design packages for the custom boards.
 | ---------------------- | -------------------------------------------------------------------------------------------------------------- |
 | `projects/`            | Things built to be used. Each has `fw/` (firmware), and `hw/` (KiCad design package) when it has a custom PCB. |
 | `examples/<platform>/` | Single-concept demos, one self-contained firmware project each                                                 |
-| `lib/<platform>/`      | Shared libraries, used by projects and examples through PlatformIO `lib_deps`                                  |
-| `hw/`                  | Shared hardware: KiCad symbol library, part catalog and selection policy, release tools, review template       |
-| `docs/`                | Cross-project notes                                                                                            |
+| `lib/<platform>/`      | Shared libraries: `arduino` for firmware, `kicad` for the symbol library                                       |
+| `tools/`               | Hardware release tools: board outputs, BOM merge, printable review checklist                                   |
+| `orders/`              | One folder per Digi-Key or Mouser order, holding the BOM that was bought                                       |
+| `docs/`                | Cross-project notes, including `docs/hw/` for board design, part selection, and review                         |
 
 ## Projects
 
@@ -51,6 +52,6 @@ KiCad design packages for the custom boards.
 2. Build any firmware from the repo root: `pio run -d projects/toy-microwave/fw`
 3. Run its native unit tests: `pio test -d projects/toy-microwave/fw -e native`
 4. Run every shared library's tests: `for l in lib/arduino/*/; do pio test -d "$l"; done`
-5. Regenerate a board's BOM, fab, and review outputs: `hw/tools/release.sh projects/toy-microwave/hw`
+5. Regenerate a board's BOM, fab, and review outputs: `tools/release.sh projects/toy-microwave/hw`
 
 Each project and example README covers its own hardware, pins, and behavior.

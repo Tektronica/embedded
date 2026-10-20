@@ -11,7 +11,7 @@ resolution.
 
 ## 1. Before you start
 
-- [ ] Regenerate the outputs: `hw/tools/release.sh projects/led-dimmer-4ch/hw`
+- [ ] Regenerate the outputs: `tools/release.sh projects/led-dimmer-4ch/hw`
 - [ ] Have these open next to KiCad: the schematic PDF, the layout PDF, and the two 3D images in this folder
 
 ## 2. Schematic

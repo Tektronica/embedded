@@ -18,7 +18,7 @@ onboard AP63205 buck regulator supplies the Nano's 5 V.
 
 - VS Code with the PlatformIO extension, or the `pio` CLI.
 - Wokwi simulator, through `fw/diagram.json` and `fw/wokwi.toml`.
-- KiCad 10 for the board, and `hw/tools/release.sh` to regenerate its outputs.
+- KiCad 10 for the board, and `tools/release.sh` to regenerate its outputs.
 
 ## Getting started
 
@@ -33,7 +33,7 @@ export PATH="$HOME/.platformio/penv/bin:$PATH"
 2. Flash the Nano: `pio run -d projects/led-dimmer-4ch/fw -t upload`
 3. Test the pot and duty logic in the shared libraries: `pio test -d lib/arduino/PotInput` and
    `pio test -d lib/arduino/PwmDuty`
-4. Regenerate BOM, fab, and review outputs: `hw/tools/release.sh projects/led-dimmer-4ch/hw`
+4. Regenerate BOM, fab, and review outputs: `tools/release.sh projects/led-dimmer-4ch/hw`
 
 The firmware has no native test env of its own. All tested logic lives in the two libraries.
 
@@ -123,7 +123,7 @@ A cap to GND alone does not define an unused pin. It has no DC path, so the pin 
 ## Folders
 
 - `fw/`: firmware, a PlatformIO project with the Wokwi diagram.
-- `hw/`: the board design package. See `hw/README.md` at the repo root for the layout. It holds
+- `hw/`: the board design package. See `docs/hw/README.md` for the layout. It holds
   the KiCad project, datasheets, mechanical STEP, and the generated `bom/`, `fab/`, and `review/`
   outputs.
 

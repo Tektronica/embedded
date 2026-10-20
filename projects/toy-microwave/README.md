@@ -19,7 +19,7 @@ buzzer and switches logic-level control lines for an off-board turntable motor, 
 
 - VS Code with the PlatformIO extension, or the `pio` CLI.
 - Unity native tests through `env:native`.
-- KiCad 10 for the board, and `hw/tools/release.sh` to regenerate its outputs.
+- KiCad 10 for the board, and `tools/release.sh` to regenerate its outputs.
 
 ## Getting started
 
@@ -34,7 +34,7 @@ export PATH="$HOME/.platformio/penv/bin:$PATH"
 2. Flash the Nano: `pio run -d projects/toy-microwave/fw -t upload`. Auto-reset is unreliable on
    this CH340 board, so tap RESET as the upload starts.
 3. Run the native tests: `pio test -d projects/toy-microwave/fw -e native`
-4. Regenerate BOM, fab, and review outputs: `hw/tools/release.sh projects/toy-microwave/hw`
+4. Regenerate BOM, fab, and review outputs: `tools/release.sh projects/toy-microwave/hw`
 
 ## Hardware
 
@@ -158,7 +158,7 @@ and a keypad scanned directly by the MCU. It is frozen as a reference.
 
 - `fw/`: firmware, a PlatformIO project with app headers in `include/` and native tests in
   `test/`.
-- `hw/`: the board design package. See `hw/README.md` at the repo root for the layout. It also
+- `hw/`: the board design package. See `docs/hw/README.md` for the layout. It also
   holds the Onshape enclosure template in `hw/mech/enclosure-template.dxf`.
 - `docs/`: design notes. `buck-converter-5v/` covers the 5 V rail, and `display-driver/` holds
   the ET6226M wiring diagram.

@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # Regenerates a board's bom/, fab/, and review/ outputs from its KiCad project.
-# Usage: hw/tools/release.sh projects/<name>/hw [--assembly]
+# Usage: tools/release.sh projects/<name>/hw [--assembly]
 set -euo pipefail
 
 KICAD_CLI="${KICAD_CLI:-/Applications/KiCad/KiCad.app/Contents/MacOS/kicad-cli}"

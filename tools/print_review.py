@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """Renders a board's review/REVIEW.md into a printable HTML page with empty checkboxes.
 
-Usage: hw/tools/print_review.py <REVIEW.md> <output.html>
+Usage: tools/print_review.py <REVIEW.md> <output.html>
 Handles only what the review checklists use: headings, plain lines, checklist items, and tables.
 """
 import html
