@@ -27,3 +27,7 @@ class SensorRegistrationConflict(WeatherStationError):
 
 class InvalidCollectorConfiguration(WeatherStationError):
     code = "invalid_collector_configuration"
+
+
+class NoSensorsDetected(WeatherStationError):
+    code = "no_sensors_detected"

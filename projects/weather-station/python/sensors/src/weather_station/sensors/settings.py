@@ -8,8 +8,7 @@ from weather_station.shared.settings import database_path, load_env
 @dataclass(frozen=True)
 class CollectorSettings:
     database_path: Path
-    sensor_id: str
-    gpio_pin: int
+    sensors_config_path: Path
     interval_seconds: int
 
     @classmethod
@@ -17,7 +16,6 @@ class CollectorSettings:
         load_env()
         return cls(
             database_path=database_path(),
-            sensor_id=os.getenv("SENSOR_ID", "room-am2302"),
-            gpio_pin=int(os.getenv("GPIO_PIN", "4")),
+            sensors_config_path=Path(os.getenv("SENSORS_CONFIG", "sensors.toml")),
             interval_seconds=int(os.getenv("INTERVAL_SECONDS", "900")),
         )

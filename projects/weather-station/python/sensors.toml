@@ -1,0 +1,25 @@
+# Sensors attached to this Pi. One [[sensor]] block each. At startup the sensors service builds
+# every block and keeps only the sensors that answer a first read, so an unplugged sensor is left
+# out. Restart the service after plugging one in. Models and options are listed in the README.
+
+[[sensor]]
+id = "room-am2302"
+model = "am2302"
+gpio = 4
+
+# [[sensor]]
+# id = "porch-bme280"
+# model = "bme280"
+# i2c_address = 0x76
+
+# [[sensor]]
+# id = "wind-speed"
+# model = "anemometer"
+# gpio = 17
+# meters_per_second_per_hz = 2.4
+
+# [[sensor]]
+# id = "rainfall"
+# model = "rain-gauge"
+# gpio = 27
+# mm_per_tip = 0.2794

@@ -5,19 +5,17 @@ from datetime import timezone
 from pathlib import Path
 from uuid import UUID
 
-from weather_station.sensors.errors import (
-    InvalidSensorId,
-    SensorNotRegistered,
-    SensorRegistrationConflict,
-)
+from weather_station.sensors.errors import SensorRegistrationConflict
 from weather_station.shared.db import SCHEMA_VERSION, schema_sql
 from weather_station.shared.errors import MeasurementPersistenceError, SchemaVersionMismatch
 from weather_station.shared.measurements import Measurement
-from weather_station.shared.registry import validate_measurement
 
 
 class SQLiteMeasurementWriter:
-    """The only writer of the measurement database. Creates the schema and records its version."""
+    """The only writer of the measurement database. Creates the schema and records its version.
+
+    Stores what it's given. RecordingService validates sensor ids and readings before they get here.
+    """
 
     def __init__(self, database_path: str | Path) -> None:
         self.database_path = Path(database_path)
@@ -61,8 +59,6 @@ class SQLiteMeasurementWriter:
                 )
 
     def register_sensor(self, sensor_id: str, sensor_type: str) -> None:
-        if not sensor_id or sensor_id != sensor_id.strip():
-            raise InvalidSensorId("sensor_id must be non-empty and have no surrounding whitespace")
         with self._connection() as connection:
             connection.execute("BEGIN IMMEDIATE")
             existing = connection.execute(
@@ -91,13 +87,6 @@ class SQLiteMeasurementWriter:
         return measurement.id
 
     def save_many(self, measurements: list[Measurement]) -> None:
-        validated: list[Measurement] = []
-        for measurement in measurements:
-            sensor_type = self.sensor_type(measurement.sensor_id)
-            if sensor_type is None:
-                raise SensorNotRegistered(f"Sensor {measurement.sensor_id!r} is not registered")
-            validated.append(validate_measurement(sensor_type, measurement))
-
         rows = [
             (
                 str(item.id),
@@ -110,7 +99,7 @@ class SQLiteMeasurementWriter:
                 item.quality.value,
                 item.uncertainty,
             )
-            for item in validated
+            for item in measurements
         ]
         with self._connection() as connection:
             connection.executemany(

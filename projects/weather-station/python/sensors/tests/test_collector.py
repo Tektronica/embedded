@@ -4,94 +4,95 @@ from pathlib import Path
 from tempfile import TemporaryDirectory
 from unittest.mock import patch
 
-from weather_station.sensors.collector import collect_once, run
+from weather_station.sensors.collector import Collector
 from weather_station.sensors.db.sqlite_writer import SQLiteMeasurementWriter
-from weather_station.sensors.errors import InvalidCollectorConfiguration
-from weather_station.shared.measurements import Measurement
-from weather_station.shared.registry import RELATIVE_HUMIDITY, TEMPERATURE
+from weather_station.sensors.detection import DetectedSensor
+from weather_station.sensors.errors import InvalidCollectorConfiguration, NoSensorsDetected
 from weather_station.sensors.recording import RecordingService
 from weather_station.shared.db.sqlite_reader import SQLiteMeasurementReader
+from weather_station.shared.measurements import Measurement
+from weather_station.shared.registry import RELATIVE_HUMIDITY, TEMPERATURE
+
+
+def sample_measurements(sensor_id: str) -> list[Measurement]:
+    timestamp = datetime.now(timezone.utc)
+    return [
+        Measurement(sensor_id=sensor_id, observed_at=timestamp, property_id=TEMPERATURE.property_id,
+                    value=294.65, unit=TEMPERATURE.si_unit),
+        Measurement(sensor_id=sensor_id, observed_at=timestamp, property_id=RELATIVE_HUMIDITY.property_id,
+                    value=0.44, unit=RELATIVE_HUMIDITY.si_unit),
+    ]
 
 
 class SensorStub:
-    sensor_id = "room-am2302"
     sensor_type = "temperature_humidity"
 
-    def __init__(self, measurements: list[Measurement]) -> None:
+    def __init__(self, sensor_id: str, fails: bool = False) -> None:
+        self.sensor_id = sensor_id
+        self.fails = fails
         self.closed = False
-        self.measurements = measurements
         self.read_count = 0
 
     def read(self) -> list[Measurement]:
         self.read_count += 1
-        return self.measurements
+        if self.fails:
+            raise RuntimeError("sensor unplugged")
+        return sample_measurements(self.sensor_id)
 
     def close(self) -> None:
         self.closed = True
 
 
-def sample_measurements() -> list[Measurement]:
-    timestamp = datetime.now(timezone.utc)
-    return [
-        Measurement(
-            sensor_id="room-am2302",
-            observed_at=timestamp,
-            property_id=TEMPERATURE.property_id,
-            value=294.65,
-            unit=TEMPERATURE.si_unit,
-        ),
-        Measurement(
-            sensor_id="room-am2302",
-            observed_at=timestamp,
-            property_id=RELATIVE_HUMIDITY.property_id,
-            value=0.44,
-            unit=RELATIVE_HUMIDITY.si_unit,
-        ),
-    ]
-
-
 class CollectorTests(unittest.TestCase):
-    def test_collect_once_persists_a_measurement_batch(self) -> None:
-        sensor = SensorStub(sample_measurements())
+    def setUp(self) -> None:
+        self.directory = TemporaryDirectory()
+        self.path = Path(self.directory.name) / "readings.sqlite3"
+        self.recorder = RecordingService(SQLiteMeasurementWriter(self.path))
 
-        with TemporaryDirectory() as directory:
-            repository = SQLiteMeasurementWriter(Path(directory) / "readings.sqlite3")
-            service = RecordingService(repository)
-            service.register_sensor(sensor.sensor_id, sensor.sensor_type)
-            measurements = collect_once(sensor, service)
-            latest = SQLiteMeasurementReader(repository.database_path).latest()
+    def tearDown(self) -> None:
+        self.directory.cleanup()
 
-        self.assertEqual(sensor.read_count, 1)
-        self.assertEqual(len(measurements), 2)
-        self.assertEqual(
-            {item.measurement.property_id for item in latest},
-            {TEMPERATURE.property_id, RELATIVE_HUMIDITY.property_id},
+    def test_registers_detected_sensors_and_stores_their_first_reading(self) -> None:
+        sensor = SensorStub("room")
+        Collector([DetectedSensor(sensor, sensor.read())], self.recorder, 60)
+
+        latest = SQLiteMeasurementReader(self.path).latest()
+
+        self.assertEqual({item.measurement.sensor_id for item in latest}, {"room"})
+        self.assertEqual(len(latest), 2)
+
+    def test_one_failing_sensor_does_not_stop_the_others(self) -> None:
+        good, flaky = SensorStub("good"), SensorStub("flaky")
+        collector = Collector(
+            [DetectedSensor(good, good.read()), DetectedSensor(flaky, flaky.read())],
+            self.recorder,
+            60,
         )
+        flaky.fails = True
 
-    def test_invalid_interval_closes_sensor_without_reading(self) -> None:
-        sensor = SensorStub(sample_measurements())
-        with TemporaryDirectory() as directory:
-            repository = SQLiteMeasurementWriter(Path(directory) / "readings.sqlite3")
-            service = RecordingService(repository)
-            with self.assertRaisesRegex(InvalidCollectorConfiguration, "must be positive"):
-                run(sensor, service, 0)
+        with self.assertLogs(level="ERROR"):
+            stored = collector.collect_once()
 
-        self.assertTrue(sensor.closed)
-        self.assertEqual(sensor.read_count, 0)
+        self.assertEqual(stored, 2)
 
-    def test_run_collects_then_closes_on_interrupt(self) -> None:
-        sensor = SensorStub(sample_measurements())
-        with TemporaryDirectory() as directory:
-            repository = SQLiteMeasurementWriter(Path(directory) / "readings.sqlite3")
-            service = RecordingService(repository)
-            with patch("weather_station.sensors.collector.time.sleep", side_effect=KeyboardInterrupt):
-                with self.assertRaises(KeyboardInterrupt):
-                    run(sensor, service, 1)
-            registered_type = repository.sensor_type(sensor.sensor_id)
+    def test_run_closes_every_sensor_on_interrupt(self) -> None:
+        sensors = [SensorStub("a"), SensorStub("b")]
+        collector = Collector([DetectedSensor(s, s.read()) for s in sensors], self.recorder, 1)
 
-        self.assertTrue(sensor.closed)
-        self.assertEqual(sensor.read_count, 1)
-        self.assertEqual(registered_type, sensor.sensor_type)
+        with patch("weather_station.sensors.collector.time.sleep", side_effect=KeyboardInterrupt):
+            with self.assertRaises(KeyboardInterrupt):
+                collector.run()
+
+        self.assertTrue(all(sensor.closed for sensor in sensors))
+
+    def test_rejects_a_non_positive_interval(self) -> None:
+        sensor = SensorStub("room")
+        with self.assertRaisesRegex(InvalidCollectorConfiguration, "must be positive"):
+            Collector([DetectedSensor(sensor, [])], self.recorder, 0)
+
+    def test_refuses_to_start_with_no_detected_sensors(self) -> None:
+        with self.assertRaises(NoSensorsDetected):
+            Collector([], self.recorder, 60)
 
 
 if __name__ == "__main__":
