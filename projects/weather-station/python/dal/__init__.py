@@ -1,0 +1,1 @@
+"""SQLite persistence for validated sensor readings."""

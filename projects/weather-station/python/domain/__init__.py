@@ -1,0 +1,1 @@
+"""Weather station domain types and sensor schemas."""

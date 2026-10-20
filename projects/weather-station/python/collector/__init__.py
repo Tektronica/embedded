@@ -1,0 +1,1 @@
+"""Sensor polling and validated reading ingestion."""
