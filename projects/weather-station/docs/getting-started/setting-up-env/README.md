@@ -2,6 +2,16 @@
 
 Run commands from `projects/weather-station/python`. The packages are installed separately so hardware dependencies stay out of the web and notification environments.
 
+`init.sh` rebuilds the environments and creates `.env` from the template when it's missing. It uses `uv` when installed, which honors `.python-version`, and falls back to `python3 -m venv` with Python 3.12 or newer. Each run deletes and recreates the named environments.
+
+```bash
+./init.sh services                  # .venv-sensors, .venv-web, .venv-notifications
+./init.sh services web              # one service only
+./init.sh dev                       # .venv, every package editable plus test dependencies
+```
+
+To set up manually instead:
+
 ```bash
 python3 -m venv .venv-sensors
 python3 -m venv .venv-web

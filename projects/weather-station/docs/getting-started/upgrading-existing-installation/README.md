@@ -22,38 +22,17 @@ Compare the current `.env` with `.env.example` manually. Preserve `SMTP_HOST`, `
 
 Review the current `sensors.toml`; it is now the source of enabled sensor IDs, models, and options. Don't overwrite local calibrations without comparing them first.
 
-## 3. Install the split packages
+## 3. Deploy
 
-Run from `projects/weather-station/python`:
-
-```bash
-python3 -m venv .venv-sensors
-python3 -m venv .venv-web
-python3 -m venv .venv-notifications
-.venv-sensors/bin/python -m pip install ./shared ./sensors
-.venv-web/bin/python -m pip install ./shared ./web
-.venv-notifications/bin/python -m pip install ./shared ./notifications
-```
-
-These are the current unit paths. If the matching environments already exist, back them up or rename them before rebuilding; don't install all hardware dependencies into the web/notifier environments.
-
-## 4. Replace units and start in order
-
-Return to the repository root before copying the units:
+Run from `projects/weather-station/python`, as the user the services run as:
 
 ```bash
-cd /home/pi/embedded
-sudo cp projects/weather-station/deploy/weather-sensors.service /etc/systemd/system/
-sudo cp projects/weather-station/deploy/weather-web.service /etc/systemd/system/
-sudo cp projects/weather-station/deploy/weather-digest.service /etc/systemd/system/
-sudo cp projects/weather-station/deploy/weather-digest.timer /etc/systemd/system/
-sudo systemctl daemon-reload
-sudo systemctl enable --now weather-sensors.service
-sudo systemctl status weather-sensors.service
-sudo systemctl enable --now weather-web.service weather-digest.timer
+./deploy.sh
 ```
 
-Starting sensors first lets the writer initialize `schema_version` before the read-only services start.
+`deploy.sh` pulls, deletes and rebuilds `.venv-sensors`, `.venv-web`, and `.venv-notifications`, installs the units with `User` and paths set to the current user and checkout, and starts them. See [Install on Raspberry Pi](../installing-on-rpi/README.md#4-deploy) for the full sequence. Rename existing environments first if a rollback needs them.
+
+`deploy.sh` starts sensors first, so the writer initializes `schema_version` before the read-only services start.
 
 ## Database compatibility
 

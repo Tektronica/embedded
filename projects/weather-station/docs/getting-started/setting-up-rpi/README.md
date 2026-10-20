@@ -17,4 +17,4 @@ python3 -m venv --help
 
 If either check fails, install a supported Python and venv package using the instructions for the installed Raspberry Pi OS release. The sensors use Adafruit Blinka and GPIO libraries; follow the current [Adafruit DHT Raspberry Pi setup guide](https://docs.circuitpython.org/projects/dht/en/latest/) for OS-level GPIO requirements and permissions. Don't run the service with `sudo` merely to work around missing GPIO access.
 
-Continue with [Python environments](../setting-up-env/README.md), then [sensor configuration](../../hardware-configuration/sensor-configuration/README.md) and [the web server](../setting-up-web-server/README.md).
+Continue with [Install on Raspberry Pi](../installing-on-rpi/README.md).

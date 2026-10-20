@@ -14,7 +14,7 @@ Open `http://127.0.0.1:5000`. The service binds to loopback, not the LAN. To acc
 
 ## Install as a service
 
-Copy `deploy/weather-web.service` to `/etc/systemd/system/`, update `User`, `WorkingDirectory`, and `ExecStart` if the checkout isn't at `/home/pi/embedded`, then reload and start it:
+`deploy.sh` installs this unit with the others. See [Install on Raspberry Pi](../installing-on-rpi/README.md). To install it alone, copy `deploy/weather-web.service` to `/etc/systemd/system/`, update `User`, `WorkingDirectory`, and `ExecStart` if the checkout isn't at `/home/pi/embedded`, then reload and start it:
 
 ```bash
 sudo systemctl daemon-reload
