@@ -4,7 +4,7 @@ from dataclasses import dataclass
 from weather_station.sensors.config import SensorConfig
 from weather_station.sensors.contracts import Sensor
 from weather_station.sensors.factory import SensorFactory
-from weather_station.sensors.errors import InvalidSensorConfiguration
+from weather_station.sensors.errors import InvalidSensorConfiguration, SensorUnavailable
 from weather_station.shared.measurements import Measurement
 
 
@@ -34,7 +34,7 @@ class SensorDetector:
                 logging.info("Detected %s (%s)", config.sensor_id, config.model)
             except InvalidSensorConfiguration:
                 raise
-            except Exception as error:
+            except (SensorUnavailable, OSError, RuntimeError) as error:
                 logging.warning("Not detected: %s (%s): %s", config.sensor_id, config.model, error)
                 if sensor is not None:
                     _close_quietly(sensor)

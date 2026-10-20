@@ -1,4 +1,6 @@
 from collections.abc import Callable, Mapping
+from dataclasses import dataclass
+from math import isfinite
 from typing import Any
 
 from weather_station.sensors.config import SensorConfig
@@ -6,6 +8,32 @@ from weather_station.sensors.contracts import Sensor
 from weather_station.sensors.errors import InvalidSensorConfiguration
 
 Builder = Callable[[str, dict[str, Any], "SensorFactory"], Sensor]
+
+
+@dataclass(frozen=True)
+class OptionSpec:
+    argument: str
+    kind: type[int] | type[float]
+    minimum: float | None = None
+    maximum: float | None = None
+    minimum_exclusive: bool = False
+
+
+def _int(
+    argument: str,
+    minimum: int | None = None,
+    maximum: int | None = None,
+) -> OptionSpec:
+    return OptionSpec(argument, int, minimum, maximum)
+
+
+def _float(
+    argument: str,
+    minimum: float | None = None,
+    maximum: float | None = None,
+    minimum_exclusive: bool = False,
+) -> OptionSpec:
+    return OptionSpec(argument, float, minimum, maximum, minimum_exclusive)
 
 
 class SensorFactory:
@@ -37,26 +65,68 @@ class SensorFactory:
         return self._adcs[address]
 
 
-def _take(options: dict[str, Any], sensor_id: str, allowed: Mapping[str, str]) -> dict[str, Any]:
-    """Renames config keys to constructor arguments and rejects keys the model doesn't accept."""
+def _take(
+    options: dict[str, Any],
+    sensor_id: str,
+    allowed: Mapping[str, OptionSpec],
+) -> dict[str, Any]:
+    """Validate model options, then map TOML names to adapter constructor names."""
     unknown = set(options) - set(allowed)
     if unknown:
         raise InvalidSensorConfiguration(
             f"Sensor {sensor_id!r} has unknown options: {', '.join(sorted(unknown))}"
         )
-    return {allowed[key]: value for key, value in options.items()}
+
+    result: dict[str, Any] = {}
+    for key, value in options.items():
+        spec = allowed[key]
+        if spec.kind is int:
+            valid_type = isinstance(value, int) and not isinstance(value, bool)
+        else:
+            valid_type = isinstance(value, (int, float)) and not isinstance(value, bool)
+        if not valid_type:
+            raise InvalidSensorConfiguration(
+                f"Sensor {sensor_id!r} option {key!r} must be {spec.kind.__name__}"
+            )
+        numeric_value = float(value)
+        if not isfinite(numeric_value):
+            raise InvalidSensorConfiguration(
+                f"Sensor {sensor_id!r} option {key!r} must be finite"
+            )
+        below_minimum = (
+            numeric_value <= spec.minimum
+            if spec.minimum_exclusive
+            else numeric_value < spec.minimum
+        ) if spec.minimum is not None else False
+        if below_minimum:
+            raise InvalidSensorConfiguration(
+                f"Sensor {sensor_id!r} option {key!r} must be "
+                f"{'greater than' if spec.minimum_exclusive else 'at least'} {spec.minimum}"
+            )
+        if spec.maximum is not None and numeric_value > spec.maximum:
+            raise InvalidSensorConfiguration(
+                f"Sensor {sensor_id!r} option {key!r} must be at most {spec.maximum}"
+            )
+        result[spec.argument] = value if spec.kind is int else float(value)
+    return result
 
 
 def _am2302(sensor_id: str, options: dict[str, Any], factory: SensorFactory) -> Sensor:
     from weather_station.sensors.adapters.am2302 import AM2302Sensor
 
-    return AM2302Sensor(sensor_id=sensor_id, **_take(options, sensor_id, {"gpio": "gpio_pin"}))
+    return AM2302Sensor(
+        sensor_id=sensor_id,
+        **_take(options, sensor_id, {"gpio": _int("gpio_pin", 0, 27)}),
+    )
 
 
 def _bme280(sensor_id: str, options: dict[str, Any], factory: SensorFactory) -> Sensor:
     from weather_station.sensors.adapters.bme280 import BME280Sensor
 
-    return BME280Sensor(sensor_id=sensor_id, **_take(options, sensor_id, {"i2c_address": "address"}))
+    return BME280Sensor(
+        sensor_id=sensor_id,
+        **_take(options, sensor_id, {"i2c_address": _int("address", 0, 127)}),
+    )
 
 
 def _sgp30(sensor_id: str, options: dict[str, Any], factory: SensorFactory) -> Sensor:
@@ -83,22 +153,28 @@ def _bh1750(sensor_id: str, options: dict[str, Any], factory: SensorFactory) -> 
 def _ds18b20(sensor_id: str, options: dict[str, Any], factory: SensorFactory) -> Sensor:
     from weather_station.sensors.adapters.ds18b20 import DS18B20Sensor
 
-    return DS18B20Sensor(sensor_id=sensor_id, **_take(options, sensor_id, {"index": "sensor_index"}))
+    return DS18B20Sensor(
+        sensor_id=sensor_id,
+        **_take(options, sensor_id, {"index": _int("sensor_index", 0)}),
+    )
 
 
 def _as3935(sensor_id: str, options: dict[str, Any], factory: SensorFactory) -> Sensor:
     from weather_station.sensors.adapters.as3935 import AS3935Sensor
 
-    return AS3935Sensor(sensor_id=sensor_id, **_take(options, sensor_id, {"i2c_address": "address"}))
+    return AS3935Sensor(
+        sensor_id=sensor_id,
+        **_take(options, sensor_id, {"i2c_address": _int("address", 0, 127)}),
+    )
 
 
 def _anemometer(sensor_id: str, options: dict[str, Any], factory: SensorFactory) -> Sensor:
     from weather_station.sensors.adapters.wind_rain import PulseAnemometer
 
     allowed = {
-        "gpio": "gpio_pin",
-        "meters_per_second_per_hz": "meters_per_second_per_hz",
-        "gust_window_seconds": "gust_window_seconds",
+        "gpio": _int("gpio_pin", 0, 27),
+        "meters_per_second_per_hz": _float("meters_per_second_per_hz", 0, minimum_exclusive=True),
+        "gust_window_seconds": _int("gust_window_seconds", 1),
     }
     return PulseAnemometer(sensor_id=sensor_id, **_take(options, sensor_id, allowed))
 
@@ -106,14 +182,24 @@ def _anemometer(sensor_id: str, options: dict[str, Any], factory: SensorFactory)
 def _rain_gauge(sensor_id: str, options: dict[str, Any], factory: SensorFactory) -> Sensor:
     from weather_station.sensors.adapters.wind_rain import TippingBucketRainGauge
 
-    allowed = {"gpio": "gpio_pin", "mm_per_tip": "mm_per_tip"}
+    allowed = {
+        "gpio": _int("gpio_pin", 0, 27),
+        "mm_per_tip": _float("mm_per_tip", 0, minimum_exclusive=True),
+    }
     return TippingBucketRainGauge(sensor_id=sensor_id, **_take(options, sensor_id, allowed))
 
 
 def _wind_vane(sensor_id: str, options: dict[str, Any], factory: SensorFactory) -> Sensor:
     from weather_station.sensors.adapters.analog import AnalogWindVane
 
-    kwargs = _take(options, sensor_id, {"adc_address": "adc_address", "channel": "channel"})
+    kwargs = _take(
+        options,
+        sensor_id,
+        {
+            "adc_address": _int("adc_address", 0, 127),
+            "channel": _int("channel", 0, 3),
+        },
+    )
     adc = factory.adc(kwargs.pop("adc_address", 0x48))
     return AnalogWindVane(adc, sensor_id=sensor_id, **kwargs)
 
@@ -122,10 +208,10 @@ def _soil_moisture(sensor_id: str, options: dict[str, Any], factory: SensorFacto
     from weather_station.sensors.adapters.analog import AnalogSoilMoisture
 
     allowed = {
-        "adc_address": "adc_address",
-        "channel": "channel",
-        "dry_voltage": "dry_voltage",
-        "wet_voltage": "wet_voltage",
+        "adc_address": _int("adc_address", 0, 127),
+        "channel": _int("channel", 0, 3),
+        "dry_voltage": _float("dry_voltage", 0, 4.096),
+        "wet_voltage": _float("wet_voltage", 0, 4.096),
     }
     kwargs = _take(options, sensor_id, allowed)
     adc = factory.adc(kwargs.pop("adc_address", 0x48))

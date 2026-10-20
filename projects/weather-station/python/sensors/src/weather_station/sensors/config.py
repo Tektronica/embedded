@@ -18,10 +18,20 @@ class SensorConfig:
 def load_sensor_configs(path: Path) -> list[SensorConfig]:
     if not path.exists():
         raise InvalidSensorConfiguration(f"No sensor configuration at {path}")
-    with path.open("rb") as file:
-        document = tomllib.load(file)
+    try:
+        with path.open("rb") as file:
+            document = tomllib.load(file)
+    except tomllib.TOMLDecodeError as error:
+        raise InvalidSensorConfiguration(f"Invalid TOML in {path}: {error}") from error
+
+    sensor_blocks = document.get("sensor", [])
+    if not isinstance(sensor_blocks, list):
+        raise InvalidSensorConfiguration("Top-level 'sensor' value must be an array of tables")
+
     configs: list[SensorConfig] = []
-    for block in document.get("sensor", []):
+    for block in sensor_blocks:
+        if not isinstance(block, dict):
+            raise InvalidSensorConfiguration("Each sensor entry must be a TOML table")
         options = dict(block)
         sensor_id = options.pop("id", None)
         model = options.pop("model", None)
