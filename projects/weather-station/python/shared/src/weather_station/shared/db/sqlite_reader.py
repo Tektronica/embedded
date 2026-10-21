@@ -86,6 +86,28 @@ class SQLiteMeasurementReader:
             ).fetchall()
         return [self._decode(row) for row in rows]
 
+    def latest_before(self, cutoff: datetime) -> list[StoredMeasurement]:
+        with self._connection() as connection:
+            rows = connection.execute(
+                """
+                SELECT m.*, s.sensor_type
+                FROM measurements AS m
+                JOIN sensors AS s USING (sensor_id)
+                WHERE m.id = (
+                    SELECT candidate.id
+                    FROM measurements AS candidate
+                    WHERE candidate.sensor_id = m.sensor_id
+                      AND candidate.property_id = m.property_id
+                      AND candidate.observed_at < ?
+                    ORDER BY candidate.observed_at DESC, candidate.id DESC
+                    LIMIT 1
+                )
+                ORDER BY m.sensor_id, m.property_id
+                """,
+                (cutoff.astimezone(timezone.utc).isoformat(),),
+            ).fetchall()
+        return [self._decode(row) for row in rows]
+
     def latest_for_sensor(self, sensor_id: str) -> list[StoredMeasurement]:
         return [item for item in self.latest() if item.measurement.sensor_id == sensor_id]
 

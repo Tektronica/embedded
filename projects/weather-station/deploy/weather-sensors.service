@@ -1,6 +1,7 @@
 [Unit]
 Description=Weather station sensor collector
-After=network.target
+Wants=time-sync.target
+After=network.target time-sync.target
 
 [Service]
 User=pi

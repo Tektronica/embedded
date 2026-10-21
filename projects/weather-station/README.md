@@ -22,6 +22,7 @@ A Raspberry Pi weather station with a sensor collector, SQLite history, a local 
 - [Alarms](docs/operations/alarms/README.md)
 - [Back up and restore](docs/operations/backup-and-restore/README.md)
 - [Email digest](docs/operations/email-digest/README.md)
+- [Startup email](docs/operations/startup-email/README.md)
 - [Troubleshoot services and sensors](docs/operations/troubleshooting/README.md)
 
 The AM2302 reference datasheet is in [docs/datasheets](docs/datasheets/AM2302-EN.pdf). The shipped `config.example.json` enables the AM2302; other adapters need their hardware connected and configured before use.

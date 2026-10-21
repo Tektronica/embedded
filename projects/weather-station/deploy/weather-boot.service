@@ -1,0 +1,17 @@
+[Unit]
+Description=Weather station started email
+Wants=network-online.target time-sync.target
+After=network-online.target time-sync.target
+StartLimitIntervalSec=15min
+StartLimitBurst=20
+
+[Service]
+Type=oneshot
+User=pi
+WorkingDirectory=/home/pi/embedded/projects/weather-station/python
+ExecStart=/home/pi/embedded/projects/weather-station/python/.venv-notifications/bin/python -m weather_station.notifications.boot
+Restart=on-failure
+RestartSec=30
+
+[Install]
+WantedBy=multi-user.target

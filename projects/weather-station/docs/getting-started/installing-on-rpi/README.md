@@ -54,7 +54,8 @@ From `projects/weather-station/python`, as the user the services run as:
 2. Stops any running weather station units.
 3. Rebuilds `.venv-sensors`, `.venv-web`, and `.venv-notifications` with `./init.sh services`.
 4. Copies the units from `deploy/` into `/etc/systemd/system/`, with `User` set to the current user and paths set to this checkout.
-5. Enables and starts the sensors service, then the web service, the digest timer, and the alarm timer.
+5. Installs a 2 minute timeout for `systemd-time-wait-sync.service` and enables it, so the sensors and boot units wait for the clock to sync before they start.
+6. Enables and starts the sensors service, then the web service, the digest timer, and the alarm timer. Enables the boot email unit without starting it.
 
 The units in `deploy/` use `pi` and `/home/pi/embedded` as placeholders. `deploy.sh` replaces both, so any username and checkout location work.
 

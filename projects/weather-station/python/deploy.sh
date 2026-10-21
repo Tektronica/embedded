@@ -4,7 +4,10 @@
 set -eu
 
 TIMERS="weather-digest.timer weather-alarm.timer"
-UNITS="weather-sensors.service weather-web.service weather-digest.service weather-alarm.service $TIMERS"
+BOOT_UNITS="weather-boot.service"
+UNITS="weather-sensors.service weather-web.service weather-digest.service weather-alarm.service $TIMERS $BOOT_UNITS"
+TIME_WAIT_UNIT=systemd-time-wait-sync.service
+TIME_WAIT_DROPIN_DIR=/etc/systemd/system/systemd-time-wait-sync.service.d
 UNIT_TEMPLATE_DIR=/home/pi/embedded/projects/weather-station/python
 
 main() {
@@ -23,11 +26,11 @@ main() {
 
   git pull --ff-only
 
-  # A first install turns each timer on. Later deploys keep whatever state it was left in.
-  enabled_timers=""
-  for timer in $TIMERS; do
-    if [ ! -f "/etc/systemd/system/$timer" ] || systemctl is-enabled --quiet "$timer"; then
-      enabled_timers="$enabled_timers $timer"
+  # A first install turns each timer and boot unit on. Later deploys keep whatever state it was left in.
+  enabled_units=""
+  for unit in $TIMERS $BOOT_UNITS; do
+    if [ ! -f "/etc/systemd/system/$unit" ] || systemctl is-enabled --quiet "$unit"; then
+      enabled_units="$enabled_units $unit"
     fi
   done
 
@@ -40,14 +43,23 @@ main() {
         -e "s|$UNIT_TEMPLATE_DIR|$python_dir|g" \
         "../deploy/$unit" | sudo tee "/etc/systemd/system/$unit" >/dev/null
   done
+  sudo mkdir -p "$TIME_WAIT_DROPIN_DIR"
+  sudo cp ../deploy/systemd-time-wait-sync.service.d/timeout.conf "$TIME_WAIT_DROPIN_DIR/timeout.conf"
   sudo systemctl daemon-reload
+  sudo systemctl enable "$TIME_WAIT_UNIT"
 
   sudo systemctl enable --now weather-sensors.service
   sudo systemctl enable --now weather-web.service
   for timer in $TIMERS; do
-    case " $enabled_timers " in
+    case " $enabled_units " in
       *" $timer "*) sudo systemctl enable --now "$timer" ;;
       *) echo "Left $timer disabled" ;;
+    esac
+  done
+  for unit in $BOOT_UNITS; do
+    case " $enabled_units " in
+      *" $unit "*) sudo systemctl enable "$unit" ;;
+      *) echo "Left $unit disabled" ;;
     esac
   done
   systemctl --no-pager status weather-sensors.service weather-web.service $TIMERS
