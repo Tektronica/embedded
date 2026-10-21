@@ -99,12 +99,15 @@ class SQLiteMeasurementReader:
         with self._connection() as connection:
             rows = connection.execute(
                 """
-                SELECT m.*, s.sensor_type
-                FROM measurements AS m
-                JOIN sensors AS s USING (sensor_id)
-                WHERE m.sensor_id = ? AND m.property_id = ? AND m.observed_at >= ?
-                ORDER BY m.observed_at ASC, m.id ASC
-                LIMIT ?
+                SELECT * FROM (
+                    SELECT m.*, s.sensor_type
+                    FROM measurements AS m
+                    JOIN sensors AS s USING (sensor_id)
+                    WHERE m.sensor_id = ? AND m.property_id = ? AND m.observed_at >= ?
+                    ORDER BY m.observed_at DESC, m.id DESC
+                    LIMIT ?
+                )
+                ORDER BY observed_at ASC, id ASC
                 """,
                 (
                     sensor_id,

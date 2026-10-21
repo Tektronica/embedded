@@ -1,7 +1,9 @@
 import sqlite3
 import unittest
+from datetime import datetime, timedelta, timezone
 from pathlib import Path
 from tempfile import TemporaryDirectory
+from uuid import uuid4
 
 from weather_station.shared.db import SCHEMA_VERSION, schema_sql
 from weather_station.shared.db.sqlite_reader import SQLiteMeasurementReader
@@ -10,6 +12,7 @@ from weather_station.shared.errors import (
     MeasurementPersistenceError,
     SchemaVersionMismatch,
 )
+from weather_station.shared.registry import TEMPERATURE
 
 
 class SQLiteMeasurementReaderTests(unittest.TestCase):
@@ -44,6 +47,24 @@ class SQLiteMeasurementReaderTests(unittest.TestCase):
 
         with self.assertRaises(SchemaVersionMismatch):
             SQLiteMeasurementReader(self.path).latest()
+
+    def test_series_keeps_the_newest_rows_in_ascending_order(self) -> None:
+        self._create()
+        start = datetime(2026, 10, 1, tzinfo=timezone.utc)
+        with sqlite3.connect(self.path) as connection:
+            connection.execute("INSERT INTO sensors VALUES ('room-am2302', 'temperature_humidity')")
+            for minute in range(5):
+                observed_at = (start + timedelta(minutes=minute)).isoformat()
+                connection.execute(
+                    "INSERT INTO measurements VALUES (?, ?, ?, 'room-am2302', ?, ?, ?, 'valid', NULL)",
+                    (str(uuid4()), observed_at, observed_at, TEMPERATURE.property_id, 290.0 + minute, TEMPERATURE.si_unit),
+                )
+
+        history = SQLiteMeasurementReader(self.path).series(
+            "room-am2302", TEMPERATURE.property_id, start, limit=3
+        )
+
+        self.assertEqual([item.measurement.value for item in history], [292.0, 293.0, 294.0])
 
     def test_connection_is_read_only(self) -> None:
         self._create()

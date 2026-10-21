@@ -1,3 +1,4 @@
+{%- from "_trend_chart.html" import trend_chart -%}
 <!doctype html>
 <html lang="en">
   <head>
@@ -93,26 +94,7 @@
             <div class="mt-6">
               <p class="mb-2 text-sm font-medium">{{ view.selected_property.label }}, last 30 days</p>
               {% if view.chart.points %}
-                <div class="grid grid-cols-[auto_1fr] gap-2">
-                  <div class="flex flex-col justify-between py-1 text-right text-xs text-muted-foreground tabular-nums" aria-hidden="true">
-                    <span>{{ '%.1f'|format(view.chart.maximum) }}</span>
-                    <span>{{ '%.1f'|format(view.chart.minimum) }}</span>
-                  </div>
-                  <svg class="h-56 w-full" viewBox="0 0 900 280" preserveAspectRatio="none" role="img"
-                       aria-label="{{ view.chart.sample_count }} readings over the last 30 days">
-                    <line x1="48" x2="884" y1="16" y2="16" class="stroke-border" />
-                    <line x1="48" x2="884" y1="248" y2="248" class="stroke-border" />
-                    <polygon points="{{ view.chart.area }}" class="fill-muted" />
-                    <polyline points="{{ view.chart.line }}" fill="none" class="stroke-primary" stroke-width="2" vector-effect="non-scaling-stroke" />
-                    {% if view.chart.points|length == 1 %}
-                      <circle cx="{{ view.chart.line.split(',')[0] }}" cy="{{ view.chart.line.split(',')[1] }}" r="5" class="fill-primary" />
-                    {% endif %}
-                  </svg>
-                </div>
-                <div class="mt-1 flex justify-between pl-8 text-xs text-muted-foreground">
-                  <span>{{ view.chart.points[0].timestamp.strftime('%b %d') }}</span>
-                  <span>{{ view.chart.points[-1].timestamp.strftime('%b %d, %H:%M') }}</span>
-                </div>
+                {{ trend_chart(view.chart) }}
               {% else %}
                 <p class="rounded-md border border-dashed border-border p-8 text-center text-sm text-muted-foreground">No samples in this period</p>
               {% endif %}

@@ -65,6 +65,7 @@ class WebApiTests(unittest.TestCase):
         self.assertEqual(series.json["measurements"][0]["value"], 294.65)
         self.assertIn(b"Temperature and humidity", dashboard.data)
         self.assertIn(b"21.5", dashboard.data)
+        self.assertIn('aria-label="Temperature in °C'.encode(), dashboard.data)
 
     def test_sensor_without_recent_readings_is_marked_stale(self) -> None:
         connection = create_database(self.database_path)
