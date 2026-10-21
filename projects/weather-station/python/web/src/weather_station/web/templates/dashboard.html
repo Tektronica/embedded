@@ -86,7 +86,7 @@
               </div>
               <div>
                 <dt class="text-xs text-muted-foreground">Samples</dt>
-                <dd class="text-2xl font-semibold tabular-nums">{{ view.chart.points|length }}</dd>
+                <dd class="text-2xl font-semibold tabular-nums">{{ view.chart.sample_count }}</dd>
               </div>
             </dl>
 
@@ -99,7 +99,7 @@
                     <span>{{ '%.1f'|format(view.chart.minimum) }}</span>
                   </div>
                   <svg class="h-56 w-full" viewBox="0 0 900 280" preserveAspectRatio="none" role="img"
-                       aria-label="{{ view.chart.points|length }} readings over the last 30 days">
+                       aria-label="{{ view.chart.sample_count }} readings over the last 30 days">
                     <line x1="48" x2="884" y1="16" y2="16" class="stroke-border" />
                     <line x1="48" x2="884" y1="248" y2="248" class="stroke-border" />
                     <polygon points="{{ view.chart.area }}" class="fill-muted" />

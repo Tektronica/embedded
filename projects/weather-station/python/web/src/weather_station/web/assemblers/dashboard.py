@@ -5,6 +5,9 @@ from weather_station.shared.measurements import Measurement, StoredMeasurement
 from weather_station.shared.registry import PropertyDefinition, SensorDefinition, get_sensor_definition
 from weather_station.shared.contracts import MeasurementReader
 
+MAX_CHART_POINTS = 2880
+HISTORY_LIMIT = 50_000
+
 
 @dataclass(frozen=True)
 class SensorSummary:
@@ -28,6 +31,7 @@ class TrendChart:
     area: str
     minimum: float | None
     maximum: float | None
+    sample_count: int
 
 
 @dataclass(frozen=True)
@@ -106,13 +110,14 @@ class DashboardAssembler:
             None,
         )
 
-        chart = TrendChart((), "", "", None, None)
+        chart = TrendChart((), "", "", None, None, 0)
         current_value = None
         if selected_sensor is not None and selected_property is not None:
             history = self._reader.series(
                 selected_sensor.sensor_id,
                 selected_property.property_id,
                 datetime.now(timezone.utc) - timedelta(days=30),
+                limit=HISTORY_LIMIT,
             )
             chart = _build_chart(history, selected_property)
             if latest_measurement is not None:
@@ -148,24 +153,49 @@ def _status(sensors: tuple[SensorSummary, ...], last_update: datetime | None) ->
     return "stale" if any(item.is_stale for item in sensors) else "live"
 
 
+def downsample(samples: list[ChartPoint], max_points: int) -> tuple[ChartPoint, ...]:
+    """Averages time-ordered samples into max_points equal-duration buckets, skipping empty ones."""
+    if len(samples) <= max_points:
+        return tuple(samples)
+
+    start = samples[0].timestamp
+    bucket_duration = (samples[-1].timestamp - start) / max_points
+    if not bucket_duration:
+        return tuple(samples)
+
+    buckets: dict[int, list[float]] = {}
+    for sample in samples:
+        index = min((sample.timestamp - start) // bucket_duration, max_points - 1)
+        buckets.setdefault(index, []).append(sample.value)
+    return tuple(
+        ChartPoint(
+            timestamp=start + bucket_duration * (index + 0.5),
+            value=sum(values) / len(values),
+        )
+        for index, values in sorted(buckets.items())
+    )
+
+
 def _build_chart(
     history: list[StoredMeasurement],
     prop: PropertyDefinition,
 ) -> TrendChart:
-    points = tuple(
+    samples = [
         ChartPoint(
             timestamp=item.measurement.observed_at.astimezone(),
             value=prop.display_value(item.measurement.value),
         )
         for item in history
-    )
-    if not points:
-        return TrendChart((), "", "", None, None)
+    ]
+    if not samples:
+        return TrendChart((), "", "", None, None, 0)
+    points = downsample(samples, MAX_CHART_POINTS)
 
     width, height = 900.0, 280.0
     left, right, top, bottom = 48.0, 16.0, 16.0, 32.0
     values = [point.value for point in points]
-    minimum, maximum = min(values), max(values)
+    raw_values = [sample.value for sample in samples]
+    minimum, maximum = min(raw_values), max(raw_values)
     span = maximum - minimum or max(abs(maximum) * 0.05, 1.0)
     coordinates = [
         (
@@ -178,4 +208,4 @@ def _build_chart(
     first_x, last_x = coordinates[0][0], coordinates[-1][0]
     baseline = height - bottom
     area = f"{first_x:.1f},{baseline:.1f} {line} {last_x:.1f},{baseline:.1f}"
-    return TrendChart(points, line, area, minimum, maximum)
+    return TrendChart(points, line, area, minimum, maximum, len(samples))
