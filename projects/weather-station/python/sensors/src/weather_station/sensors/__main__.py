@@ -14,7 +14,7 @@ def main() -> None:
     logging.basicConfig(level=logging.INFO, format="%(asctime)s %(levelname)s %(message)s")
     detected = SensorDetector(SensorFactory()).detect(load_sensor_configs(settings.sensors_config_path))
     recorder = RecordingService(SQLiteMeasurementWriter(settings.database_path))
-    Collector(detected, recorder, settings.interval_seconds).run()
+    Collector(detected, recorder, settings.interval_seconds, settings.retention_days).run()
 
 
 if __name__ == "__main__":

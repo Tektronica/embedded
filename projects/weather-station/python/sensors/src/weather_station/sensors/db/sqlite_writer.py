@@ -1,7 +1,7 @@
 import sqlite3
 from collections.abc import Iterator
 from contextlib import contextmanager
-from datetime import timezone
+from datetime import datetime, timezone
 from pathlib import Path
 from uuid import UUID
 
@@ -110,3 +110,11 @@ class SQLiteMeasurementWriter:
                 """,
                 rows,
             )
+
+    def delete_observed_before(self, cutoff: datetime) -> int:
+        with self._connection() as connection:
+            cursor = connection.execute(
+                "DELETE FROM measurements WHERE observed_at < ?",
+                (cutoff.astimezone(timezone.utc).isoformat(),),
+            )
+            return cursor.rowcount

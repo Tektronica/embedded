@@ -19,7 +19,7 @@ def create_app(test_config: dict[str, Any] | None = None) -> Flask:
     app = Flask(__name__)
     app.config.from_mapping(
         DATABASE_PATH=database_path(),
-        STALE_AFTER=timedelta(minutes=int(os.getenv("STALE_AFTER_MINUTES", "45"))),
+        STALE_AFTER=timedelta(minutes=int(os.getenv("STALE_AFTER_MINUTES", "5"))),
     )
     if test_config:
         app.config.update(test_config)

@@ -1,5 +1,5 @@
 import unittest
-from datetime import datetime, timezone
+from datetime import datetime, timedelta, timezone
 from pathlib import Path
 from tempfile import TemporaryDirectory
 from unittest.mock import patch
@@ -43,6 +43,35 @@ class SensorStub:
         self.closed = True
 
 
+class FakeClock:
+    def __init__(self) -> None:
+        self.current = datetime(2026, 1, 1, tzinfo=timezone.utc)
+
+    def __call__(self) -> datetime:
+        return self.current
+
+    def advance(self, delta: timedelta) -> None:
+        self.current += delta
+
+
+class RecorderSpy:
+    def __init__(self, fails: bool = False) -> None:
+        self.cutoffs: list[datetime] = []
+        self.fails = fails
+
+    def register_sensor(self, sensor_id: str, sensor_type: str) -> None:
+        pass
+
+    def record_many(self, measurements: list[Measurement]) -> None:
+        pass
+
+    def prune_observed_before(self, cutoff: datetime) -> int:
+        self.cutoffs.append(cutoff)
+        if self.fails:
+            raise RuntimeError("database locked")
+        return 3
+
+
 class CollectorTests(unittest.TestCase):
     def setUp(self) -> None:
         self.directory = TemporaryDirectory()
@@ -54,7 +83,7 @@ class CollectorTests(unittest.TestCase):
 
     def test_registers_detected_sensors_and_stores_their_first_reading(self) -> None:
         sensor = SensorStub("room")
-        Collector([DetectedSensor(sensor, sensor.read())], self.recorder, 60)
+        Collector([DetectedSensor(sensor, sensor.read())], self.recorder, 60, 30)
 
         latest = SQLiteMeasurementReader(self.path).latest()
 
@@ -67,6 +96,7 @@ class CollectorTests(unittest.TestCase):
             [DetectedSensor(good, good.read()), DetectedSensor(flaky, flaky.read())],
             self.recorder,
             60,
+            30,
         )
         flaky.fails = True
 
@@ -77,7 +107,7 @@ class CollectorTests(unittest.TestCase):
 
     def test_run_closes_every_sensor_on_interrupt(self) -> None:
         sensors = [SensorStub("a"), SensorStub("b")]
-        collector = Collector([DetectedSensor(s, s.read()) for s in sensors], self.recorder, 1)
+        collector = Collector([DetectedSensor(s, s.read()) for s in sensors], self.recorder, 1, 30)
 
         with patch("weather_station.sensors.collector.time.sleep", side_effect=KeyboardInterrupt):
             with self.assertRaises(KeyboardInterrupt):
@@ -88,11 +118,55 @@ class CollectorTests(unittest.TestCase):
     def test_rejects_a_non_positive_interval(self) -> None:
         sensor = SensorStub("room")
         with self.assertRaisesRegex(InvalidCollectorConfiguration, "must be positive"):
-            Collector([DetectedSensor(sensor, [])], self.recorder, 0)
+            Collector([DetectedSensor(sensor, [])], self.recorder, 0, 30)
+
+    def test_rejects_a_non_positive_retention(self) -> None:
+        sensor = SensorStub("room")
+        with self.assertRaisesRegex(InvalidCollectorConfiguration, "retention_days must be positive"):
+            Collector([DetectedSensor(sensor, [])], self.recorder, 60, 0)
+
+    def run_with_sleeps(self, collector: Collector, clock: FakeClock, sleeps: list[timedelta]) -> None:
+        remaining = iter(sleeps)
+
+        def fake_sleep(_: float) -> None:
+            try:
+                clock.advance(next(remaining))
+            except StopIteration:
+                raise KeyboardInterrupt
+
+        with patch("weather_station.sensors.collector.time.sleep", side_effect=fake_sleep):
+            with self.assertRaises(KeyboardInterrupt):
+                collector.run()
+
+    def test_prunes_at_startup_then_at_most_once_per_hour(self) -> None:
+        sensor = SensorStub("room")
+        clock, spy = FakeClock(), RecorderSpy()
+        collector = Collector([DetectedSensor(sensor, [])], spy, 60, 7, clock)  # type: ignore[arg-type]
+        start = clock.current
+        retention = timedelta(days=7)
+
+        with self.assertLogs(level="INFO") as logs:
+            self.run_with_sleeps(
+                collector, clock, [timedelta(minutes=30), timedelta(minutes=29), timedelta(minutes=2)]
+            )
+
+        self.assertEqual(spy.cutoffs, [start - retention, start + timedelta(minutes=61) - retention])
+        self.assertIn("Pruned 3 measurements older than", logs.output[0])
+
+    def test_pruning_failure_is_logged_and_collection_continues(self) -> None:
+        sensor = SensorStub("room")
+        clock, spy = FakeClock(), RecorderSpy(fails=True)
+        collector = Collector([DetectedSensor(sensor, [])], spy, 60, 7, clock)  # type: ignore[arg-type]
+
+        with self.assertLogs(level="ERROR"):
+            self.run_with_sleeps(collector, clock, [timedelta(hours=2)])
+
+        self.assertEqual(sensor.read_count, 1)
+        self.assertEqual(len(spy.cutoffs), 2)
 
     def test_refuses_to_start_with_no_detected_sensors(self) -> None:
         with self.assertRaises(NoSensorsDetected):
-            Collector([], self.recorder, 60)
+            Collector([], self.recorder, 60, 30)
 
 
 if __name__ == "__main__":

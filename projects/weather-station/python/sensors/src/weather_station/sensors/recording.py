@@ -1,3 +1,5 @@
+from datetime import datetime
+
 from weather_station.sensors.contracts import MeasurementWriter
 from weather_station.sensors.errors import InvalidSensorId, SensorNotRegistered
 from weather_station.shared.errors import UnknownSensorType
@@ -22,6 +24,9 @@ class RecordingService:
             validate_measurement(self._sensor_type(item.sensor_id), item) for item in measurements
         ]
         self._writer.save_many(validated)
+
+    def prune_observed_before(self, cutoff: datetime) -> int:
+        return self._writer.delete_observed_before(cutoff)
 
     def _sensor_type(self, sensor_id: str) -> str:
         sensor_type = self._writer.sensor_type(sensor_id)
