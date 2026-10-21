@@ -48,6 +48,7 @@ cp -n config.example.json config.json
 | `sensors.retention_days` | sensors | 30 |
 | `sensors.devices` | sensors | empty list |
 | `status.stale_after_minutes` | web, alarms | 5 |
+| `display.temperature_unit` | web, digest, alarms | `"celsius"` (or `"fahrenheit"`) |
 | `email.smtp_host`, `email.recipients` | notifications | required |
 | `email.smtp_port` | notifications | 465 |
 | `alarms` | alarms | empty list |

@@ -4,6 +4,7 @@ from datetime import date, datetime, time, timedelta, timezone
 from weather_station.notifications.contracts import Notification
 from weather_station.shared.contracts import MeasurementReader
 from weather_station.shared.registry import get_property_definition, get_sensor_definition
+from weather_station.shared.units import UnitSystem
 
 DIGEST_WINDOW = timedelta(hours=24)
 DAILY_TABLE_DAYS = 7
@@ -40,8 +41,9 @@ class PropertySummary:
 class DigestBuilder:
     """Builds one summary per sensor: latest reading, 24 hour stats, change since yesterday, and daily highs and lows."""
 
-    def __init__(self, reader: MeasurementReader) -> None:
+    def __init__(self, reader: MeasurementReader, units: UnitSystem) -> None:
         self._reader = reader
+        self._units = units
 
     def build(self, now: datetime) -> Notification:
         sections: list[str] = []
@@ -62,17 +64,17 @@ class DigestBuilder:
         for stored in self._reader.latest_for_sensor(sensor_id):
             prop = get_property_definition(sensor_type, stored.measurement.property_id)
             history = [
-                Reading(item.measurement.observed_at, prop.display_value(item.measurement.value))
+                Reading(item.measurement.observed_at, self._units.value(prop, item.measurement.value))
                 for item in self._reader.series(sensor_id, prop.property_id, table_start, SERIES_LIMIT)
             ]
             latest = Reading(
-                stored.measurement.observed_at, prop.display_value(stored.measurement.value)
+                stored.measurement.observed_at, self._units.value(prop, stored.measurement.value)
             )
             last_day = [item.value for item in history if item.observed_at >= window_start]
             summaries.append(
                 PropertySummary(
                     label=prop.label,
-                    unit=prop.display_unit,
+                    unit=self._units.unit(prop),
                     latest=latest.value,
                     observed_at=latest.observed_at.astimezone(now.tzinfo),
                     minimum=min(last_day, default=latest.value),

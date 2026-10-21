@@ -11,6 +11,7 @@ from weather_station.notifications.contracts import Notification
 from weather_station.notifications.settings import AlarmSettings
 from weather_station.shared.measurements import Measurement, StoredMeasurement
 from weather_station.shared.registry import TEMPERATURE
+from weather_station.shared.units import CELSIUS, FAHRENHEIT
 
 ZONE = timezone(timedelta(hours=-5), "EST")
 NOW = datetime(2026, 10, 21, 14, 5, tzinfo=ZONE)
@@ -78,6 +79,7 @@ class RunAlarmsTests(unittest.TestCase):
             state_path=self.store._path,
             stale_after=STALE_AFTER,
             rules=[RULE],
+            unit_system=CELSIUS,
         )
 
     def tearDown(self) -> None:
@@ -105,6 +107,20 @@ class RunAlarmsTests(unittest.TestCase):
         )
         self.assertEqual(self.store.load().thresholds, {RULE.key: frozenset({"above"})})
 
+    def test_fahrenheit_default_prints_fahrenheit_and_still_compares_in_celsius(self) -> None:
+        self.settings = AlarmSettings(
+            self.settings.database_path, self.settings.state_path, STALE_AFTER, [RULE], FAHRENHEIT
+        )
+        notifier = NotifierFake()
+
+        run_alarms(self.settings, ReaderFake([temperature(30.0, NOW)]), self.store, notifier.create, NOW)
+        run_alarms(self.settings, ReaderFake([temperature(36.2, NOW)]), self.store, notifier.create, NOW)
+
+        self.assertEqual(
+            [item.body for item in notifier.sent],
+            ["room-am2302 temperature above 95.0 °F: now 97.2 °F (2026-10-21 14:05 EST)\n"],
+        )
+
     def test_second_run_with_the_same_reading_sends_nothing(self) -> None:
         notifier = NotifierFake()
         reader = ReaderFake([temperature(36.2, NOW)])
@@ -118,7 +134,7 @@ class RunAlarmsTests(unittest.TestCase):
         notifier = NotifierFake()
         other = AlarmRule("porch", "air-temperature", above=30.0, below=None, hysteresis=0.0)
         self.settings = AlarmSettings(
-            self.settings.database_path, self.settings.state_path, STALE_AFTER, [RULE, other]
+            self.settings.database_path, self.settings.state_path, STALE_AFTER, [RULE, other], CELSIUS
         )
         reader = ReaderFake([temperature(36.0, NOW), temperature(31.0, NOW, "porch")])
 
@@ -141,7 +157,7 @@ class RunAlarmsTests(unittest.TestCase):
         self.assertEqual(self.store.load(), previous)
 
     def test_no_rules_skips_the_database(self) -> None:
-        self.settings = AlarmSettings(self.settings.database_path, self.settings.state_path, STALE_AFTER, [])
+        self.settings = AlarmSettings(self.settings.database_path, self.settings.state_path, STALE_AFTER, [], CELSIUS)
         reader = ReaderFake([])
 
         self.assertTrue(run_alarms(self.settings, reader, self.store, NotifierFake().create, NOW))

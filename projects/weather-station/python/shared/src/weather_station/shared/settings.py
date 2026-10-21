@@ -6,16 +6,19 @@ from dotenv import find_dotenv, load_dotenv
 
 from weather_station.shared.errors import (
     ConfigFileError,
+    InvalidDisplayConfiguration,
     InvalidStatusConfiguration,
     InvalidStorageConfiguration,
     WeatherStationError,
 )
+from weather_station.shared.units import CELSIUS, UNIT_SYSTEMS, UnitSystem
 
 DEFAULT_CONFIG_PATH = Path("config.json")
 DEFAULT_DATABASE_PATH = "instance/weather.sqlite3"
 DEFAULT_STALE_AFTER_MINUTES = 5
-CONFIG_SECTIONS = frozenset({"storage", "sensors", "status", "email", "alarms"})
+CONFIG_SECTIONS = frozenset({"storage", "sensors", "status", "display", "email", "alarms"})
 STATUS_KEYS = frozenset({"stale_after_minutes"})
+DISPLAY_KEYS = frozenset({"temperature_unit"})
 
 
 def load_env() -> None:
@@ -95,3 +98,12 @@ def read_stale_after_minutes(document: dict[str, Any]) -> int:
     return read_positive_int(
         status, "status", "stale_after_minutes", DEFAULT_STALE_AFTER_MINUTES, InvalidStatusConfiguration
     )
+
+
+def read_unit_system(document: dict[str, Any]) -> UnitSystem:
+    display = read_section(document, "display", DISPLAY_KEYS, InvalidDisplayConfiguration)
+    key = display.get("temperature_unit", CELSIUS.key)
+    if not isinstance(key, str) or key not in UNIT_SYSTEMS:
+        allowed = ", ".join(f'"{name}"' for name in UNIT_SYSTEMS)
+        raise InvalidDisplayConfiguration(f"Config key 'display.temperature_unit' must be one of {allowed}")
+    return UNIT_SYSTEMS[key]

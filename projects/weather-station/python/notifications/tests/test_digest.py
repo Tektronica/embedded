@@ -4,6 +4,7 @@ from datetime import datetime, timedelta, timezone
 from weather_station.notifications.digest import DigestBuilder
 from weather_station.shared.measurements import Measurement, StoredMeasurement
 from weather_station.shared.registry import RELATIVE_HUMIDITY, TEMPERATURE
+from weather_station.shared.units import CELSIUS, FAHRENHEIT
 
 NOW = datetime(2026, 10, 20, 7, 0, tzinfo=timezone.utc)
 LOCAL_NOW = datetime(2026, 10, 20, 7, 0, tzinfo=timezone(timedelta(hours=-5)))
@@ -60,20 +61,35 @@ class ReaderStub:
 
 class DigestBuilderTests(unittest.TestCase):
     def build_body(self, history: dict[str, list[StoredMeasurement]], now: datetime = NOW) -> str:
-        return DigestBuilder(ReaderStub(history)).build(now).body
+        return DigestBuilder(ReaderStub(history), CELSIUS).build(now).body
 
     def test_digest_lists_latest_value_with_observed_time_in_display_units(self) -> None:
         history = {
             TEMPERATURE.property_id: [temperature(20, NOW - timedelta(hours=1))],
             RELATIVE_HUMIDITY.property_id: [humidity(0.40, NOW - timedelta(hours=1))],
         }
-        notification = DigestBuilder(ReaderStub(history)).build(NOW)
+        notification = DigestBuilder(ReaderStub(history), CELSIUS).build(NOW)
         body = notification.body
 
         self.assertEqual(notification.subject, "Weather station summary for 2026-10-20")
         self.assertIn("Temperature and humidity (room-am2302)", body)
         self.assertIn("Latest:          20.0 °C (2026-10-20 06:00 UTC)", body)
         self.assertIn("Latest:          40.0 % (2026-10-20 06:00 UTC)", body)
+
+    def test_fahrenheit_default_converts_values_and_the_change_since_yesterday(self) -> None:
+        history = {
+            TEMPERATURE.property_id: [
+                temperature(10, NOW - timedelta(hours=25)),
+                temperature(20, NOW - timedelta(hours=1)),
+            ],
+            RELATIVE_HUMIDITY.property_id: [humidity(0.40, NOW - timedelta(hours=1))],
+        }
+
+        body = DigestBuilder(ReaderStub(history), FAHRENHEIT).build(NOW).body
+
+        self.assertIn("Latest:          68.0 °F (2026-10-20 06:00 UTC)", body)
+        self.assertIn("Latest:          40.0 % (2026-10-20 06:00 UTC)", body)
+        self.assertIn("Since yesterday: +18.0 °F", body)
 
     def test_last_reading_time_is_shown_in_the_local_zone_of_now(self) -> None:
         body = self.build_body(
@@ -188,7 +204,7 @@ class DigestBuilderTests(unittest.TestCase):
 
         DigestBuilder(RecordingReader({
             TEMPERATURE.property_id: [temperature(20, NOW - timedelta(hours=1))],
-        })).build(NOW)
+        }), CELSIUS).build(NOW)
 
         self.assertGreaterEqual(requested[0], 7 * 24 * 60)
 
@@ -207,7 +223,7 @@ class DigestBuilderTests(unittest.TestCase):
         self.assertIn("Temperature and humidity (room-am2302)\n  No readings yet.", body)
 
     def test_digest_with_no_sensors_says_so(self) -> None:
-        notification = DigestBuilder(ReaderStub({})).build(NOW)
+        notification = DigestBuilder(ReaderStub({}), CELSIUS).build(NOW)
 
         self.assertIn("No sensors have reported yet.", notification.body)
 

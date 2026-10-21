@@ -6,6 +6,7 @@ from uuid import uuid4
 
 from weather_station.shared.measurements import Measurement, MeasurementQuality, StoredMeasurement
 from weather_station.shared.registry import TEMPERATURE
+from weather_station.shared.units import CELSIUS, FAHRENHEIT
 from weather_station.web.assemblers.dashboard import (
     DAY,
     HOUR,
@@ -202,7 +203,7 @@ class ChartSegmentTests(NewYorkTimeTestCase):
         first = [stored(NOW - timedelta(hours=10) + timedelta(minutes=minute), 295.0) for minute in range(0, 60, 5)]
         second = [stored(NOW - timedelta(hours=2) + timedelta(minutes=minute), 296.0) for minute in range(0, 60, 5)]
 
-        chart = _build_chart(first + second, TEMPERATURE, NOW, STALE_AFTER)
+        chart = _build_chart(first + second, TEMPERATURE, CELSIUS, NOW, STALE_AFTER)
 
         self.assertEqual(len(chart.segments), 2)
         self.assertFalse(any(segment.is_single_point for segment in chart.segments))
@@ -211,7 +212,7 @@ class ChartSegmentTests(NewYorkTimeTestCase):
         total = MAX_CHART_POINTS * 3
         history = [stored(NOW - timedelta(days=20) + timedelta(minutes=10 * index), 295.0) for index in range(total)]
 
-        chart = _build_chart(history, TEMPERATURE, NOW, STALE_AFTER)
+        chart = _build_chart(history, TEMPERATURE, CELSIUS, NOW, STALE_AFTER)
 
         self.assertEqual(len(chart.segments), 1)
 
@@ -224,7 +225,7 @@ class ChartSegmentTests(NewYorkTimeTestCase):
             stored(NOW - timedelta(hours=1) + timedelta(minutes=1), 295.2),
         ]
 
-        chart = _build_chart(history, TEMPERATURE, NOW, STALE_AFTER)
+        chart = _build_chart(history, TEMPERATURE, CELSIUS, NOW, STALE_AFTER)
 
         self.assertEqual([segment.is_single_point for segment in chart.segments], [False, True, False])
         marker = chart.segments[1]
@@ -232,7 +233,7 @@ class ChartSegmentTests(NewYorkTimeTestCase):
         self.assertLess(marker.x, PLOT_RIGHT_EDGE)
 
     def test_single_reading_is_one_marker_at_the_right_edge(self) -> None:
-        chart = _build_chart([stored(NOW, 295.0)], TEMPERATURE, NOW, STALE_AFTER)
+        chart = _build_chart([stored(NOW, 295.0)], TEMPERATURE, CELSIUS, NOW, STALE_AFTER)
 
         self.assertEqual(len(chart.segments), 1)
         self.assertTrue(chart.segments[0].is_single_point)
@@ -243,7 +244,7 @@ class ChartGeometryTests(NewYorkTimeTestCase):
     def test_x_is_proportional_to_time_and_the_right_edge_is_now(self) -> None:
         history = [stored(NOW - timedelta(hours=10), 295.0), stored(NOW - timedelta(hours=5), 296.0)]
 
-        chart = _build_chart(history, TEMPERATURE, NOW, timedelta(hours=10))
+        chart = _build_chart(history, TEMPERATURE, CELSIUS, NOW, timedelta(hours=10))
 
         coordinates = [pair.split(",") for pair in chart.segments[0].line.split()]
         self.assertAlmostEqual(float(coordinates[0][0]), PLOT_LEFT, places=1)
@@ -252,7 +253,7 @@ class ChartGeometryTests(NewYorkTimeTestCase):
     def test_window_starts_at_the_first_sample_inside_thirty_days(self) -> None:
         history = [stored(NOW - timedelta(days=2), 295.0), stored(NOW, 296.0)]
 
-        chart = _build_chart(history, TEMPERATURE, NOW, timedelta(days=1))
+        chart = _build_chart(history, TEMPERATURE, CELSIUS, NOW, timedelta(days=1))
 
         coordinates = [pair.split(",") for pair in chart.segments[0].line.split()]
         self.assertAlmostEqual(float(coordinates[0][0]), PLOT_LEFT, places=1)
@@ -261,7 +262,7 @@ class ChartGeometryTests(NewYorkTimeTestCase):
     def test_minimum_and_maximum_stay_raw(self) -> None:
         history = [stored(NOW - timedelta(hours=1), 293.15), stored(NOW, 296.15)]
 
-        chart = _build_chart(history, TEMPERATURE, NOW, STALE_AFTER)
+        chart = _build_chart(history, TEMPERATURE, CELSIUS, NOW, STALE_AFTER)
 
         self.assertAlmostEqual(chart.minimum or 0.0, 20.0)
         self.assertAlmostEqual(chart.maximum or 0.0, 23.0)
@@ -271,7 +272,7 @@ class ChartGeometryTests(NewYorkTimeTestCase):
     def test_tick_positions_span_zero_to_one_and_percents_stay_in_the_box(self) -> None:
         history = [stored(NOW - timedelta(hours=30), 293.15), stored(NOW, 296.15)]
 
-        chart = _build_chart(history, TEMPERATURE, NOW, STALE_AFTER)
+        chart = _build_chart(history, TEMPERATURE, CELSIUS, NOW, STALE_AFTER)
 
         self.assertEqual(chart.y_ticks[0].position, 0.0)
         self.assertEqual(chart.y_ticks[-1].position, 1.0)
@@ -283,7 +284,7 @@ class ChartGeometryTests(NewYorkTimeTestCase):
     def test_every_other_x_label_hides_on_narrow_when_more_than_four(self) -> None:
         history = [stored(NOW - timedelta(hours=30), 293.15), stored(NOW, 296.15)]
 
-        chart = _build_chart(history, TEMPERATURE, NOW, STALE_AFTER)
+        chart = _build_chart(history, TEMPERATURE, CELSIUS, NOW, STALE_AFTER)
 
         self.assertGreater(len(chart.x_ticks), 4)
         self.assertEqual(
@@ -294,15 +295,27 @@ class ChartGeometryTests(NewYorkTimeTestCase):
     def test_description_names_property_unit_span_low_high_and_latest(self) -> None:
         history = [stored(NOW - timedelta(days=2), 293.15), stored(NOW, 296.15)]
 
-        chart = _build_chart(history, TEMPERATURE, NOW, STALE_AFTER)
+        chart = _build_chart(history, TEMPERATURE, CELSIUS, NOW, STALE_AFTER)
 
         self.assertEqual(
             chart.description,
             "Temperature in °C, Oct 19 to Oct 21, 2 readings. Low 20.0, high 23.0, latest 23.0.",
         )
 
+    def test_fahrenheit_converts_values_ticks_unit_and_description(self) -> None:
+        history = [stored(NOW - timedelta(days=2), 293.15), stored(NOW, 295.15)]
+
+        chart = _build_chart(history, TEMPERATURE, FAHRENHEIT, NOW, STALE_AFTER)
+
+        self.assertEqual(chart.unit, "°F")
+        self.assertAlmostEqual(chart.minimum or 0.0, 68.0)
+        self.assertAlmostEqual(chart.maximum or 0.0, 71.6)
+        self.assertEqual([tick.label for tick in chart.y_ticks], ["68", "69", "70", "71", "72"])
+        self.assertIn("Temperature in °F", chart.description)
+        self.assertIn("Low 68.0, high 71.6, latest 71.6.", chart.description)
+
     def test_empty_history_gives_the_empty_chart(self) -> None:
-        self.assertEqual(_build_chart([], TEMPERATURE, NOW, STALE_AFTER), TrendChart.empty())
+        self.assertEqual(_build_chart([], TEMPERATURE, CELSIUS, NOW, STALE_AFTER), TrendChart.empty())
 
 
 if __name__ == "__main__":

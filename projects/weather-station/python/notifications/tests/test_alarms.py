@@ -13,7 +13,10 @@ from weather_station.notifications.alarms import (
     evaluate_alarms,
     format_notification,
 )
+from weather_station.shared.registry import TEMPERATURE
+from weather_station.shared.units import CELSIUS, FAHRENHEIT
 
+KELVIN_AT_0_C = 273.15
 ZONE = timezone(timedelta(hours=-5), "EST")
 NOW = datetime(2026, 10, 21, 14, 5, tzinfo=ZONE)
 STALE_AFTER = timedelta(minutes=5)
@@ -22,9 +25,13 @@ ABOVE_ONLY = AlarmRule("room", "air-temperature", above=35.0, below=None, hyster
 BELOW_ONLY = AlarmRule("room", "air-temperature", above=None, below=0.0, hysteresis=1.0)
 
 
+def celsius_reading(value: float, observed_at: datetime) -> AlarmReading:
+    return AlarmReading(TEMPERATURE, value, value + KELVIN_AT_0_C, observed_at)
+
+
 def snapshot(value: float, age: timedelta = timedelta(0)) -> dict[str, SensorSnapshot]:
     observed_at = NOW - age
-    reading = AlarmReading("Temperature", "°C", value, observed_at)
+    reading = celsius_reading(value, observed_at)
     return {"room": SensorSnapshot(observed_at, {"air-temperature": reading})}
 
 
@@ -170,7 +177,7 @@ class FormatTests(unittest.TestCase):
     def test_one_event_uses_the_plain_subject(self) -> None:
         _, events = evaluate_alarms([RULE], snapshot(36.2), state(), NOW, STALE_AFTER)
 
-        notification = format_notification(events, NOW)
+        notification = format_notification(events, NOW, CELSIUS)
 
         self.assertEqual(notification.subject, "Weather station alarm")
         self.assertEqual(
@@ -178,19 +185,29 @@ class FormatTests(unittest.TestCase):
             "room temperature above 35.0 °C: now 36.2 °C (2026-10-21 14:05 EST)\n",
         )
 
+    def test_fahrenheit_prints_limit_and_value_converted_from_si(self) -> None:
+        _, events = evaluate_alarms([RULE], snapshot(36.2), state(), NOW, STALE_AFTER)
+
+        notification = format_notification(events, NOW, FAHRENHEIT)
+
+        self.assertEqual(
+            notification.body,
+            "room temperature above 95.0 °F: now 97.2 °F (2026-10-21 14:05 EST)\n",
+        )
+
     def test_every_event_kind_has_a_line(self) -> None:
-        reading = AlarmReading("Temperature", "°C", 33.8, NOW)
+        reading = celsius_reading(33.8, NOW)
         seen = NOW - timedelta(minutes=25)
         events = [
             ThresholdEvent(ThresholdEventKind.BACK_BELOW, "room", 34.0, reading),
-            ThresholdEvent(ThresholdEventKind.BELOW, "room", 0.0, AlarmReading("Temperature", "°C", -1.5, NOW)),
-            ThresholdEvent(ThresholdEventKind.BACK_ABOVE, "room", 1.0, AlarmReading("Temperature", "°C", 1.5, NOW)),
+            ThresholdEvent(ThresholdEventKind.BELOW, "room", 0.0, celsius_reading(-1.5, NOW)),
+            ThresholdEvent(ThresholdEventKind.BACK_ABOVE, "room", 1.0, celsius_reading(1.5, NOW)),
             FreshnessEvent(FreshnessEventKind.STALE, "room", seen),
             FreshnessEvent(FreshnessEventKind.STALE, "porch", None),
             FreshnessEvent(FreshnessEventKind.REPORTING, "room", NOW),
         ]
 
-        notification = format_notification(events, NOW)
+        notification = format_notification(events, NOW, CELSIUS)
 
         self.assertEqual(notification.subject, "Weather station alarm: 6 events")
         self.assertEqual(
@@ -206,10 +223,10 @@ class FormatTests(unittest.TestCase):
         )
 
     def test_times_convert_to_the_local_zone(self) -> None:
-        reading = AlarmReading("Temperature", "°C", 36.0, datetime(2026, 10, 21, 19, 3, tzinfo=timezone.utc))
+        reading = celsius_reading(36.0, datetime(2026, 10, 21, 19, 3, tzinfo=timezone.utc))
         event = ThresholdEvent(ThresholdEventKind.ABOVE, "room", 35.0, reading)
 
-        self.assertIn("(2026-10-21 14:03 EST)", format_notification([event], NOW).body)
+        self.assertIn("(2026-10-21 14:03 EST)", format_notification([event], NOW, CELSIUS).body)
 
 
 if __name__ == "__main__":

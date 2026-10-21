@@ -23,11 +23,15 @@ class PropertyDefinition:
     def display_value(self, value: float) -> float:
         return value * self.display_scale + self.display_offset
 
+    def si_value(self, display_value: float) -> float:
+        return (display_value - self.display_offset) / self.display_scale
+
 
 @dataclass(frozen=True)
 class SensorDefinition:
     key: str
     label: str
+    primary_property: PropertyDefinition
     properties: tuple[PropertyDefinition, ...]
 
 
@@ -72,16 +76,16 @@ LIGHTNING_DISTANCE = _property("lightning-distance", "Last distance", "Length", 
 SENSOR_DEFINITIONS = MappingProxyType({
     definition.key: definition
     for definition in (
-        SensorDefinition("temperature_humidity", "Temperature and humidity", (TEMPERATURE, RELATIVE_HUMIDITY)),
-        SensorDefinition("pressure", "Pressure", (TEMPERATURE, RELATIVE_HUMIDITY, PRESSURE)),
-        SensorDefinition("air_quality", "Air quality", (TVOC, EQUIVALENT_CO2)),
-        SensorDefinition("wind", "Wind", (WIND_SPEED, WIND_GUST, WIND_DIRECTION, ADC_VOLTAGE)),
-        SensorDefinition("rainfall", "Rainfall", (RAINFALL_ACCUMULATION, RAINFALL_RATE)),
-        SensorDefinition("uv", "UV", (UV_INDEX,)),
-        SensorDefinition("light", "Illuminance", (ILLUMINANCE,)),
-        SensorDefinition("probe_temperature", "Probe temperature", (TEMPERATURE,)),
-        SensorDefinition("soil_moisture", "Soil moisture", (SOIL_MOISTURE, ADC_VOLTAGE)),
-        SensorDefinition("lightning", "Lightning", (LIGHTNING_COUNT, LIGHTNING_DISTANCE)),
+        SensorDefinition("temperature_humidity", "Temperature and humidity", TEMPERATURE, (TEMPERATURE, RELATIVE_HUMIDITY)),
+        SensorDefinition("pressure", "Pressure", PRESSURE, (TEMPERATURE, RELATIVE_HUMIDITY, PRESSURE)),
+        SensorDefinition("air_quality", "Air quality", EQUIVALENT_CO2, (TVOC, EQUIVALENT_CO2)),
+        SensorDefinition("wind", "Wind", WIND_SPEED, (WIND_SPEED, WIND_GUST, WIND_DIRECTION, ADC_VOLTAGE)),
+        SensorDefinition("rainfall", "Rainfall", RAINFALL_ACCUMULATION, (RAINFALL_ACCUMULATION, RAINFALL_RATE)),
+        SensorDefinition("uv", "UV", UV_INDEX, (UV_INDEX,)),
+        SensorDefinition("light", "Illuminance", ILLUMINANCE, (ILLUMINANCE,)),
+        SensorDefinition("probe_temperature", "Probe temperature", TEMPERATURE, (TEMPERATURE,)),
+        SensorDefinition("soil_moisture", "Soil moisture", SOIL_MOISTURE, (SOIL_MOISTURE, ADC_VOLTAGE)),
+        SensorDefinition("lightning", "Lightning", LIGHTNING_COUNT, (LIGHTNING_COUNT, LIGHTNING_DISTANCE)),
     )
 })
 

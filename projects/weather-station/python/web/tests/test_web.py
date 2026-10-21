@@ -74,7 +74,7 @@ class WebApiTests(unittest.TestCase):
 
         dashboard = self.client.get("/")
 
-        self.assertIn(b"Stale", dashboard.data)
+        self.assertIn(b"1 of 1 stale", dashboard.data)
         self.assertIn(b"(stale)", dashboard.data)
 
     def test_empty_dashboard_renders(self) -> None:

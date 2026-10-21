@@ -24,6 +24,15 @@ sudo systemctl status weather-web.service
 
 The sensors service should be started first so it can create the database. The web service returns a structured 503 if the database doesn't exist or has an unsupported schema version. See [Troubleshooting](../../operations/troubleshooting/README.md).
 
+## Units
+
+The dashboard shows temperature in °C or °F. The toggle in the top bar switches between them.
+
+- The choice is saved in a `unit` cookie for a year. Each browser keeps its own choice.
+- Without a cookie, the dashboard uses `display.temperature_unit` from `config.json`. It defaults to `"celsius"`.
+- `?unit=c` or `?unit=f` in the URL overrides the cookie and sets it. Any other value is ignored.
+- Storage and `/api/*` responses stay in SI units (kelvin for temperature) whatever the choice.
+
 ## Access on the local network
 
 The dashboard listens on port 5000 on every interface, so any device on the same network as the Pi can open it:

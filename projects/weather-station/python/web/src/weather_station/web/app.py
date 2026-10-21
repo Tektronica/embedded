@@ -2,7 +2,7 @@ from datetime import datetime, timedelta, timezone
 from pathlib import Path
 from typing import Any, cast
 
-from flask import Flask, abort, current_app, jsonify, render_template, request
+from flask import Flask, Response, abort, current_app, jsonify, make_response, render_template, request
 
 from weather_station.shared.contracts import MeasurementReader
 from weather_station.shared.db.sqlite_reader import SQLiteMeasurementReader
@@ -12,11 +12,13 @@ from weather_station.shared.settings import (
     database_path,
     load_config,
     read_stale_after_minutes,
+    read_unit_system,
 )
 from weather_station.web.assemblers.dashboard import DashboardAssembler
 from weather_station.web.assemblers.measurement import MeasurementAssembler
 from weather_station.web.assemblers.sensor import SensorAssembler
 from weather_station.web.errors import register_error_handlers
+from weather_station.web.unit_preference import UNIT_COOKIE, UNIT_COOKIE_MAX_AGE, resolve_unit
 
 
 def create_app(
@@ -28,6 +30,7 @@ def create_app(
     app.config.from_mapping(
         DATABASE_PATH=database_path(config_path),
         STALE_AFTER=timedelta(minutes=read_stale_after_minutes(document)),
+        DEFAULT_UNIT_SYSTEM=read_unit_system(document),
     )
     if test_config:
         app.config.update(test_config)
@@ -38,12 +41,28 @@ def create_app(
     register_error_handlers(app)
 
     @app.get("/")
-    def dashboard() -> str:
+    def dashboard() -> Response:
+        choice = resolve_unit(
+            request.args.get("unit"),
+            request.cookies.get(UNIT_COOKIE),
+            app.config["DEFAULT_UNIT_SYSTEM"],
+        )
         view = _dashboard_assembler().assemble(
             request.args.get("sensor_id"),
             request.args.get("property"),
+            choice.system,
         )
-        return render_template("dashboard.html", view=view)
+        response = make_response(render_template("dashboard.html", view=view))
+        response.vary.add("Cookie")
+        if choice.from_query:
+            response.set_cookie(
+                UNIT_COOKIE,
+                choice.system.code,
+                max_age=UNIT_COOKIE_MAX_AGE,
+                samesite="Lax",
+                httponly=True,
+            )
+        return response
 
     @app.get("/api/readings")
     def latest_readings() -> Any:

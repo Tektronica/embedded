@@ -25,7 +25,7 @@ Each entry in the top-level `alarms` list is one rule for one sensor and propert
 | `below` | Alarm when the value passes this limit downward | none |
 | `hysteresis` | Distance back past a limit before the alarm clears | 0 |
 
-Set `above`, `below`, or both. Limits and `hysteresis` use the units the digest prints, such as °C and hPa. Each sensor and property pair can appear once. When both limits are set, `above` minus `below` must exceed twice `hysteresis`. An invalid rule stops the run and the unit shows `failed`.
+Set `above`, `below`, or both. Limits and `hysteresis` use the default display units: °C for temperature, hPa for pressure. They stay in °C when `display.temperature_unit` is `"fahrenheit"`. Each sensor and property pair can appear once. When both limits are set, `above` minus `below` must exceed twice `hysteresis`. An invalid rule stops the run and the unit shows `failed`.
 
 ## Hysteresis
 
@@ -56,6 +56,12 @@ One run sends at most one email. It lists every change found in that run, one li
 ```
 room-am2302 temperature above 35.0 °C: now 36.2 °C (2026-10-21 14:03 EST)
 room-am2302 stale: no reading since 2026-10-21 13:40 EST
+```
+
+Alarm and digest emails follow `display.temperature_unit` from `config.json` and ignore the dashboard toggle. With `"fahrenheit"`, the numbers and units in the email are converted. Comparisons against the limits still run in °C, so the email shows the limit converted too:
+
+```
+room-am2302 temperature above 95.0 °F: now 97.2 °F (2026-10-21 14:03 EST)
 ```
 
 Emails go to `email.recipients` through the same account as the [digest](../email-digest/README.md). If sending fails, the run logs the error and exits with a failure. It keeps the old state, so the next run finds the same changes and tries again.

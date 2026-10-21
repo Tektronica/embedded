@@ -12,6 +12,9 @@
   "status": {
     "stale_after_minutes": 5
   },
+  "display": {
+    "temperature_unit": "celsius"
+  },
   "alarms": [
     { "sensor": "room-am2302", "property": "air-temperature", "above": 35.0, "below": 0.0, "hysteresis": 1.0 }
   ],

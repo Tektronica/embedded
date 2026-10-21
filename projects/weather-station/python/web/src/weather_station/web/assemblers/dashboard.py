@@ -3,12 +3,14 @@ from dataclasses import dataclass
 from datetime import datetime, time, timedelta, timezone
 
 from weather_station.shared.measurements import Measurement, StoredMeasurement
-from weather_station.shared.registry import PropertyDefinition, SensorDefinition, get_sensor_definition
 from weather_station.shared.contracts import MeasurementReader
+from weather_station.shared.registry import PropertyDefinition, SensorDefinition, get_sensor_definition
+from weather_station.shared.units import UNIT_SYSTEMS, UnitSystem
 
 MAX_CHART_POINTS = 2880
 HISTORY_LIMIT = 50_000
 CHART_WINDOW = timedelta(days=30)
+RETIRED_AFTER = timedelta(days=7)
 GAP_STALE_MULTIPLE = 3
 MIN_Y_TICKS = 4
 MAX_Y_TICKS = 6
@@ -41,6 +43,31 @@ class SensorSummary:
     label: str
     latest_at: datetime | None
     is_stale: bool
+    has_recent_reading: bool
+
+
+@dataclass(frozen=True)
+class StatusBadge:
+    tone: str
+    label: str
+
+
+@dataclass(frozen=True)
+class SensorEntry:
+    sensor_id: str
+    label: str
+    property_label: str
+    value: float | None
+    unit: str
+    is_selected: bool
+    is_stale: bool
+
+
+@dataclass(frozen=True)
+class UnitOption:
+    code: str
+    symbol: str
+    is_selected: bool
 
 
 @dataclass(frozen=True)
@@ -108,9 +135,12 @@ class TrendChart:
 
 @dataclass(frozen=True)
 class DashboardView:
-    status: str
+    status_badge: StatusBadge | None
     last_update: datetime | None
     sensors: tuple[SensorSummary, ...]
+    entries: tuple[SensorEntry, ...]
+    unit_options: tuple[UnitOption, ...]
+    display_unit: str
     selected_sensor: SensorSummary | None
     definition: SensorDefinition | None
     properties: tuple[PropertyDefinition, ...]
@@ -118,6 +148,10 @@ class DashboardView:
     selected_measurement: Measurement | None
     current_value: float | None
     chart: TrendChart
+
+    @property
+    def has_multiple_sensors(self) -> bool:
+        return len(self.sensors) > 1
 
 
 class DashboardAssembler:
@@ -131,6 +165,7 @@ class DashboardAssembler:
         self,
         sensor_id: str | None,
         property_key: str | None,
+        units: UnitSystem,
     ) -> DashboardView:
         now = datetime.now(timezone.utc)
         latest = self._reader.latest()
@@ -147,14 +182,20 @@ class DashboardAssembler:
             for registered_id, _ in registered_sensors
         }
         sensors = tuple(
-            SensorSummary(
-                sensor_id=registered_id,
-                sensor_type=sensor_type,
-                label=get_sensor_definition(sensor_type).label,
-                latest_at=_local(latest_by_sensor[registered_id]),
-                is_stale=_is_stale(latest_by_sensor[registered_id], now, self._stale_after),
+            sorted(
+                (
+                    SensorSummary(
+                        sensor_id=registered_id,
+                        sensor_type=sensor_type,
+                        label=get_sensor_definition(sensor_type).label,
+                        latest_at=_local(latest_by_sensor[registered_id]),
+                        is_stale=_is_stale(latest_by_sensor[registered_id], now, self._stale_after),
+                        has_recent_reading=_has_recent_reading(latest_by_sensor[registered_id], now),
+                    )
+                    for registered_id, sensor_type in registered_sensors
+                ),
+                key=lambda item: (item.label, item.sensor_id),
             )
-            for registered_id, sensor_type in registered_sensors
         )
         selected_sensor = next(
             (item for item in sensors if item.sensor_id == sensor_id),
@@ -191,16 +232,22 @@ class DashboardAssembler:
                 now - CHART_WINDOW,
                 limit=HISTORY_LIMIT,
             )
-            chart = _build_chart(history, selected_property, now, self._stale_after)
+            chart = _build_chart(history, selected_property, units, now, self._stale_after)
             if latest_measurement is not None:
-                current_value = selected_property.display_value(latest_measurement.value)
+                current_value = units.value(selected_property, latest_measurement.value)
 
         reported = [item.latest_at for item in sensors if item.latest_at is not None]
         last_update = max(reported, default=None)
         return DashboardView(
-            status=_status(sensors, last_update),
+            status_badge=_status_badge(sensors),
             last_update=last_update,
             sensors=sensors,
+            entries=_build_entries(sensors, latest, selected_sensor, units),
+            unit_options=tuple(
+                UnitOption(system.code, system.temperature_symbol, system is units)
+                for system in UNIT_SYSTEMS.values()
+            ),
+            display_unit=units.unit(selected_property) if selected_property is not None else "",
             selected_sensor=selected_sensor,
             definition=definition,
             properties=properties,
@@ -219,10 +266,50 @@ def _is_stale(latest_at: datetime | None, now: datetime, stale_after: timedelta)
     return latest_at is not None and now - latest_at > stale_after
 
 
-def _status(sensors: tuple[SensorSummary, ...], last_update: datetime | None) -> str:
-    if last_update is None:
-        return "no-data"
-    return "stale" if any(item.is_stale for item in sensors) else "live"
+def _has_recent_reading(latest_at: datetime | None, now: datetime) -> bool:
+    return latest_at is not None and now - latest_at <= RETIRED_AFTER
+
+
+def _status_badge(sensors: tuple[SensorSummary, ...]) -> StatusBadge | None:
+    if not any(item.latest_at is not None for item in sensors):
+        return StatusBadge("no-data", "No data")
+    reporting = [item for item in sensors if item.has_recent_reading]
+    stale_count = sum(item.is_stale for item in reporting)
+    if stale_count:
+        return StatusBadge("stale", f"{stale_count} of {len(reporting)} stale")
+    return None
+
+
+def _build_entries(
+    sensors: tuple[SensorSummary, ...],
+    latest: list[StoredMeasurement],
+    selected_sensor: SensorSummary | None,
+    units: UnitSystem,
+) -> tuple[SensorEntry, ...]:
+    entries = []
+    for sensor in sensors:
+        primary = get_sensor_definition(sensor.sensor_type).primary_property
+        measurement = next(
+            (
+                item.measurement
+                for item in latest
+                if item.measurement.sensor_id == sensor.sensor_id
+                and item.measurement.property_id == primary.property_id
+            ),
+            None,
+        )
+        entries.append(
+            SensorEntry(
+                sensor_id=sensor.sensor_id,
+                label=sensor.label,
+                property_label=primary.label,
+                value=units.value(primary, measurement.value) if measurement is not None else None,
+                unit=units.unit(primary),
+                is_selected=selected_sensor is not None and sensor.sensor_id == selected_sensor.sensor_id,
+                is_stale=sensor.is_stale,
+            )
+        )
+    return tuple(entries)
 
 
 def downsample(samples: list[ChartPoint], max_points: int) -> tuple[ChartPoint, ...]:
@@ -392,13 +479,14 @@ def split_at_gaps(points: tuple[ChartPoint, ...], threshold: timedelta) -> list[
 
 def _describe(
     prop: PropertyDefinition,
+    unit: str,
     samples: list[ChartPoint],
     window_start: datetime,
     window_end: datetime,
 ) -> str:
     values = [sample.value for sample in samples]
     return (
-        f"{prop.label} in {prop.display_unit}, {window_start:%b %d} to {window_end:%b %d}, "
+        f"{prop.label} in {unit}, {window_start:%b %d} to {window_end:%b %d}, "
         f"{len(samples)} readings. Low {min(values):.1f}, high {max(values):.1f}, "
         f"latest {values[-1]:.1f}."
     )
@@ -407,13 +495,14 @@ def _describe(
 def _build_chart(
     history: list[StoredMeasurement],
     prop: PropertyDefinition,
+    units: UnitSystem,
     now: datetime,
     stale_after: timedelta,
 ) -> TrendChart:
     samples = [
         ChartPoint(
             timestamp=item.measurement.observed_at.astimezone(),
-            value=prop.display_value(item.measurement.value),
+            value=units.value(prop, item.measurement.value),
         )
         for item in history
     ]
@@ -453,6 +542,6 @@ def _build_chart(
         sample_count=len(samples),
         y_ticks=tuple(frame.y_tick(value, scale.decimals) for value in scale.values),
         x_ticks=x_ticks,
-        unit=prop.display_unit,
-        description=_describe(prop, samples, window_start, window_end),
+        unit=units.unit(prop),
+        description=_describe(prop, units.unit(prop), samples, window_start, window_end),
     )

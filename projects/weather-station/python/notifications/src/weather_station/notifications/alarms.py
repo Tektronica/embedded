@@ -6,6 +6,8 @@ from enum import StrEnum
 from weather_station.notifications.alarm_rules import AlarmRule
 from weather_station.notifications.alarm_state import AlarmState
 from weather_station.notifications.contracts import Notification
+from weather_station.shared.registry import PropertyDefinition
+from weather_station.shared.units import UnitSystem
 
 ABOVE = "above"
 BELOW = "below"
@@ -25,9 +27,11 @@ class FreshnessEventKind(StrEnum):
 
 @dataclass(frozen=True)
 class AlarmReading:
-    label: str
-    unit: str
+    """value is in the property's default display unit and is what rules compare. si_value is what notifications print from."""
+
+    property: PropertyDefinition
     value: float
+    si_value: float
     observed_at: datetime
 
 
@@ -88,11 +92,11 @@ def evaluate_alarms(
     return AlarmState(thresholds, frozenset(stale_sensors)), events
 
 
-def format_notification(events: Sequence[AlarmEvent], now: datetime) -> Notification:
+def format_notification(events: Sequence[AlarmEvent], now: datetime, units: UnitSystem) -> Notification:
     subject = "Weather station alarm"
     if len(events) > 1:
         subject = f"{subject}: {len(events)} events"
-    body = "\n".join(_format_event(event, now) for event in events)
+    body = "\n".join(_format_event(event, now, units) for event in events)
     return Notification(subject=subject, body=f"{body}\n")
 
 
@@ -144,13 +148,17 @@ def _threshold_events(
     return events
 
 
-def _format_event(event: AlarmEvent, now: datetime) -> str:
+def _format_event(event: AlarmEvent, now: datetime, units: UnitSystem) -> str:
     if isinstance(event, ThresholdEvent):
         reading = event.reading
-        unit = f" {reading.unit}" if reading.unit else ""
+        prop = reading.property
+        unit_symbol = units.unit(prop)
+        unit = f" {unit_symbol}" if unit_symbol else ""
+        limit = units.value(prop, prop.si_value(event.limit))
+        value = units.value(prop, reading.si_value)
         return (
-            f"{event.sensor} {reading.label.lower()} {event.kind.value} {event.limit:.1f}{unit}: "
-            f"now {reading.value:.1f}{unit} ({_format_time(reading.observed_at, now)})"
+            f"{event.sensor} {prop.label.lower()} {event.kind.value} {limit:.1f}{unit}: "
+            f"now {value:.1f}{unit} ({_format_time(reading.observed_at, now)})"
         )
     if event.kind is FreshnessEventKind.STALE:
         if event.last_observed_at is None:

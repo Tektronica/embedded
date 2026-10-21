@@ -3,8 +3,14 @@ import unittest
 from pathlib import Path
 from tempfile import TemporaryDirectory
 
-from weather_station.shared.errors import ConfigFileError, InvalidStatusConfiguration, InvalidStorageConfiguration
-from weather_station.shared.settings import database_path, load_config, read_stale_after_minutes
+from weather_station.shared.errors import (
+    ConfigFileError,
+    InvalidDisplayConfiguration,
+    InvalidStatusConfiguration,
+    InvalidStorageConfiguration,
+)
+from weather_station.shared.settings import database_path, load_config, read_stale_after_minutes, read_unit_system
+from weather_station.shared.units import CELSIUS, FAHRENHEIT
 
 
 class ConfigTestCase(unittest.TestCase):
@@ -107,6 +113,34 @@ class StaleAfterMinutesTests(unittest.TestCase):
             read_stale_after_minutes({"status": {"stale_after_minute": 5}})
         with self.assertRaisesRegex(InvalidStatusConfiguration, "must be an object"):
             read_stale_after_minutes({"status": 5})
+
+
+class ReadUnitSystemTests(unittest.TestCase):
+    def test_defaults_to_celsius(self) -> None:
+        self.assertIs(read_unit_system({}), CELSIUS)
+
+    def test_reads_fahrenheit(self) -> None:
+        self.assertIs(read_unit_system({"display": {"temperature_unit": "fahrenheit"}}), FAHRENHEIT)
+
+    def test_rejects_unknown_values_and_types(self) -> None:
+        for value in ("kelvin", "F", 5, None):
+            with self.subTest(value=value):
+                with self.assertRaisesRegex(InvalidDisplayConfiguration, "temperature_unit"):
+                    read_unit_system({"display": {"temperature_unit": value}})
+
+    def test_rejects_unknown_keys_and_non_objects(self) -> None:
+        with self.assertRaisesRegex(InvalidDisplayConfiguration, "unknown keys"):
+            read_unit_system({"display": {"unit": "celsius"}})
+        with self.assertRaisesRegex(InvalidDisplayConfiguration, "must be an object"):
+            read_unit_system({"display": "celsius"})
+
+    def test_load_config_accepts_the_display_section(self) -> None:
+        directory = TemporaryDirectory()
+        self.addCleanup(directory.cleanup)
+        path = Path(directory.name) / "config.json"
+        path.write_text(json.dumps({"display": {"temperature_unit": "celsius"}}))
+
+        self.assertIs(read_unit_system(load_config(path)), CELSIUS)
 
 
 if __name__ == "__main__":

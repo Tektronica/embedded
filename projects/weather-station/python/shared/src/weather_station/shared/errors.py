@@ -36,3 +36,7 @@ class InvalidStorageConfiguration(WeatherStationError):
 
 class InvalidStatusConfiguration(WeatherStationError):
     code = "invalid_status_configuration"
+
+
+class InvalidDisplayConfiguration(WeatherStationError):
+    code = "invalid_display_configuration"

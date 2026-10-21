@@ -36,9 +36,9 @@ def _snapshot(items: list[StoredMeasurement]) -> SensorSnapshot:
     for stored in items:
         prop = get_property_definition(stored.sensor_type, stored.measurement.property_id)
         readings[prop.key] = AlarmReading(
-            label=prop.label,
-            unit=prop.display_unit,
+            property=prop,
             value=prop.display_value(stored.measurement.value),
+            si_value=stored.measurement.value,
             observed_at=stored.measurement.observed_at,
         )
     return SensorSnapshot(
@@ -61,7 +61,7 @@ def run_alarms(
     logging.info("Checked %d rules, %d events", len(settings.rules), len(events))
     if events:
         try:
-            notifier_factory().send(format_notification(events, now))
+            notifier_factory().send(format_notification(events, now, settings.unit_system))
         except (WeatherStationError, OSError):
             logging.exception("Could not send the alarm email for %d events", len(events))
             return False

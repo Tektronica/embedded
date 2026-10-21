@@ -5,6 +5,8 @@ from tempfile import TemporaryDirectory
 from typing import Any
 from unittest.mock import patch
 
+from weather_station.shared.errors import InvalidDisplayConfiguration
+from weather_station.shared.units import CELSIUS, FAHRENHEIT
 from weather_station.notifications.errors import InvalidEmailConfiguration, MissingSmtpCredential
 from weather_station.notifications.settings import AlarmSettings, NotificationSettings
 
@@ -111,6 +113,22 @@ class AlarmSettingsTests(unittest.TestCase):
         self.assertEqual(settings.state_path, Path("data/alarm-state.json"))
         self.assertEqual(settings.stale_after.total_seconds(), 9 * 60)
         self.assertEqual([item.key for item in settings.rules], ["room/air-temperature"])
+
+    def test_unit_system_defaults_to_celsius(self) -> None:
+        self.path.write_text(json.dumps({}))
+
+        self.assertEqual(AlarmSettings.from_config(self.path).unit_system, CELSIUS)
+
+    def test_unit_system_reads_the_display_section(self) -> None:
+        self.path.write_text(json.dumps({"display": {"temperature_unit": "fahrenheit"}}))
+
+        self.assertEqual(AlarmSettings.from_config(self.path).unit_system, FAHRENHEIT)
+
+    def test_bad_display_config_raises(self) -> None:
+        self.path.write_text(json.dumps({"display": {"temperature_unit": "kelvin"}}))
+
+        with self.assertRaises(InvalidDisplayConfiguration):
+            AlarmSettings.from_config(self.path)
 
 
 if __name__ == "__main__":

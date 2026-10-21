@@ -14,7 +14,9 @@ from weather_station.shared.settings import (
     read_int,
     read_section,
     read_stale_after_minutes,
+    read_unit_system,
 )
+from weather_station.shared.units import UnitSystem
 
 EMAIL_KEYS = frozenset({"smtp_host", "smtp_port", "recipients"})
 ALARM_STATE_FILENAME = "alarm-state.json"
@@ -33,12 +35,14 @@ class SmtpSettings:
 class NotificationSettings:
     database_path: Path
     smtp: SmtpSettings
+    unit_system: UnitSystem
 
     @classmethod
     def from_config(cls, config_path: Path = DEFAULT_CONFIG_PATH) -> "NotificationSettings":
         return cls(
             database_path=database_path(config_path),
             smtp=load_smtp_settings(config_path),
+            unit_system=read_unit_system(load_config(config_path)),
         )
 
 
@@ -48,6 +52,7 @@ class AlarmSettings:
     state_path: Path
     stale_after: timedelta
     rules: list[AlarmRule]
+    unit_system: UnitSystem
 
     @classmethod
     def from_config(cls, config_path: Path = DEFAULT_CONFIG_PATH) -> "AlarmSettings":
@@ -58,6 +63,7 @@ class AlarmSettings:
             state_path=path.parent / ALARM_STATE_FILENAME,
             stale_after=timedelta(minutes=read_stale_after_minutes(document)),
             rules=read_alarm_rules(document),
+            unit_system=read_unit_system(document),
         )
 
 
