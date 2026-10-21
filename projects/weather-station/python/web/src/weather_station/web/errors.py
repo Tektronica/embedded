@@ -15,6 +15,10 @@ from weather_station.shared.errors import (
 )
 
 
+class InvalidStatusConfiguration(WeatherStationError):
+    code = "invalid_status_configuration"
+
+
 HTTP_STATUS_BY_ERROR: dict[type[WeatherStationError], HTTPStatus] = {
     UnknownSensorType: HTTPStatus.BAD_REQUEST,
     UnknownProperty: HTTPStatus.NOT_FOUND,

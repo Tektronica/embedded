@@ -28,6 +28,7 @@ fp-info-cache
 .env
 .env.*
 !.env.example
+/projects/weather-station/python/config.json
 secrets.h
 *_secrets.h
 arduino_secrets.h

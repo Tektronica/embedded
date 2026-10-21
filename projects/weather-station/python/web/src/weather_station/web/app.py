@@ -1,5 +1,5 @@
-import os
 from datetime import datetime, timedelta, timezone
+from pathlib import Path
 from typing import Any, cast
 
 from flask import Flask, abort, current_app, jsonify, render_template, request
@@ -7,19 +7,37 @@ from flask import Flask, abort, current_app, jsonify, render_template, request
 from weather_station.shared.contracts import MeasurementReader
 from weather_station.shared.db.sqlite_reader import SQLiteMeasurementReader
 from weather_station.shared.registry import get_sensor_definition
-from weather_station.shared.settings import database_path, load_env
+from weather_station.shared.settings import (
+    DEFAULT_CONFIG_PATH,
+    database_path,
+    load_config,
+    read_positive_int,
+    read_section,
+)
 from weather_station.web.assemblers.dashboard import DashboardAssembler
 from weather_station.web.assemblers.measurement import MeasurementAssembler
 from weather_station.web.assemblers.sensor import SensorAssembler
-from weather_station.web.errors import register_error_handlers
+from weather_station.web.errors import InvalidStatusConfiguration, register_error_handlers
 
 
-def create_app(test_config: dict[str, Any] | None = None) -> Flask:
-    load_env()
+STATUS_KEYS = frozenset({"stale_after_minutes"})
+
+
+def create_app(
+    test_config: dict[str, Any] | None = None,
+    config_path: Path = DEFAULT_CONFIG_PATH,
+) -> Flask:
     app = Flask(__name__)
+    status = read_section(
+        load_config(config_path), "status", STATUS_KEYS, InvalidStatusConfiguration
+    )
     app.config.from_mapping(
-        DATABASE_PATH=database_path(),
-        STALE_AFTER=timedelta(minutes=int(os.getenv("STALE_AFTER_MINUTES", "5"))),
+        DATABASE_PATH=database_path(config_path),
+        STALE_AFTER=timedelta(
+            minutes=read_positive_int(
+                status, "status", "stale_after_minutes", 5, InvalidStatusConfiguration
+            )
+        ),
     )
     if test_config:
         app.config.update(test_config)

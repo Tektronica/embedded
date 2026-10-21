@@ -1,11 +1,17 @@
+import json
 import sqlite3
 import unittest
+from datetime import timedelta
 from pathlib import Path
 from tempfile import TemporaryDirectory
+from typing import Any
+
+from flask import Flask
 
 from weather_station.shared.db import SCHEMA_VERSION, schema_sql
 from weather_station.shared.registry import TEMPERATURE
 from weather_station.web.app import create_app
+from weather_station.web.errors import InvalidStatusConfiguration
 
 
 def create_database(path: Path) -> sqlite3.Connection:
@@ -37,7 +43,9 @@ class WebApiTests(unittest.TestCase):
     def setUp(self) -> None:
         self.temporary_directory = TemporaryDirectory()
         self.database_path = Path(self.temporary_directory.name) / "weather.sqlite3"
-        app = create_app({"TESTING": True, "DATABASE_PATH": self.database_path})
+        config_path = Path(self.temporary_directory.name) / "config.json"
+        config_path.write_text(json.dumps({"storage": {"database_path": str(self.database_path)}}))
+        app = create_app({"TESTING": True}, config_path)
         self.client = app.test_client()
 
     def tearDown(self) -> None:
@@ -105,6 +113,52 @@ class WebApiTests(unittest.TestCase):
         response = self.client.get("/api/series/not-registered?property=air-temperature")
 
         self.assertEqual(response.status_code, 404)
+
+
+class StatusConfigTests(unittest.TestCase):
+    def setUp(self) -> None:
+        self.directory = TemporaryDirectory()
+        self.path = Path(self.directory.name) / "config.json"
+
+    def tearDown(self) -> None:
+        self.directory.cleanup()
+
+    def _create(self, document: Any) -> Flask:
+        self.path.write_text(json.dumps(document))
+        return create_app({"TESTING": True}, self.path)
+
+    def test_stale_after_defaults_to_five_minutes(self) -> None:
+        app = self._create({})
+
+        self.assertEqual(app.config["STALE_AFTER"], timedelta(minutes=5))
+
+    def test_stale_after_reads_the_status_section(self) -> None:
+        app = self._create({"status": {"stale_after_minutes": 12}})
+
+        self.assertEqual(app.config["STALE_AFTER"], timedelta(minutes=12))
+
+    def test_database_path_reads_the_storage_section(self) -> None:
+        app = self._create({"storage": {"database_path": "data/weather.sqlite3"}})
+
+        self.assertEqual(app.config["DATABASE_PATH"], Path("data/weather.sqlite3"))
+
+    def test_stale_after_rejects_wrong_type_and_bool(self) -> None:
+        for value in ("5", 2.5, True):
+            with self.subTest(value=value):
+                with self.assertRaisesRegex(InvalidStatusConfiguration, "integer"):
+                    self._create({"status": {"stale_after_minutes": value}})
+
+    def test_stale_after_must_be_positive(self) -> None:
+        with self.assertRaisesRegex(InvalidStatusConfiguration, "positive"):
+            self._create({"status": {"stale_after_minutes": 0}})
+
+    def test_unknown_status_key_is_rejected(self) -> None:
+        with self.assertRaisesRegex(InvalidStatusConfiguration, "stale_after_minute"):
+            self._create({"status": {"stale_after_minute": 5}})
+
+    def test_status_section_must_be_an_object(self) -> None:
+        with self.assertRaisesRegex(InvalidStatusConfiguration, "must be an object"):
+            self._create({"status": 5})
 
 
 if __name__ == "__main__":

@@ -1,0 +1,20 @@
+{
+  "storage": {
+    "database_path": "instance/weather.sqlite3"
+  },
+  "sensors": {
+    "interval_seconds": 60,
+    "retention_days": 30,
+    "devices": [
+      { "id": "room-am2302", "model": "am2302", "gpio": 4 }
+    ]
+  },
+  "status": {
+    "stale_after_minutes": 5
+  },
+  "email": {
+    "smtp_host": "smtp.gmail.com",
+    "smtp_port": 465,
+    "recipients": ["you@example.com"]
+  }
+}

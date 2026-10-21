@@ -24,3 +24,11 @@ class DatabaseUnavailable(WeatherStationError):
 
 class SchemaVersionMismatch(WeatherStationError):
     code = "schema_version_mismatch"
+
+
+class ConfigFileError(WeatherStationError):
+    code = "config_file_error"
+
+
+class InvalidStorageConfiguration(WeatherStationError):
+    code = "invalid_storage_configuration"

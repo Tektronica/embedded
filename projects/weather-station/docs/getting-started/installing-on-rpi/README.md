@@ -35,9 +35,10 @@ git -C ~/embedded sparse-checkout set projects/weather-station
 ```bash
 cd ~/embedded/projects/weather-station/python
 cp -n .env.example .env
+cp -n config.example.json config.json
 ```
 
-Edit `.env` to add the SMTP settings, then review `sensors.toml` against the connected hardware. See [Configure sensors](../../hardware-configuration/sensor-configuration/README.md).
+Edit `.env` to add the SMTP credentials. Edit `config.json` to set `email.recipients` and review `sensors.devices` against the connected hardware. `./init.sh` creates both files when they are missing, so this step also happens on the first deploy. See [Configure sensors](../../hardware-configuration/sensor-configuration/README.md).
 
 ## 4. Deploy
 
@@ -61,7 +62,7 @@ The services start at boot without a login session.
 
 ## Update
 
-Run `./deploy.sh` again. The pull stops the deploy before any service is touched if a local edit to a tracked file, such as `sensors.toml`, conflicts with an incoming change. Commit or stash the local edit, then rerun.
+Run `./deploy.sh` again. The pull stops the deploy before any service is touched if a local edit to a tracked file conflicts with an incoming change. `.env` and `config.json` are ignored by Git and never conflict. Commit or stash the local edit, then rerun.
 
 ## Check
 

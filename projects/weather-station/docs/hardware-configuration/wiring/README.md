@@ -1,6 +1,6 @@
 # Wire the AM2302
 
-The shipped `sensors.toml` connects the AM2302/DHT22 data line to BCM GPIO 4 (physical pin 7).
+The shipped `config.example.json` connects the AM2302/DHT22 data line to BCM GPIO 4 (physical pin 7).
 
 | AM2302 | Raspberry Pi               |
 | ------ | -------------------------- |

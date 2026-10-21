@@ -12,7 +12,7 @@ class EmailNotifier:
     def send(self, notification: Notification) -> None:
         message = EmailMessage()
         message["From"] = self._settings.username
-        message["To"] = self._settings.recipient
+        message["To"] = ", ".join(self._settings.recipients)
         message["Subject"] = notification.subject
         message.set_content(notification.body)
 

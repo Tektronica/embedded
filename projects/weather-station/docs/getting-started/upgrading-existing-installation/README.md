@@ -18,9 +18,18 @@ The `.env` and database backups stay local and are ignored by Git. Keep a copy o
 
 ## 2. Update configuration
 
-Compare the current `.env` with `.env.example` manually. Preserve `SMTP_HOST`, `SMTP_PORT`, `SMTP_USER`, `SMTP_PASSWORD`, and `EMAIL_TO`. Remove the obsolete `GPIO_PIN` and `SENSOR_ID` keys; sensor pins and IDs now live in `sensors.toml`. Add `SENSORS_CONFIG=sensors.toml` if it is missing. `cp -n .env.example .env` will not update an existing file.
+Compare the current `.env` with `.env.example` manually. Keep `SMTP_USER` and `SMTP_PASSWORD`. Every other key moves to `config.json`, described below. `cp -n .env.example .env` will not update an existing file.
 
-Review the current `sensors.toml`; it is now the source of enabled sensor IDs, models, and options. Don't overwrite local calibrations without comparing them first.
+### Move to config.json
+
+Settings that were in `.env` and `sensors.toml` now live in `config.json`. Do this once on an existing Pi:
+
+1. Create the file from the template: `cp -n config.example.json config.json`.
+2. Replace the example entry in `sensors.devices` with the `[[sensor]]` blocks from `sensors.toml`. Each block becomes one JSON object with the same `id`, `model`, and options. Write I²C addresses in decimal, so `0x76` becomes `118`. See [Configure sensors](../../hardware-configuration/sensor-configuration/README.md).
+3. Move `SMTP_HOST` and `SMTP_PORT` to `email.smtp_host` and `email.smtp_port`. Move `EMAIL_TO` to `email.recipients` as a list, one string per address.
+4. Move `DATABASE_PATH`, `INTERVAL_SECONDS`, `RETENTION_DAYS`, and `STALE_AFTER_MINUTES` to `storage.database_path`, `sensors.interval_seconds`, `sensors.retention_days`, and `status.stale_after_minutes`. Skip any key that still has its default.
+5. Delete the moved keys, `SENSORS_CONFIG`, and the obsolete `GPIO_PIN` and `SENSOR_ID` from `.env`. Only `SMTP_USER` and `SMTP_PASSWORD` stay.
+6. Delete `sensors.toml` after checking that no local calibration was missed. Don't overwrite local calibrations without comparing them first.
 
 ## 3. Deploy
 
@@ -40,4 +49,4 @@ The previous committed SQLite `sensors` and `measurements` columns match the cur
 
 ## Roll back
 
-Stop the services, restore `.env`, `sensors.toml`, and the SQLite backup, then restore the previous package environments and unit files. Run `systemctl daemon-reload` before starting the old services.
+Stop the services, restore `.env`, `sensors.toml`, and the SQLite backup. The old services need `sensors.toml` and the old `.env` keys, so keep both backups until the upgrade is verified, then restore the previous package environments and unit files. Run `systemctl daemon-reload` before starting the old services.

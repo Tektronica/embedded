@@ -70,7 +70,7 @@ def _take(
     sensor_id: str,
     allowed: Mapping[str, OptionSpec],
 ) -> dict[str, Any]:
-    """Validate model options, then map TOML names to adapter constructor names."""
+    """Validate model options, then map config names to adapter constructor names."""
     unknown = set(options) - set(allowed)
     if unknown:
         raise InvalidSensorConfiguration(

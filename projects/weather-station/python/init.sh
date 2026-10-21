@@ -71,6 +71,15 @@ copy_env_template() {
   fi
 }
 
+copy_config_template() {
+  if [ -f config.json ]; then
+    echo "Kept existing config.json"
+  else
+    cp config.example.json config.json
+    echo "Created config.json from config.example.json. Set the sensors and email recipients before starting the services."
+  fi
+}
+
 [ $# -ge 1 ] || usage
 mode=$1
 shift
@@ -85,3 +94,4 @@ case "$mode" in
 esac
 
 copy_env_template
+copy_config_template

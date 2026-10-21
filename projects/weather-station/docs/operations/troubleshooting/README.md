@@ -2,13 +2,13 @@
 
 ## Sensor not detected
 
-Check `sensors.toml` model/options, wiring, power, I²C address, GPIO permissions, and Raspberry Pi interfaces such as 1-Wire. Sensor configuration errors stop startup; a hardware read failure logs `Not detected` and skips that sensor. Inspect logs with:
+Check the `sensors.devices` model and options in `config.json`, wiring, power, I²C address, GPIO permissions, and Raspberry Pi interfaces such as 1-Wire. Sensor configuration errors stop startup; a hardware read failure logs `Not detected` and skips that sensor. Inspect logs with:
 
 ```bash
 sudo journalctl -u weather-sensors.service -b --no-pager
 ```
 
-After changing hardware or `sensors.toml`, restart the collector:
+After changing hardware or `config.json`, restart the collector:
 
 ```bash
 sudo systemctl restart weather-sensors.service
@@ -16,7 +16,7 @@ sudo systemctl restart weather-sensors.service
 
 ## Web shows no data or returns 503
 
-Check that the sensors service started and initialized the database, then verify all services use the same `DATABASE_PATH` and `WorkingDirectory`:
+Check that the sensors service started and initialized the database, then verify all services use the same `storage.database_path` in `config.json` and the same `WorkingDirectory`:
 
 ```bash
 sudo systemctl status weather-sensors.service weather-web.service
@@ -27,7 +27,7 @@ The web and digest packages open SQLite read-only and reject missing or unsuppor
 
 ## Digest email fails
 
-Verify SMTP host, port, sender, app password, and recipient in the local `.env`, then inspect:
+Verify `email.smtp_host`, `email.smtp_port`, and `email.recipients` in `config.json`, and `SMTP_USER` and `SMTP_PASSWORD` in `.env`, then inspect:
 
 ```bash
 sudo systemctl start weather-digest.service

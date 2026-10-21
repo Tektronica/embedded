@@ -9,7 +9,7 @@ from weather_station.shared.db.sqlite_reader import SQLiteMeasurementReader
 
 def main() -> None:
     """Sends one digest and exits. A systemd timer runs it on a schedule."""
-    settings = NotificationSettings.from_env()
+    settings = NotificationSettings.from_config()
     logging.basicConfig(level=logging.INFO, format="%(asctime)s %(levelname)s %(message)s")
     digest = DigestBuilder(SQLiteMeasurementReader(settings.database_path))
     EmailNotifier(settings.smtp).send(digest.build(datetime.now().astimezone()))

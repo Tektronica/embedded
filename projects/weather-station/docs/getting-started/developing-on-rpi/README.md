@@ -64,5 +64,5 @@ Imager's public-key-only option turns off password logins, so `ssh-copy-id` can'
 ## Limits
 
 - VS Code treats ARM hosts as preview. Extensions that ship x86 native code may not run on the Pi.
-- The Pi's deploy key is read-only, so changes made on the Pi can't be pushed. Make code changes on the local machine and deploy them with `./deploy.sh`. Use the remote session for logs, `sensors.toml` and `.env` edits, and debugging.
+- The Pi's deploy key is read-only, so changes made on the Pi can't be pushed. Make code changes on the local machine and deploy them with `./deploy.sh`. Use the remote session for logs, `config.json` and `.env` edits, and debugging.
 - A local edit to a tracked file stops the next `./deploy.sh` at the pull. See [Install on Raspberry Pi](../installing-on-rpi/README.md#update).

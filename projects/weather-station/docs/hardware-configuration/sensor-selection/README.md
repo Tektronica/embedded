@@ -2,7 +2,7 @@
 
 Pick a sensor by measured quantity, environment, interface, and required calibration. Check the exact breakout board's voltage and driver API before ordering; a model name alone doesn't guarantee that two boards have the same pinout or address.
 
-| Model in `sensors.toml` | Measures                                 | Interface / notes                                                 |
+| Model in `config.json` | Measures                                 | Interface / notes                                                 |
 | ----------------------- | ---------------------------------------- | ----------------------------------------------------------------- |
 | `am2302`                | Temperature, relative humidity           | One-wire timing on a GPIO; enabled by default                     |
 | `bme280`                | Temperature, relative humidity, pressure | I²C; address configurable                                         |
