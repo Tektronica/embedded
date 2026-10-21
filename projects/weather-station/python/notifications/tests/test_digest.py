@@ -19,7 +19,7 @@ def stored(property_id: str, unit: str, value: float, observed_at: datetime) -> 
     return StoredMeasurement(
         "temperature_humidity",
         Measurement(
-            sensor_id="room-am2302",
+            sensor_id="sensor-am2302",
             observed_at=observed_at,
             property_id=property_id,
             value=value,
@@ -41,7 +41,7 @@ class ReaderStub:
         self._history = history
 
     def registered_sensors(self) -> list[tuple[str, str]]:
-        return [("room-am2302", "temperature_humidity")] if self._history else []
+        return [("sensor-am2302", "temperature_humidity")] if self._history else []
 
     def sensor_type(self, sensor_id: str) -> str | None:
         return "temperature_humidity"
@@ -72,7 +72,7 @@ class DigestBuilderTests(unittest.TestCase):
         body = notification.body
 
         self.assertEqual(notification.subject, "Weather station summary for 2026-10-20")
-        self.assertIn("Temperature and humidity (room-am2302)", body)
+        self.assertIn("Temperature and humidity (sensor-am2302)", body)
         self.assertIn("Latest:          20.0 °C (2026-10-20 06:00 UTC)", body)
         self.assertIn("Latest:          40.0 % (2026-10-20 06:00 UTC)", body)
 
@@ -220,7 +220,7 @@ class DigestBuilderTests(unittest.TestCase):
     def test_sensor_without_readings_says_no_readings_yet(self) -> None:
         body = self.build_body({TEMPERATURE.property_id: []})
 
-        self.assertIn("Temperature and humidity (room-am2302)\n  No readings yet.", body)
+        self.assertIn("Temperature and humidity (sensor-am2302)\n  No readings yet.", body)
 
     def test_digest_with_no_sensors_says_so(self) -> None:
         notification = DigestBuilder(ReaderStub({}), CELSIUS).build(NOW)

@@ -8,7 +8,7 @@ The email lists the start time, the newest reading stored before that start, and
 
 ```
 The weather station started at 2026-10-21 14:00 EST.
-Last reading before the start: 2026-10-21 10:48 EST (room-am2302).
+Last reading before the start: 2026-10-21 10:48 EST (sensor-am2302).
 Offline for about 3 h 12 min.
 ```
 

@@ -26,7 +26,7 @@ UPTIME = timedelta(minutes=5)
 STARTED_AT = NOW - UPTIME
 
 
-def temperature(observed_at: datetime, sensor_id: str = "room-am2302") -> StoredMeasurement:
+def temperature(observed_at: datetime, sensor_id: str = "sensor-am2302") -> StoredMeasurement:
     return StoredMeasurement(
         "temperature_humidity",
         Measurement(
@@ -102,12 +102,12 @@ class FormatOfflineGapTests(unittest.TestCase):
 class LastReadingBeforeTests(unittest.TestCase):
     def test_ignores_readings_after_the_start(self) -> None:
         before = temperature(STARTED_AT - timedelta(hours=1))
-        reader = ReaderFake([before, temperature(STARTED_AT + timedelta(minutes=1), "porch")])
+        reader = ReaderFake([before, temperature(STARTED_AT + timedelta(minutes=1), "sensor-bme280")])
 
         self.assertEqual(last_reading_before(reader, STARTED_AT), before.measurement)
 
     def test_picks_the_newest_across_sensors(self) -> None:
-        newest = temperature(STARTED_AT - timedelta(minutes=10), "porch")
+        newest = temperature(STARTED_AT - timedelta(minutes=10), "sensor-bme280")
         reader = ReaderFake([temperature(STARTED_AT - timedelta(hours=2)), newest])
 
         self.assertEqual(last_reading_before(reader, STARTED_AT), newest.measurement)
@@ -128,11 +128,11 @@ class LastReadingBeforeTests(unittest.TestCase):
             with sqlite3.connect(path) as connection:
                 connection.executescript(schema_sql())
                 connection.execute("INSERT INTO schema_version (version) VALUES (?)", (SCHEMA_VERSION,))
-                connection.execute("INSERT INTO sensors VALUES ('room-am2302', 'temperature_humidity')")
+                connection.execute("INSERT INTO sensors VALUES ('sensor-am2302', 'temperature_humidity')")
                 for observed_at in (earlier, STARTED_AT + timedelta(minutes=1)):
                     utc_time = observed_at.astimezone(timezone.utc).isoformat()
                     connection.execute(
-                        "INSERT INTO measurements VALUES (?, ?, ?, 'room-am2302', ?, 293.15, ?, 'valid', NULL)",
+                        "INSERT INTO measurements VALUES (?, ?, ?, 'sensor-am2302', ?, 293.15, ?, 'valid', NULL)",
                         (str(uuid4()), utc_time, utc_time, TEMPERATURE.property_id, TEMPERATURE.si_unit),
                     )
 
@@ -155,7 +155,7 @@ class RunBootTests(unittest.TestCase):
         self.assertEqual(
             notifier.sent[0].body,
             "The weather station started at 2026-10-21 14:00 EST.\n"
-            "Last reading before the start: 2026-10-21 10:48 EST (room-am2302).\n"
+            "Last reading before the start: 2026-10-21 10:48 EST (sensor-am2302).\n"
             "Offline for about 3 h 12 min.\n",
         )
 

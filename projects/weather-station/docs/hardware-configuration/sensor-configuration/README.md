@@ -6,13 +6,13 @@
 {
   "sensors": {
     "devices": [
-      { "id": "room-am2302", "model": "am2302", "gpio": 4 }
+      { "id": "sensor-am2302", "model": "am2302", "gpio": 4 }
     ]
   }
 }
 ```
 
-Use unique IDs. The model must be in the factory catalog. Only options supported by that model are accepted. Unknown models, unknown options, and invalid option types or ranges stop startup as configuration errors. A boolean is not accepted where a number is required. A sensor that fails its first hardware read is logged as not detected and skipped. If no configured sensor responds, the service exits and systemd retries after 60 seconds.
+An ID takes the form `sensor-<model>`. A second sensor of the same model takes a numeric suffix, such as `sensor-am2302-2`. IDs must be unique, and a duplicate stops startup. The model must be in the factory catalog. Only options supported by that model are accepted. Unknown models, unknown options, and invalid option types or ranges stop startup as configuration errors. A boolean is not accepted where a number is required. A sensor that fails its first hardware read is logged as not detected and skipped. If no configured sensor responds, the service exits and systemd retries after 60 seconds.
 
 Supported model options:
 
@@ -46,15 +46,15 @@ JSON has no hex literals, so write an I²C address as a decimal integer. The sen
 JSON has no comments, so these are the supported sensors as copy-ready entries. Add the ones you connect to `sensors.devices`. Pins, addresses, and calibration values are examples.
 
 ```json
-{ "id": "porch-bme280", "model": "bme280", "i2c_address": 118 }
+{ "id": "sensor-bme280", "model": "bme280", "i2c_address": 118 }
 ```
 
 ```json
-{ "id": "wind-speed", "model": "anemometer", "gpio": 17, "meters_per_second_per_hz": 2.4 }
+{ "id": "sensor-anemometer", "model": "anemometer", "gpio": 17, "meters_per_second_per_hz": 2.4 }
 ```
 
 ```json
-{ "id": "rainfall", "model": "rain-gauge", "gpio": 27, "mm_per_tip": 0.2794 }
+{ "id": "sensor-rain-gauge", "model": "rain-gauge", "gpio": 27, "mm_per_tip": 0.2794 }
 ```
 
 At startup the sensors service builds every entry and keeps only the sensors that answer a first read. An unplugged sensor is left out. Restart the service after plugging one in. Entries in `sensors.devices` are separated by commas.

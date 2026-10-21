@@ -15,7 +15,7 @@ from weather_station.shared.units import CELSIUS, FAHRENHEIT, UnitSystem
 from weather_station.web.app import create_app
 from weather_station.web.assemblers.dashboard import RETIRED_AFTER, DashboardView
 
-ROOM = "room-am2302"
+AM2302_ID = "sensor-am2302"
 KELVIN_AT_20_C = 293.15
 
 
@@ -68,14 +68,14 @@ class DashboardTestCase(unittest.TestCase):
         self.client()
         return self.app.extensions["dashboard_assembler"].assemble(sensor_id, property_key, CELSIUS)
 
-    def add_room(self, kelvin: float = KELVIN_AT_20_C, age: timedelta = timedelta(minutes=1)) -> None:
-        add_reading(self.connection, ROOM, "temperature_humidity", TEMPERATURE, kelvin, age)
+    def add_am2302(self, kelvin: float = KELVIN_AT_20_C, age: timedelta = timedelta(minutes=1)) -> None:
+        add_reading(self.connection, AM2302_ID, "temperature_humidity", TEMPERATURE, kelvin, age)
 
 
 class UnitPrecedenceTests(DashboardTestCase):
     def setUp(self) -> None:
         super().setUp()
-        self.add_room()
+        self.add_am2302()
 
     def test_config_default_applies_without_query_or_cookie(self) -> None:
         response = self.client({"temperature_unit": "fahrenheit"}).get("/")
@@ -133,7 +133,7 @@ class UnitPrecedenceTests(DashboardTestCase):
         client = self.client({"temperature_unit": "fahrenheit"})
         client.set_cookie("unit", "f")
 
-        response = client.get(f"/api/series/{ROOM}?property=air-temperature")
+        response = client.get(f"/api/series/{AM2302_ID}?property=air-temperature")
 
         self.assertEqual(response.json["unit"], TEMPERATURE.si_unit)
         self.assertAlmostEqual(response.json["measurements"][0]["value"], KELVIN_AT_20_C)
@@ -148,12 +148,12 @@ class UnitPrecedenceTests(DashboardTestCase):
 
 class ConvertedPresentationTests(DashboardTestCase):
     def test_tiles_chart_ticks_and_entries_convert_in_fahrenheit(self) -> None:
-        self.add_room(293.15, timedelta(hours=2))
-        self.add_room(295.15, timedelta(minutes=1))
+        self.add_am2302(293.15, timedelta(hours=2))
+        self.add_am2302(295.15, timedelta(minutes=1))
         add_reading(self.connection, "bme280", "pressure", PRESSURE, 101300.0, timedelta(minutes=1))
         add_reading(self.connection, "bme280", "pressure", TEMPERATURE, 273.15, timedelta(minutes=1))
 
-        view = self.app_view(FAHRENHEIT, ROOM)
+        view = self.app_view(FAHRENHEIT, AM2302_ID)
 
         self.assertAlmostEqual(view.current_value or 0.0, 71.6)
         self.assertAlmostEqual(view.chart.minimum or 0.0, 68.0)
@@ -162,14 +162,14 @@ class ConvertedPresentationTests(DashboardTestCase):
         self.assertEqual(view.display_unit, "°F")
         self.assertGreaterEqual(float(view.chart.y_ticks[0].label), 67.0)
         entries = {entry.sensor_id: entry for entry in view.entries}
-        self.assertAlmostEqual(entries[ROOM].value or 0.0, 71.6)
-        self.assertEqual(entries[ROOM].unit, "°F")
+        self.assertAlmostEqual(entries[AM2302_ID].value or 0.0, 71.6)
+        self.assertEqual(entries[AM2302_ID].unit, "°F")
 
     def test_non_temperature_properties_keep_their_display_unit(self) -> None:
-        add_reading(self.connection, ROOM, "temperature_humidity", RELATIVE_HUMIDITY, 0.4, timedelta(minutes=1))
-        self.add_room()
+        add_reading(self.connection, AM2302_ID, "temperature_humidity", RELATIVE_HUMIDITY, 0.4, timedelta(minutes=1))
+        self.add_am2302()
 
-        view = self.app_view(FAHRENHEIT, ROOM, "relative-humidity")
+        view = self.app_view(FAHRENHEIT, AM2302_ID, "relative-humidity")
 
         self.assertAlmostEqual(view.current_value or 0.0, 40.0)
         self.assertEqual(view.display_unit, "%")
@@ -183,7 +183,7 @@ class ConvertedPresentationTests(DashboardTestCase):
 
 class StatusBadgeTests(DashboardTestCase):
     def test_healthy_shows_no_badge_and_keeps_updated_text(self) -> None:
-        self.add_room()
+        self.add_am2302()
 
         view = self.assemble()
         page = self.client().get("/").data
@@ -194,7 +194,7 @@ class StatusBadgeTests(DashboardTestCase):
         self.assertNotIn(b"stale</span>", page)
 
     def test_stale_badge_counts_stale_sensors_among_reporting_ones(self) -> None:
-        self.add_room()
+        self.add_am2302()
         add_reading(self.connection, "bme280", "pressure", PRESSURE, 101300.0, timedelta(hours=3))
         add_reading(self.connection, "probe", "probe_temperature", TEMPERATURE, 290.0, timedelta(hours=4))
 
@@ -205,7 +205,7 @@ class StatusBadgeTests(DashboardTestCase):
         self.assertIn(b"2 of 3 stale", self.client().get("/").data)
 
     def test_retired_sensor_stays_stale_in_the_list_but_not_in_the_badge(self) -> None:
-        self.add_room()
+        self.add_am2302()
         add_reading(
             self.connection, "old", "probe_temperature", TEMPERATURE, 290.0, RETIRED_AFTER + timedelta(hours=1)
         )
@@ -218,7 +218,7 @@ class StatusBadgeTests(DashboardTestCase):
         self.assertTrue(next(entry for entry in view.entries if entry.sensor_id == "old").is_stale)
 
     def test_no_data_when_no_sensor_has_a_reading(self) -> None:
-        register_empty(self.connection, ROOM, "temperature_humidity")
+        register_empty(self.connection, AM2302_ID, "temperature_humidity")
 
         badge = self.assemble().status_badge
 
@@ -237,12 +237,12 @@ class SensorLayoutTests(DashboardTestCase):
         add_reading(self.connection, "b-probe", "probe_temperature", TEMPERATURE, 290.0, timedelta(minutes=1))
         add_reading(self.connection, "a-probe", "probe_temperature", TEMPERATURE, 290.0, timedelta(minutes=1))
         add_reading(self.connection, "bme280", "pressure", PRESSURE, 101300.0, timedelta(minutes=1))
-        self.add_room()
+        self.add_am2302()
 
         view = self.assemble()
 
-        self.assertEqual([item.sensor_id for item in view.sensors], ["bme280", "a-probe", "b-probe", ROOM])
-        self.assertEqual([entry.sensor_id for entry in view.entries], ["bme280", "a-probe", "b-probe", ROOM])
+        self.assertEqual([item.sensor_id for item in view.sensors], ["bme280", "a-probe", "b-probe", AM2302_ID])
+        self.assertEqual([entry.sensor_id for entry in view.entries], ["bme280", "a-probe", "b-probe", AM2302_ID])
 
     def test_entries_show_the_declared_primary_property(self) -> None:
         add_reading(self.connection, "bme280", "pressure", TEMPERATURE, 293.15, timedelta(minutes=1))
@@ -254,7 +254,7 @@ class SensorLayoutTests(DashboardTestCase):
         self.assertAlmostEqual(entry.value or 0.0, 1013.0)
 
     def test_one_sensor_hides_navigation(self) -> None:
-        self.add_room()
+        self.add_am2302()
 
         page = self.client().get("/").data
 
@@ -262,7 +262,7 @@ class SensorLayoutTests(DashboardTestCase):
         self.assertNotIn(b"sensor-select", page)
 
     def test_many_sensors_render_sidebar_and_a_select(self) -> None:
-        self.add_room()
+        self.add_am2302()
         add_reading(self.connection, "bme280", "pressure", PRESSURE, 101300.0, timedelta(minutes=1))
 
         page = self.client().get("/").data.decode()
@@ -273,7 +273,7 @@ class SensorLayoutTests(DashboardTestCase):
         self.assertEqual(page.count('href="/?sensor_id=bme280"'), 1)
 
     def test_empty_sensor_is_marked_no_data(self) -> None:
-        self.add_room()
+        self.add_am2302()
         register_empty(self.connection, "empty-uv", "uv")
 
         view = self.assemble()
@@ -285,9 +285,9 @@ class SensorLayoutTests(DashboardTestCase):
         self.assertIn("(empty-uv) - no data", page)
 
     def test_property_tabs_mark_the_selected_one(self) -> None:
-        self.add_room()
+        self.add_am2302()
 
-        page = self.client().get(f"/?sensor_id={ROOM}&property=relative-humidity").data.decode()
+        page = self.client().get(f"/?sensor_id={AM2302_ID}&property=relative-humidity").data.decode()
 
         tabs = re.search(r'<nav[^>]*aria-label="Measurements".*?</nav>', page, re.S)
         assert tabs is not None
@@ -298,15 +298,15 @@ class SensorLayoutTests(DashboardTestCase):
 
 class UnitToggleTests(DashboardTestCase):
     def test_toggle_marks_the_active_unit_and_preserves_the_selection(self) -> None:
-        self.add_room()
+        self.add_am2302()
 
-        page = self.client().get(f"/?sensor_id={ROOM}&property=relative-humidity&unit=f").data.decode()
+        page = self.client().get(f"/?sensor_id={AM2302_ID}&property=relative-humidity&unit=f").data.decode()
 
         form = re.search(r'<form[^>]*aria-label="Temperature unit".*?</form>', page, re.S)
         assert form is not None
         html = form.group(0)
         self.assertIn('role="group"', html)
-        self.assertIn(f'name="sensor_id" value="{ROOM}"', html)
+        self.assertIn(f'name="sensor_id" value="{AM2302_ID}"', html)
         self.assertIn('name="property" value="relative-humidity"', html)
         self.assertRegex(html, r'value="c" aria-pressed="false"')
         self.assertRegex(html, r'value="f" aria-pressed="true"')

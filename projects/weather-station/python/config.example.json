@@ -6,7 +6,7 @@
     "interval_seconds": 60,
     "retention_days": 30,
     "devices": [
-      { "id": "room-am2302", "model": "am2302", "gpio": 4 }
+      { "id": "sensor-am2302", "model": "am2302", "gpio": 4 }
     ]
   },
   "status": {
@@ -16,7 +16,7 @@
     "temperature_unit": "celsius"
   },
   "alarms": [
-    { "sensor": "room-am2302", "property": "air-temperature", "above": 35.0, "below": 0.0, "hysteresis": 1.0 }
+    { "sensor": "sensor-am2302", "property": "air-temperature", "above": 35.0, "below": 0.0, "hysteresis": 1.0 }
   ],
   "email": {
     "smtp_host": "smtp.gmail.com",

@@ -11,7 +11,7 @@ from weather_station.shared.registry import TEMPERATURE
 
 def measurement(observed_at: datetime) -> Measurement:
     return Measurement(
-        sensor_id="room",
+        sensor_id="sensor-am2302",
         observed_at=observed_at,
         property_id=TEMPERATURE.property_id,
         value=294.65,
@@ -24,7 +24,7 @@ class DeleteObservedBeforeTests(unittest.TestCase):
         self.directory = TemporaryDirectory()
         self.path = Path(self.directory.name) / "readings.sqlite3"
         self.writer = SQLiteMeasurementWriter(self.path)
-        self.writer.register_sensor("room", "temperature_humidity")
+        self.writer.register_sensor("sensor-am2302", "temperature_humidity")
 
     def tearDown(self) -> None:
         self.directory.cleanup()

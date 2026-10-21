@@ -36,11 +36,11 @@ class SQLiteMeasurementReaderTests(unittest.TestCase):
     def test_reads_registered_sensors(self) -> None:
         self._create()
         with sqlite3.connect(self.path) as connection:
-            connection.execute("INSERT INTO sensors VALUES ('room-am2302', 'temperature_humidity')")
+            connection.execute("INSERT INTO sensors VALUES ('sensor-am2302', 'temperature_humidity')")
 
         sensors = SQLiteMeasurementReader(self.path).registered_sensors()
 
-        self.assertEqual(sensors, [("room-am2302", "temperature_humidity")])
+        self.assertEqual(sensors, [("sensor-am2302", "temperature_humidity")])
 
     def test_rejects_an_unsupported_schema_version(self) -> None:
         self._create(version=SCHEMA_VERSION + 1)
@@ -52,16 +52,16 @@ class SQLiteMeasurementReaderTests(unittest.TestCase):
         self._create()
         start = datetime(2026, 10, 1, tzinfo=timezone.utc)
         with sqlite3.connect(self.path) as connection:
-            connection.execute("INSERT INTO sensors VALUES ('room-am2302', 'temperature_humidity')")
+            connection.execute("INSERT INTO sensors VALUES ('sensor-am2302', 'temperature_humidity')")
             for minute in range(5):
                 observed_at = (start + timedelta(minutes=minute)).isoformat()
                 connection.execute(
-                    "INSERT INTO measurements VALUES (?, ?, ?, 'room-am2302', ?, ?, ?, 'valid', NULL)",
+                    "INSERT INTO measurements VALUES (?, ?, ?, 'sensor-am2302', ?, ?, ?, 'valid', NULL)",
                     (str(uuid4()), observed_at, observed_at, TEMPERATURE.property_id, 290.0 + minute, TEMPERATURE.si_unit),
                 )
 
         history = SQLiteMeasurementReader(self.path).series(
-            "room-am2302", TEMPERATURE.property_id, start, limit=3
+            "sensor-am2302", TEMPERATURE.property_id, start, limit=3
         )
 
         self.assertEqual([item.measurement.value for item in history], [292.0, 293.0, 294.0])
@@ -71,27 +71,27 @@ class SQLiteMeasurementReaderTests(unittest.TestCase):
         start = datetime(2026, 10, 1, tzinfo=timezone.utc)
         cutoff = start + timedelta(minutes=3)
         with sqlite3.connect(self.path) as connection:
-            connection.execute("INSERT INTO sensors VALUES ('porch', 'temperature_humidity')")
-            connection.execute("INSERT INTO sensors VALUES ('room-am2302', 'temperature_humidity')")
-            self._insert_temperature(connection, "room-am2302", start, 290.0)
-            self._insert_temperature(connection, "room-am2302", start + timedelta(minutes=2), 292.0)
-            self._insert_temperature(connection, "room-am2302", cutoff, 293.0)
-            self._insert_temperature(connection, "room-am2302", start + timedelta(minutes=5), 295.0)
-            self._insert_temperature(connection, "porch", start + timedelta(minutes=1), 280.0)
+            connection.execute("INSERT INTO sensors VALUES ('sensor-bme280', 'temperature_humidity')")
+            connection.execute("INSERT INTO sensors VALUES ('sensor-am2302', 'temperature_humidity')")
+            self._insert_temperature(connection, "sensor-am2302", start, 290.0)
+            self._insert_temperature(connection, "sensor-am2302", start + timedelta(minutes=2), 292.0)
+            self._insert_temperature(connection, "sensor-am2302", cutoff, 293.0)
+            self._insert_temperature(connection, "sensor-am2302", start + timedelta(minutes=5), 295.0)
+            self._insert_temperature(connection, "sensor-bme280", start + timedelta(minutes=1), 280.0)
 
         latest = SQLiteMeasurementReader(self.path).latest_before(cutoff)
 
         self.assertEqual(
             [(item.measurement.sensor_id, item.measurement.value) for item in latest],
-            [("porch", 280.0), ("room-am2302", 292.0)],
+            [("sensor-am2302", 292.0), ("sensor-bme280", 280.0)],
         )
 
     def test_latest_before_is_empty_when_no_row_qualifies(self) -> None:
         self._create()
         start = datetime(2026, 10, 1, tzinfo=timezone.utc)
         with sqlite3.connect(self.path) as connection:
-            connection.execute("INSERT INTO sensors VALUES ('room-am2302', 'temperature_humidity')")
-            self._insert_temperature(connection, "room-am2302", start, 290.0)
+            connection.execute("INSERT INTO sensors VALUES ('sensor-am2302', 'temperature_humidity')")
+            self._insert_temperature(connection, "sensor-am2302", start, 290.0)
 
         self.assertEqual(SQLiteMeasurementReader(self.path).latest_before(start), [])
 

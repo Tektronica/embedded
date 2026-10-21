@@ -96,7 +96,7 @@ class AlarmSettingsTests(unittest.TestCase):
         self.directory.cleanup()
 
     def test_reads_rules_stale_window_and_state_path_without_email_settings(self) -> None:
-        rule = {"sensor": "room", "property": "air-temperature", "above": 35}
+        rule = {"sensor": "sensor-am2302", "property": "air-temperature", "above": 35}
         self.path.write_text(
             json.dumps(
                 {
@@ -112,7 +112,7 @@ class AlarmSettingsTests(unittest.TestCase):
 
         self.assertEqual(settings.state_path, Path("data/alarm-state.json"))
         self.assertEqual(settings.stale_after.total_seconds(), 9 * 60)
-        self.assertEqual([item.key for item in settings.rules], ["room/air-temperature"])
+        self.assertEqual([item.key for item in settings.rules], ["sensor-am2302/air-temperature"])
 
     def test_unit_system_defaults_to_celsius(self) -> None:
         self.path.write_text(json.dumps({}))

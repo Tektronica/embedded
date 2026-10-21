@@ -67,7 +67,7 @@ class SensorDetectorTests(unittest.TestCase):
     def test_invalid_option_value_is_not_treated_as_missing_hardware(self) -> None:
         with self.assertRaises(InvalidSensorConfiguration):
             SensorDetector(SensorFactory()).detect(
-                [SensorConfig("room", "am2302", {"gpio": "four"})]
+                [SensorConfig("sensor-am2302", "am2302", {"gpio": "four"})]
             )
 
 
@@ -81,13 +81,13 @@ class SensorFactoryTests(unittest.TestCase):
 
     def test_unknown_option_is_rejected_before_touching_hardware(self) -> None:
         with self.assertRaisesRegex(InvalidSensorConfiguration, "unknown options: pin"):
-            SensorFactory().build(SensorConfig("room", "am2302", {"pin": 4}))
+            SensorFactory().build(SensorConfig("sensor-am2302", "am2302", {"pin": 4}))
 
     def test_wrong_option_type_and_range_are_configuration_errors(self) -> None:
         for options in ({"gpio": "four"}, {"gpio": 40}):
             with self.subTest(options=options):
                 with self.assertRaises(InvalidSensorConfiguration):
-                    SensorFactory().build(SensorConfig("room", "am2302", options))
+                    SensorFactory().build(SensorConfig("sensor-am2302", "am2302", options))
 
     def test_nonfinite_calibration_is_a_configuration_error(self) -> None:
         with self.assertRaisesRegex(InvalidSensorConfiguration, "must be finite"):
@@ -100,12 +100,12 @@ class SensorConfigTests(unittest.TestCase):
     def test_parses_devices_with_model_options(self) -> None:
         configs = parse_sensor_configs(
             [
-                {"id": "room", "model": "am2302", "gpio": 4},
-                {"id": "porch", "model": "bme280", "i2c_address": 119},
+                {"id": "sensor-am2302", "model": "am2302", "gpio": 4},
+                {"id": "sensor-bme280", "model": "bme280", "i2c_address": 119},
             ]
         )
 
-        self.assertEqual(configs[0], SensorConfig("room", "am2302", {"gpio": 4}))
+        self.assertEqual(configs[0], SensorConfig("sensor-am2302", "am2302", {"gpio": 4}))
         self.assertEqual(configs[1].options, {"i2c_address": 0x77})
 
     def test_duplicate_ids_are_rejected(self) -> None:
@@ -123,14 +123,14 @@ class SensorConfigTests(unittest.TestCase):
             parse_sensor_configs(["am2302"])
 
     def test_id_must_be_a_non_empty_trimmed_string(self) -> None:
-        for sensor_id in ("", " room", 7, None):
+        for sensor_id in ("", " sensor-am2302", 7, None):
             with self.subTest(sensor_id=sensor_id):
                 with self.assertRaisesRegex(InvalidSensorConfiguration, "non-empty id"):
                     parse_sensor_configs([{"id": sensor_id, "model": "am2302"}])
 
     def test_model_must_be_a_string(self) -> None:
         with self.assertRaisesRegex(InvalidSensorConfiguration, "needs a model"):
-            parse_sensor_configs([{"id": "room", "model": 4}])
+            parse_sensor_configs([{"id": "sensor-am2302", "model": 4}])
 
     def test_empty_devices_list_is_valid(self) -> None:
         self.assertEqual(parse_sensor_configs([]), [])
@@ -155,7 +155,7 @@ class CollectorSettingsTests(unittest.TestCase):
                 "sensors": {
                     "interval_seconds": 30,
                     "retention_days": 7,
-                    "devices": [{"id": "room", "model": "am2302", "gpio": 4}],
+                    "devices": [{"id": "sensor-am2302", "model": "am2302", "gpio": 4}],
                 },
             }
         )
@@ -163,7 +163,7 @@ class CollectorSettingsTests(unittest.TestCase):
         self.assertEqual(settings.database_path, Path("data/weather.sqlite3"))
         self.assertEqual(settings.interval_seconds, 30)
         self.assertEqual(settings.retention_days, 7)
-        self.assertEqual(settings.sensors, [SensorConfig("room", "am2302", {"gpio": 4})])
+        self.assertEqual(settings.sensors, [SensorConfig("sensor-am2302", "am2302", {"gpio": 4})])
 
     def test_absent_keys_use_defaults(self) -> None:
         settings = self._load({})

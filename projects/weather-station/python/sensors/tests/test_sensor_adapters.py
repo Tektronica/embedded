@@ -38,7 +38,7 @@ class AM2302SensorTests(unittest.TestCase):
             ),
             patch("weather_station.sensors.adapters.am2302.time.sleep") as sleep,
         ):
-            sensor = AM2302Sensor(sensor_id="test-room", gpio_pin=4)
+            sensor = AM2302Sensor(sensor_id="sensor-am2302", gpio_pin=4)
             readings = sensor.read()
             sensor.close()
 

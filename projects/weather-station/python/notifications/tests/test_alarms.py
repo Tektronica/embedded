@@ -20,9 +20,9 @@ KELVIN_AT_0_C = 273.15
 ZONE = timezone(timedelta(hours=-5), "EST")
 NOW = datetime(2026, 10, 21, 14, 5, tzinfo=ZONE)
 STALE_AFTER = timedelta(minutes=5)
-RULE = AlarmRule("room", "air-temperature", above=35.0, below=0.0, hysteresis=1.0)
-ABOVE_ONLY = AlarmRule("room", "air-temperature", above=35.0, below=None, hysteresis=1.0)
-BELOW_ONLY = AlarmRule("room", "air-temperature", above=None, below=0.0, hysteresis=1.0)
+RULE = AlarmRule("sensor-am2302", "air-temperature", above=35.0, below=0.0, hysteresis=1.0)
+ABOVE_ONLY = AlarmRule("sensor-am2302", "air-temperature", above=35.0, below=None, hysteresis=1.0)
+BELOW_ONLY = AlarmRule("sensor-am2302", "air-temperature", above=None, below=0.0, hysteresis=1.0)
 
 
 def celsius_reading(value: float, observed_at: datetime) -> AlarmReading:
@@ -32,12 +32,12 @@ def celsius_reading(value: float, observed_at: datetime) -> AlarmReading:
 def snapshot(value: float, age: timedelta = timedelta(0)) -> dict[str, SensorSnapshot]:
     observed_at = NOW - age
     reading = celsius_reading(value, observed_at)
-    return {"room": SensorSnapshot(observed_at, {"air-temperature": reading})}
+    return {"sensor-am2302": SensorSnapshot(observed_at, {"air-temperature": reading})}
 
 
 def state(*sides: str, stale: bool = False) -> AlarmState:
     thresholds = {RULE.key: frozenset(sides)} if sides else {}
-    return AlarmState(thresholds, frozenset({"room"}) if stale else frozenset())
+    return AlarmState(thresholds, frozenset({"sensor-am2302"}) if stale else frozenset())
 
 
 def kinds(events: list[ThresholdEvent | FreshnessEvent]) -> list[str]:
@@ -145,7 +145,7 @@ class StaleTests(unittest.TestCase):
         self.assertEqual((event.kind, event.last_observed_at), (FreshnessEventKind.STALE, None))
 
     def test_missing_property_on_a_fresh_sensor_holds_state(self) -> None:
-        rule = AlarmRule("room", "air-pressure", above=1000.0, below=None, hysteresis=0.0)
+        rule = AlarmRule("sensor-am2302", "air-pressure", above=1000.0, below=None, hysteresis=0.0)
         previous = AlarmState({rule.key: frozenset({"above"})}, frozenset())
 
         new_state, events = evaluate_alarms([rule], snapshot(20.0), previous, NOW, STALE_AFTER)
@@ -153,7 +153,7 @@ class StaleTests(unittest.TestCase):
         self.assertEqual((new_state, events), (previous, []))
 
     def test_sensor_with_two_rules_reports_stale_once(self) -> None:
-        other = AlarmRule("room", "relative-humidity", above=90.0, below=None, hysteresis=0.0)
+        other = AlarmRule("sensor-am2302", "relative-humidity", above=90.0, below=None, hysteresis=0.0)
 
         _, events = evaluate_alarms([RULE, other], {}, AlarmState.empty(), NOW, STALE_AFTER)
 
@@ -182,7 +182,7 @@ class FormatTests(unittest.TestCase):
         self.assertEqual(notification.subject, "Weather station alarm")
         self.assertEqual(
             notification.body,
-            "room temperature above 35.0 °C: now 36.2 °C (2026-10-21 14:05 EST)\n",
+            "sensor-am2302 temperature above 35.0 °C: now 36.2 °C (2026-10-21 14:05 EST)\n",
         )
 
     def test_fahrenheit_prints_limit_and_value_converted_from_si(self) -> None:
@@ -192,19 +192,19 @@ class FormatTests(unittest.TestCase):
 
         self.assertEqual(
             notification.body,
-            "room temperature above 95.0 °F: now 97.2 °F (2026-10-21 14:05 EST)\n",
+            "sensor-am2302 temperature above 95.0 °F: now 97.2 °F (2026-10-21 14:05 EST)\n",
         )
 
     def test_every_event_kind_has_a_line(self) -> None:
         reading = celsius_reading(33.8, NOW)
         seen = NOW - timedelta(minutes=25)
         events = [
-            ThresholdEvent(ThresholdEventKind.BACK_BELOW, "room", 34.0, reading),
-            ThresholdEvent(ThresholdEventKind.BELOW, "room", 0.0, celsius_reading(-1.5, NOW)),
-            ThresholdEvent(ThresholdEventKind.BACK_ABOVE, "room", 1.0, celsius_reading(1.5, NOW)),
-            FreshnessEvent(FreshnessEventKind.STALE, "room", seen),
-            FreshnessEvent(FreshnessEventKind.STALE, "porch", None),
-            FreshnessEvent(FreshnessEventKind.REPORTING, "room", NOW),
+            ThresholdEvent(ThresholdEventKind.BACK_BELOW, "sensor-am2302", 34.0, reading),
+            ThresholdEvent(ThresholdEventKind.BELOW, "sensor-am2302", 0.0, celsius_reading(-1.5, NOW)),
+            ThresholdEvent(ThresholdEventKind.BACK_ABOVE, "sensor-am2302", 1.0, celsius_reading(1.5, NOW)),
+            FreshnessEvent(FreshnessEventKind.STALE, "sensor-am2302", seen),
+            FreshnessEvent(FreshnessEventKind.STALE, "sensor-bme280", None),
+            FreshnessEvent(FreshnessEventKind.REPORTING, "sensor-am2302", NOW),
         ]
 
         notification = format_notification(events, NOW, CELSIUS)
@@ -213,18 +213,18 @@ class FormatTests(unittest.TestCase):
         self.assertEqual(
             notification.body.splitlines(),
             [
-                "room temperature back below 34.0 °C: now 33.8 °C (2026-10-21 14:05 EST)",
-                "room temperature below 0.0 °C: now -1.5 °C (2026-10-21 14:05 EST)",
-                "room temperature back above 1.0 °C: now 1.5 °C (2026-10-21 14:05 EST)",
-                "room stale: no reading since 2026-10-21 13:40 EST",
-                "porch stale: no readings yet",
-                "room reporting again: last reading 2026-10-21 14:05 EST",
+                "sensor-am2302 temperature back below 34.0 °C: now 33.8 °C (2026-10-21 14:05 EST)",
+                "sensor-am2302 temperature below 0.0 °C: now -1.5 °C (2026-10-21 14:05 EST)",
+                "sensor-am2302 temperature back above 1.0 °C: now 1.5 °C (2026-10-21 14:05 EST)",
+                "sensor-am2302 stale: no reading since 2026-10-21 13:40 EST",
+                "sensor-bme280 stale: no readings yet",
+                "sensor-am2302 reporting again: last reading 2026-10-21 14:05 EST",
             ],
         )
 
     def test_times_convert_to_the_local_zone(self) -> None:
         reading = celsius_reading(36.0, datetime(2026, 10, 21, 19, 3, tzinfo=timezone.utc))
-        event = ThresholdEvent(ThresholdEventKind.ABOVE, "room", 35.0, reading)
+        event = ThresholdEvent(ThresholdEventKind.ABOVE, "sensor-am2302", 35.0, reading)
 
         self.assertIn("(2026-10-21 14:03 EST)", format_notification([event], NOW, CELSIUS).body)
 

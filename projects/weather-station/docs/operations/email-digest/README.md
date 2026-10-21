@@ -35,6 +35,31 @@ The digest connects to Gmail with implicit TLS on port 465 and signs in with an 
 
 Providers that accept only STARTTLS on port 587 don't work, because the digest uses implicit TLS.
 
+## Check the SMTP settings
+
+Run these from `projects/weather-station/python`. The default check logs in and quits. It sends nothing.
+
+```bash
+.venv-notifications/bin/python -m weather_station.notifications.smtp_check
+```
+
+Each run ends with one line and exits 0 on success or 1 on failure:
+
+- `Logged in to <host>:<port> as <user>`: the server accepted `SMTP_USER` and `SMTP_PASSWORD`.
+- `Authentication failed. Check SMTP_USER and SMTP_PASSWORD.`: the address or app password is wrong, or the app password was revoked.
+- `Could not connect or timed out: <host>:<port>`: the Pi can't reach the server, or the host or port is wrong.
+- `TLS error with <host>:<port>`: the server doesn't accept implicit TLS on that port. Use port 465.
+- `Configuration error: <detail>`: a key in `config.json` or a variable in `.env` is missing or invalid. The detail names it.
+- `SMTP error: <detail>`: the server refused or ended the session.
+
+Add `--send` to deliver one test email to every entry in `email.recipients`:
+
+```bash
+.venv-notifications/bin/python -m weather_station.notifications.smtp_check --send
+```
+
+On success the command prints `Sent a test email to <n> recipients`, or `1 recipient` for one address. The subject is `Weather station test email`. The body names the Pi's hostname.
+
 ## Turn the digest off or on
 
 systemd decides whether the digest runs. The notifications package has no on/off setting of its own.

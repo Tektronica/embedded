@@ -15,11 +15,11 @@ from weather_station.shared.units import CELSIUS, FAHRENHEIT
 
 ZONE = timezone(timedelta(hours=-5), "EST")
 NOW = datetime(2026, 10, 21, 14, 5, tzinfo=ZONE)
-RULE = AlarmRule("room-am2302", "air-temperature", above=35.0, below=0.0, hysteresis=1.0)
+RULE = AlarmRule("sensor-am2302", "air-temperature", above=35.0, below=0.0, hysteresis=1.0)
 STALE_AFTER = timedelta(minutes=5)
 
 
-def temperature(celsius: float, observed_at: datetime, sensor_id: str = "room-am2302") -> StoredMeasurement:
+def temperature(celsius: float, observed_at: datetime, sensor_id: str = "sensor-am2302") -> StoredMeasurement:
     return StoredMeasurement(
         "temperature_humidity",
         Measurement(
@@ -103,7 +103,7 @@ class RunAlarmsTests(unittest.TestCase):
         self.assertTrue(succeeded)
         self.assertEqual(len(notifier.sent), 1)
         self.assertEqual(
-            notifier.sent[0].body, "room-am2302 temperature above 35.0 °C: now 36.2 °C (2026-10-21 14:03 EST)\n"
+            notifier.sent[0].body, "sensor-am2302 temperature above 35.0 °C: now 36.2 °C (2026-10-21 14:03 EST)\n"
         )
         self.assertEqual(self.store.load().thresholds, {RULE.key: frozenset({"above"})})
 
@@ -118,7 +118,7 @@ class RunAlarmsTests(unittest.TestCase):
 
         self.assertEqual(
             [item.body for item in notifier.sent],
-            ["room-am2302 temperature above 95.0 °F: now 97.2 °F (2026-10-21 14:05 EST)\n"],
+            ["sensor-am2302 temperature above 95.0 °F: now 97.2 °F (2026-10-21 14:05 EST)\n"],
         )
 
     def test_second_run_with_the_same_reading_sends_nothing(self) -> None:
@@ -132,11 +132,11 @@ class RunAlarmsTests(unittest.TestCase):
 
     def test_many_transitions_share_one_email(self) -> None:
         notifier = NotifierFake()
-        other = AlarmRule("porch", "air-temperature", above=30.0, below=None, hysteresis=0.0)
+        other = AlarmRule("sensor-bme280", "air-temperature", above=30.0, below=None, hysteresis=0.0)
         self.settings = AlarmSettings(
             self.settings.database_path, self.settings.state_path, STALE_AFTER, [RULE, other], CELSIUS
         )
-        reader = ReaderFake([temperature(36.0, NOW), temperature(31.0, NOW, "porch")])
+        reader = ReaderFake([temperature(36.0, NOW), temperature(31.0, NOW, "sensor-bme280")])
 
         run_alarms(self.settings, reader, self.store, notifier.create, NOW)
 
@@ -168,7 +168,7 @@ class RunAlarmsTests(unittest.TestCase):
 
         run_alarms(self.settings, ReaderFake([]), self.store, notifier.create, NOW)
 
-        self.assertEqual(notifier.sent[0].body, "room-am2302 stale: no readings yet\n")
+        self.assertEqual(notifier.sent[0].body, "sensor-am2302 stale: no readings yet\n")
 
 
 if __name__ == "__main__":

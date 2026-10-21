@@ -15,7 +15,7 @@ class AlarmStateStoreTests(unittest.TestCase):
         self.directory.cleanup()
 
     def test_round_trip(self) -> None:
-        state = AlarmState({"room/air-temperature": frozenset({"above"})}, frozenset({"porch"}))
+        state = AlarmState({"sensor-am2302/air-temperature": frozenset({"above"})}, frozenset({"sensor-bme280"}))
 
         self.store.save(state)
 

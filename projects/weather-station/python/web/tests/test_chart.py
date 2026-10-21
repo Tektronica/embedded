@@ -36,7 +36,7 @@ def stored(observed_at: datetime, kelvin: float) -> StoredMeasurement:
             id=uuid4(),
             created_at=observed_at,
             observed_at=observed_at,
-            sensor_id="room-am2302",
+            sensor_id="sensor-am2302",
             property_id=TEMPERATURE.property_id,
             value=kelvin,
             unit=TEMPERATURE.si_unit,

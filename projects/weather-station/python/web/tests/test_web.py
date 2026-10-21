@@ -25,14 +25,14 @@ def create_database(path: Path) -> sqlite3.Connection:
 
 def insert_reading(connection: sqlite3.Connection, value: float) -> None:
     connection.execute(
-        "INSERT OR IGNORE INTO sensors (sensor_id, sensor_type) VALUES ('room-am2302', 'temperature_humidity')"
+        "INSERT OR IGNORE INTO sensors (sensor_id, sensor_type) VALUES ('sensor-am2302', 'temperature_humidity')"
     )
     connection.execute(
         """
         INSERT INTO measurements
             (id, created_at, observed_at, sensor_id, property_id, value, unit, quality, uncertainty)
         VALUES ('8a1f3e2c-0000-4000-8000-000000000001', '2026-10-19T12:00:00+00:00',
-                '2026-10-19T12:00:00+00:00', 'room-am2302', ?, ?, ?, 'valid', NULL)
+                '2026-10-19T12:00:00+00:00', 'sensor-am2302', ?, ?, ?, 'valid', NULL)
         """,
         (TEMPERATURE.property_id, value, TEMPERATURE.si_unit),
     )
@@ -57,7 +57,7 @@ class WebApiTests(unittest.TestCase):
         connection.close()
 
         readings = self.client.get("/api/readings")
-        series = self.client.get("/api/series/room-am2302?property=air-temperature")
+        series = self.client.get("/api/series/sensor-am2302?property=air-temperature")
         dashboard = self.client.get("/")
 
         self.assertEqual(readings.status_code, 200)

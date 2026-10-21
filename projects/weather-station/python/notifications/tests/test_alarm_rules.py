@@ -4,7 +4,7 @@ from typing import Any
 from weather_station.notifications.alarm_rules import AlarmRule, read_alarm_rules
 from weather_station.notifications.errors import InvalidAlarmConfiguration
 
-RULE = {"sensor": "room-am2302", "property": "air-temperature", "above": 35.0, "below": 0.0, "hysteresis": 1.0}
+RULE = {"sensor": "sensor-am2302", "property": "air-temperature", "above": 35.0, "below": 0.0, "hysteresis": 1.0}
 
 
 def read(*rules: Any) -> list[AlarmRule]:
@@ -13,7 +13,7 @@ def read(*rules: Any) -> list[AlarmRule]:
 
 class AlarmRulesTests(unittest.TestCase):
     def test_reads_a_full_rule(self) -> None:
-        self.assertEqual(read(RULE), [AlarmRule("room-am2302", "air-temperature", 35.0, 0.0, 1.0)])
+        self.assertEqual(read(RULE), [AlarmRule("sensor-am2302", "air-temperature", 35.0, 0.0, 1.0)])
 
     def test_missing_section_means_no_rules(self) -> None:
         self.assertEqual(read_alarm_rules({}), [])
@@ -66,7 +66,7 @@ class AlarmRulesTests(unittest.TestCase):
             read(RULE, {**RULE, "above": 40})
 
     def test_same_property_on_another_sensor_is_allowed(self) -> None:
-        self.assertEqual(len(read(RULE, {**RULE, "sensor": "porch"})), 2)
+        self.assertEqual(len(read(RULE, {**RULE, "sensor": "sensor-bme280"})), 2)
 
     def test_band_must_exceed_twice_the_hysteresis(self) -> None:
         with self.assertRaisesRegex(InvalidAlarmConfiguration, "twice"):

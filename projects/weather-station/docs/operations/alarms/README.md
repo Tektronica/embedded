@@ -13,7 +13,7 @@ Each entry in the top-level `alarms` list is one rule for one sensor and propert
 
 ```json
 "alarms": [
-  { "sensor": "room-am2302", "property": "air-temperature", "above": 35.0, "below": 0.0, "hysteresis": 1.0 }
+  { "sensor": "sensor-am2302", "property": "air-temperature", "above": 35.0, "below": 0.0, "hysteresis": 1.0 }
 ]
 ```
 
@@ -54,14 +54,14 @@ The email goes out once when the sensor turns stale and once when it reports aga
 One run sends at most one email. It lists every change found in that run, one line per change, and sends nothing when nothing changed. The subject is `Weather station alarm`, with the event count added when there is more than one, such as `Weather station alarm: 2 events`. Times use the Pi's local time zone.
 
 ```
-room-am2302 temperature above 35.0 °C: now 36.2 °C (2026-10-21 14:03 EST)
-room-am2302 stale: no reading since 2026-10-21 13:40 EST
+sensor-am2302 temperature above 35.0 °C: now 36.2 °C (2026-10-21 14:03 EST)
+sensor-am2302 stale: no reading since 2026-10-21 13:40 EST
 ```
 
 Alarm and digest emails follow `display.temperature_unit` from `config.json` and ignore the dashboard toggle. With `"fahrenheit"`, the numbers and units in the email are converted. Comparisons against the limits still run in °C, so the email shows the limit converted too:
 
 ```
-room-am2302 temperature above 95.0 °F: now 97.2 °F (2026-10-21 14:03 EST)
+sensor-am2302 temperature above 95.0 °F: now 97.2 °F (2026-10-21 14:03 EST)
 ```
 
 Emails go to `email.recipients` through the same account as the [digest](../email-digest/README.md). If sending fails, the run logs the error and exits with a failure. It keeps the old state, so the next run finds the same changes and tries again.

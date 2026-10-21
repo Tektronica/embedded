@@ -82,12 +82,12 @@ class CollectorTests(unittest.TestCase):
         self.directory.cleanup()
 
     def test_registers_detected_sensors_and_stores_their_first_reading(self) -> None:
-        sensor = SensorStub("room")
+        sensor = SensorStub("sensor-am2302")
         Collector([DetectedSensor(sensor, sensor.read())], self.recorder, 60, 30)
 
         latest = SQLiteMeasurementReader(self.path).latest()
 
-        self.assertEqual({item.measurement.sensor_id for item in latest}, {"room"})
+        self.assertEqual({item.measurement.sensor_id for item in latest}, {"sensor-am2302"})
         self.assertEqual(len(latest), 2)
 
     def test_one_failing_sensor_does_not_stop_the_others(self) -> None:
@@ -116,12 +116,12 @@ class CollectorTests(unittest.TestCase):
         self.assertTrue(all(sensor.closed for sensor in sensors))
 
     def test_rejects_a_non_positive_interval(self) -> None:
-        sensor = SensorStub("room")
+        sensor = SensorStub("sensor-am2302")
         with self.assertRaisesRegex(InvalidCollectorConfiguration, "must be positive"):
             Collector([DetectedSensor(sensor, [])], self.recorder, 0, 30)
 
     def test_rejects_a_non_positive_retention(self) -> None:
-        sensor = SensorStub("room")
+        sensor = SensorStub("sensor-am2302")
         with self.assertRaisesRegex(InvalidCollectorConfiguration, "retention_days must be positive"):
             Collector([DetectedSensor(sensor, [])], self.recorder, 60, 0)
 
@@ -139,7 +139,7 @@ class CollectorTests(unittest.TestCase):
                 collector.run()
 
     def test_prunes_at_startup_then_at_most_once_per_hour(self) -> None:
-        sensor = SensorStub("room")
+        sensor = SensorStub("sensor-am2302")
         clock, spy = FakeClock(), RecorderSpy()
         collector = Collector([DetectedSensor(sensor, [])], spy, 60, 7, clock)  # type: ignore[arg-type]
         start = clock.current
@@ -154,7 +154,7 @@ class CollectorTests(unittest.TestCase):
         self.assertIn("Pruned 3 measurements older than", logs.output[0])
 
     def test_pruning_failure_is_logged_and_collection_continues(self) -> None:
-        sensor = SensorStub("room")
+        sensor = SensorStub("sensor-am2302")
         clock, spy = FakeClock(), RecorderSpy(fails=True)
         collector = Collector([DetectedSensor(sensor, [])], spy, 60, 7, clock)  # type: ignore[arg-type]
 
