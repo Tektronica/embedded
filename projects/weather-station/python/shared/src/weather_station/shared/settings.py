@@ -4,11 +4,18 @@ from typing import Any
 
 from dotenv import find_dotenv, load_dotenv
 
-from weather_station.shared.errors import ConfigFileError, InvalidStorageConfiguration, WeatherStationError
+from weather_station.shared.errors import (
+    ConfigFileError,
+    InvalidStatusConfiguration,
+    InvalidStorageConfiguration,
+    WeatherStationError,
+)
 
 DEFAULT_CONFIG_PATH = Path("config.json")
 DEFAULT_DATABASE_PATH = "instance/weather.sqlite3"
-CONFIG_SECTIONS = frozenset({"storage", "sensors", "status", "email"})
+DEFAULT_STALE_AFTER_MINUTES = 5
+CONFIG_SECTIONS = frozenset({"storage", "sensors", "status", "email", "alarms"})
+STATUS_KEYS = frozenset({"stale_after_minutes"})
 
 
 def load_env() -> None:
@@ -81,3 +88,10 @@ def database_path(config_path: Path = DEFAULT_CONFIG_PATH) -> Path:
     if not isinstance(value, str) or not value:
         raise InvalidStorageConfiguration("Config key 'storage.database_path' must be a non-empty string")
     return Path(value)
+
+
+def read_stale_after_minutes(document: dict[str, Any]) -> int:
+    status = read_section(document, "status", STATUS_KEYS, InvalidStatusConfiguration)
+    return read_positive_int(
+        status, "status", "stale_after_minutes", DEFAULT_STALE_AFTER_MINUTES, InvalidStatusConfiguration
+    )

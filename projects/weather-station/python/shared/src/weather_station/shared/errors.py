@@ -32,3 +32,7 @@ class ConfigFileError(WeatherStationError):
 
 class InvalidStorageConfiguration(WeatherStationError):
     code = "invalid_storage_configuration"
+
+
+class InvalidStatusConfiguration(WeatherStationError):
+    code = "invalid_status_configuration"

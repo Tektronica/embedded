@@ -3,7 +3,8 @@
 # Run on the Pi as the user the services run as. The script calls sudo where it needs it.
 set -eu
 
-UNITS="weather-sensors.service weather-web.service weather-digest.service weather-digest.timer"
+TIMERS="weather-digest.timer weather-alarm.timer"
+UNITS="weather-sensors.service weather-web.service weather-digest.service weather-alarm.service $TIMERS"
 UNIT_TEMPLATE_DIR=/home/pi/embedded/projects/weather-station/python
 
 main() {
@@ -22,13 +23,15 @@ main() {
 
   git pull --ff-only
 
-  # A first install turns the digest on. Later deploys keep whatever state it was left in.
-  digest_enabled=yes
-  if [ -f /etc/systemd/system/weather-digest.timer ] && ! systemctl is-enabled --quiet weather-digest.timer; then
-    digest_enabled=no
-  fi
+  # A first install turns each timer on. Later deploys keep whatever state it was left in.
+  enabled_timers=""
+  for timer in $TIMERS; do
+    if [ ! -f "/etc/systemd/system/$timer" ] || systemctl is-enabled --quiet "$timer"; then
+      enabled_timers="$enabled_timers $timer"
+    fi
+  done
 
-  sudo systemctl stop weather-digest.timer weather-web.service weather-sensors.service 2>/dev/null || true
+  sudo systemctl stop $TIMERS weather-web.service weather-sensors.service 2>/dev/null || true
 
   ./init.sh services
 
@@ -41,12 +44,13 @@ main() {
 
   sudo systemctl enable --now weather-sensors.service
   sudo systemctl enable --now weather-web.service
-  if [ "$digest_enabled" = yes ]; then
-    sudo systemctl enable --now weather-digest.timer
-  else
-    echo "Left weather-digest.timer disabled"
-  fi
-  systemctl --no-pager status weather-sensors.service weather-web.service weather-digest.timer
+  for timer in $TIMERS; do
+    case " $enabled_timers " in
+      *" $timer "*) sudo systemctl enable --now "$timer" ;;
+      *) echo "Left $timer disabled" ;;
+    esac
+  done
+  systemctl --no-pager status weather-sensors.service weather-web.service $TIMERS
 }
 
 # git pull can rewrite this file mid-run. sh parses main whole and reads this line before it runs.

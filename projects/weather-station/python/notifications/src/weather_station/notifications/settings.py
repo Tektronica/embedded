@@ -1,8 +1,10 @@
 import os
 from dataclasses import dataclass
+from datetime import timedelta
 from pathlib import Path
 from typing import Any
 
+from weather_station.notifications.alarm_rules import AlarmRule, read_alarm_rules
 from weather_station.notifications.errors import InvalidEmailConfiguration, MissingSmtpCredential
 from weather_station.shared.settings import (
     DEFAULT_CONFIG_PATH,
@@ -11,9 +13,11 @@ from weather_station.shared.settings import (
     load_env,
     read_int,
     read_section,
+    read_stale_after_minutes,
 )
 
 EMAIL_KEYS = frozenset({"smtp_host", "smtp_port", "recipients"})
+ALARM_STATE_FILENAME = "alarm-state.json"
 
 
 @dataclass(frozen=True)
@@ -32,20 +36,41 @@ class NotificationSettings:
 
     @classmethod
     def from_config(cls, config_path: Path = DEFAULT_CONFIG_PATH) -> "NotificationSettings":
-        load_env()
-        email = read_section(
-            load_config(config_path), "email", EMAIL_KEYS, InvalidEmailConfiguration
-        )
         return cls(
             database_path=database_path(config_path),
-            smtp=SmtpSettings(
-                host=_read_host(email),
-                port=read_int(email, "email", "smtp_port", 465, InvalidEmailConfiguration),
-                username=_read_credential("SMTP_USER"),
-                password=_read_credential("SMTP_PASSWORD"),
-                recipients=_read_recipients(email),
-            ),
+            smtp=load_smtp_settings(config_path),
         )
+
+
+@dataclass(frozen=True)
+class AlarmSettings:
+    database_path: Path
+    state_path: Path
+    stale_after: timedelta
+    rules: list[AlarmRule]
+
+    @classmethod
+    def from_config(cls, config_path: Path = DEFAULT_CONFIG_PATH) -> "AlarmSettings":
+        document = load_config(config_path)
+        path = database_path(config_path)
+        return cls(
+            database_path=path,
+            state_path=path.parent / ALARM_STATE_FILENAME,
+            stale_after=timedelta(minutes=read_stale_after_minutes(document)),
+            rules=read_alarm_rules(document),
+        )
+
+
+def load_smtp_settings(config_path: Path = DEFAULT_CONFIG_PATH) -> SmtpSettings:
+    load_env()
+    email = read_section(load_config(config_path), "email", EMAIL_KEYS, InvalidEmailConfiguration)
+    return SmtpSettings(
+        host=_read_host(email),
+        port=read_int(email, "email", "smtp_port", 465, InvalidEmailConfiguration),
+        username=_read_credential("SMTP_USER"),
+        password=_read_credential("SMTP_PASSWORD"),
+        recipients=_read_recipients(email),
+    )
 
 
 def _read_host(email: dict[str, Any]) -> str:

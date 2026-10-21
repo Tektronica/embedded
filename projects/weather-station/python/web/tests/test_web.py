@@ -9,9 +9,9 @@ from typing import Any
 from flask import Flask
 
 from weather_station.shared.db import SCHEMA_VERSION, schema_sql
+from weather_station.shared.errors import InvalidStatusConfiguration
 from weather_station.shared.registry import TEMPERATURE
 from weather_station.web.app import create_app
-from weather_station.web.errors import InvalidStatusConfiguration
 
 
 def create_database(path: Path) -> sqlite3.Connection:

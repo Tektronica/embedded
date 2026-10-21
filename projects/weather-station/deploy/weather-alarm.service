@@ -1,0 +1,10 @@
+[Unit]
+Description=Weather station alarm check
+Wants=network-online.target
+After=network-online.target
+
+[Service]
+Type=oneshot
+User=pi
+WorkingDirectory=/home/pi/embedded/projects/weather-station/python
+ExecStart=/home/pi/embedded/projects/weather-station/python/.venv-notifications/bin/python -m weather_station.notifications.alarm

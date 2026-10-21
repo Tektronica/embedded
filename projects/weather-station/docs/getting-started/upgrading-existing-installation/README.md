@@ -7,7 +7,7 @@ Use this guide when the Pi already has `.env`, SQLite data, or systemd services.
 From the repository root, stop the timer and services before copying the database:
 
 ```bash
-sudo systemctl stop weather-digest.timer weather-web.service weather-sensors.service
+sudo systemctl stop weather-digest.timer weather-alarm.timer weather-web.service weather-sensors.service
 cd projects/weather-station/python
 cp .env .env.backup
 cp instance/weather.sqlite3 instance/weather.sqlite3.backup
@@ -39,7 +39,7 @@ Run from `projects/weather-station/python`, as the user the services run as:
 ./deploy.sh
 ```
 
-`deploy.sh` pulls, deletes and rebuilds `.venv-sensors`, `.venv-web`, and `.venv-notifications`, installs the units with `User` and paths set to the current user and checkout, and starts them. See [Install on Raspberry Pi](../installing-on-rpi/README.md#4-deploy) for the full sequence. Rename existing environments first if a rollback needs them.
+`deploy.sh` pulls, deletes and rebuilds `.venv-sensors`, `.venv-web`, and `.venv-notifications`, installs the units with `User` and paths set to the current user and checkout, and starts them, including `weather-alarm.timer`. See [Install on Raspberry Pi](../installing-on-rpi/README.md#4-deploy) for the full sequence. Rename existing environments first if a rollback needs them.
 
 `deploy.sh` starts sensors first, so the writer initializes `schema_version` before the read-only services start.
 

@@ -1,0 +1,8 @@
+[Unit]
+Description=Check the weather station alarms every minute
+
+[Timer]
+OnCalendar=minutely
+
+[Install]
+WantedBy=timers.target

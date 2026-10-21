@@ -54,7 +54,7 @@ From `projects/weather-station/python`, as the user the services run as:
 2. Stops any running weather station units.
 3. Rebuilds `.venv-sensors`, `.venv-web`, and `.venv-notifications` with `./init.sh services`.
 4. Copies the units from `deploy/` into `/etc/systemd/system/`, with `User` set to the current user and paths set to this checkout.
-5. Enables and starts the sensors service, then the web service and the digest timer.
+5. Enables and starts the sensors service, then the web service, the digest timer, and the alarm timer.
 
 The units in `deploy/` use `pi` and `/home/pi/embedded` as placeholders. `deploy.sh` replaces both, so any username and checkout location work.
 
@@ -67,7 +67,7 @@ Run `./deploy.sh` again. The pull stops the deploy before any service is touched
 ## Check
 
 ```bash
-systemctl status weather-sensors.service weather-web.service weather-digest.timer
+systemctl status weather-sensors.service weather-web.service weather-digest.timer weather-alarm.timer
 journalctl -u weather-sensors.service -f
 ```
 

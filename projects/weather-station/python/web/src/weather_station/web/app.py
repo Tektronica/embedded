@@ -11,16 +11,12 @@ from weather_station.shared.settings import (
     DEFAULT_CONFIG_PATH,
     database_path,
     load_config,
-    read_positive_int,
-    read_section,
+    read_stale_after_minutes,
 )
 from weather_station.web.assemblers.dashboard import DashboardAssembler
 from weather_station.web.assemblers.measurement import MeasurementAssembler
 from weather_station.web.assemblers.sensor import SensorAssembler
-from weather_station.web.errors import InvalidStatusConfiguration, register_error_handlers
-
-
-STATUS_KEYS = frozenset({"stale_after_minutes"})
+from weather_station.web.errors import register_error_handlers
 
 
 def create_app(
@@ -28,16 +24,10 @@ def create_app(
     config_path: Path = DEFAULT_CONFIG_PATH,
 ) -> Flask:
     app = Flask(__name__)
-    status = read_section(
-        load_config(config_path), "status", STATUS_KEYS, InvalidStatusConfiguration
-    )
+    document = load_config(config_path)
     app.config.from_mapping(
         DATABASE_PATH=database_path(config_path),
-        STALE_AFTER=timedelta(
-            minutes=read_positive_int(
-                status, "status", "stale_after_minutes", 5, InvalidStatusConfiguration
-            )
-        ),
+        STALE_AFTER=timedelta(minutes=read_stale_after_minutes(document)),
     )
     if test_config:
         app.config.update(test_config)

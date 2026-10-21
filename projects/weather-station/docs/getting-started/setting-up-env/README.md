@@ -47,8 +47,9 @@ cp -n config.example.json config.json
 | `sensors.interval_seconds` | sensors | 60 |
 | `sensors.retention_days` | sensors | 30 |
 | `sensors.devices` | sensors | empty list |
-| `status.stale_after_minutes` | web | 5 |
+| `status.stale_after_minutes` | web, alarms | 5 |
 | `email.smtp_host`, `email.recipients` | notifications | required |
 | `email.smtp_port` | notifications | 465 |
+| `alarms` | alarms | empty list |
 
 Unknown sections and keys stop the service at startup, so a typo is reported instead of ignored. `storage.database_path` is relative to the shared working directory. systemd units set that directory to the Python project root so all three services use the same SQLite file.

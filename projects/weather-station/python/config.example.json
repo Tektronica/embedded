@@ -12,6 +12,9 @@
   "status": {
     "stale_after_minutes": 5
   },
+  "alarms": [
+    { "sensor": "room-am2302", "property": "air-temperature", "above": 35.0, "below": 0.0, "hysteresis": 1.0 }
+  ],
   "email": {
     "smtp_host": "smtp.gmail.com",
     "smtp_port": 465,

@@ -35,3 +35,14 @@ sudo journalctl -u weather-digest.service -b --no-pager
 ```
 
 Don't print or paste SMTP secrets into logs or issue reports.
+
+## Alarm email fails
+
+Alarms use the same email settings as the digest. A failed send leaves the alarm state unchanged, so the next run tries again. Inspect:
+
+```bash
+sudo systemctl start weather-alarm.service
+sudo journalctl -u weather-alarm.service -b --no-pager
+```
+
+See [Alarms](../alarms/README.md) for the rule format and state file.

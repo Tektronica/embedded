@@ -6,7 +6,7 @@ from typing import Any
 from unittest.mock import patch
 
 from weather_station.notifications.errors import InvalidEmailConfiguration, MissingSmtpCredential
-from weather_station.notifications.settings import NotificationSettings
+from weather_station.notifications.settings import AlarmSettings, NotificationSettings
 
 CREDENTIALS = {"SMTP_USER": "station@example.com", "SMTP_PASSWORD": "app-password"}
 EMAIL = {"smtp_host": "smtp.example.com", "recipients": ["a@example.com", "b@example.com"]}
@@ -83,6 +83,34 @@ class NotificationSettingsTests(unittest.TestCase):
                 environment = {key: value for key, value in CREDENTIALS.items() if key != name}
                 with self.assertRaisesRegex(MissingSmtpCredential, name):
                     self._load(EMAIL, environment)
+
+
+class AlarmSettingsTests(unittest.TestCase):
+    def setUp(self) -> None:
+        self.directory = TemporaryDirectory()
+        self.path = Path(self.directory.name) / "config.json"
+
+    def tearDown(self) -> None:
+        self.directory.cleanup()
+
+    def test_reads_rules_stale_window_and_state_path_without_email_settings(self) -> None:
+        rule = {"sensor": "room", "property": "air-temperature", "above": 35}
+        self.path.write_text(
+            json.dumps(
+                {
+                    "storage": {"database_path": "data/weather.sqlite3"},
+                    "status": {"stale_after_minutes": 9},
+                    "alarms": [rule],
+                }
+            )
+        )
+
+        with patch.dict("os.environ", {}, clear=True):
+            settings = AlarmSettings.from_config(self.path)
+
+        self.assertEqual(settings.state_path, Path("data/alarm-state.json"))
+        self.assertEqual(settings.stale_after.total_seconds(), 9 * 60)
+        self.assertEqual([item.key for item in settings.rules], ["room/air-temperature"])
 
 
 if __name__ == "__main__":

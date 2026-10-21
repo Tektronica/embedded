@@ -19,6 +19,7 @@ A Raspberry Pi weather station with a sensor collector, SQLite history, a local 
 
 ## Operations
 
+- [Alarms](docs/operations/alarms/README.md)
 - [Back up and restore](docs/operations/backup-and-restore/README.md)
 - [Email digest](docs/operations/email-digest/README.md)
 - [Troubleshoot services and sensors](docs/operations/troubleshooting/README.md)
